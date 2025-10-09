@@ -111,43 +111,45 @@ Pages (Main Content - PK: Page ID)
 
 Create an Airtable table named "Clients" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Client ID: Auto-number **(PRIMARY KEY)**
-- Client Name: Single line text (Required)
-- Domain: URL field (Required) - Format: "bathsrus.com" (no https://, no trailing /)
-- Active: Checkbox (Default: true)
+- **Client ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Client Name**: Single line text field type (Required) - Example: "Baths R Us"
+- **Domain**: Single line text field type (Required) - Store domain only, no protocol: "bathsrus.com" (NOT https://bathsrus.com)
+- **Active**: Checkbox field type (Default: checked/true) - Indicates if client is currently active
 
 **Branding Fields:**
-- Logo URL: URL field
-- Primary Color: Single line text (e.g., "#0ea5e9")
-- Secondary Color: Single line text (e.g., "#8b5cf6")
-- Google Fonts: Single line text (e.g., "Inter")
+- **Logo URL**: URL field type - Stores full URL: "https://example.com/logo.png" (Airtable validates as full URL)
+- **Primary Color**: Single line text field type - Hex color code: "#0ea5e9"
+- **Secondary Color**: Single line text field type - Hex color code: "#8b5cf6"
+- **Google Fonts**: Single line text field type - Font family name: "Inter" or "Roboto"
 
 **Contact Fields:**
-- Primary Phone: Phone field (Required)
-- Primary Email: Email field (Required)
-- Corporate Address: Single line text
+- **Primary Phone**: Phone number field type (Required) - Airtable will format as phone: "(330) 555-1234"
+- **Primary Email**: Email field type (Required) - Airtable validates email format: "info@bathsrus.com"
+- **Corporate Address**: Single line text field type - Full address: "123 Main St, Medina, OH 44256"
 
 **Tracking & Integrations Fields:**
-- GTM Container ID: Single line text
-- CallRail Swap Target: Single line text
-- reCAPTCHA Site Key: Single line text
-- Salesforce Campaign ID: Single line text
-- Make.com Webhook URL: URL field
-- Google Analytics Property ID: Single line text
+- **GTM Container ID**: Single line text field type - Google Tag Manager ID: "GTM-XXXXXXX"
+- **CallRail Swap Target**: Phone number field type - Phone number to swap: "(888) 555-1234"
+- **reCAPTCHA Site Key**: Single line text field type - Google reCAPTCHA key: "6Le..."
+- **Salesforce Campaign ID**: Single line text field type - Salesforce ID: "701..."
+- **Make.com Webhook URL**: URL field type - Full webhook URL: "https://hook.us1.make.com/..."
+- **Google Analytics Property ID**: Single line text field type - GA4 property: "G-XXXXXXXXXX"
 
 **Business Info Fields:**
-- Years in Business: Number field
-- Licensed Since: Number field (Year format, e.g., 2010)
-- Insurance Amount: Currency field (e.g., $2,000,000)
-- BBB Rating: Single select (Options: A+, A, B, C, D, F, Not Rated)
-- Default Warranty Years: Number field
+- **Years in Business**: Number field type (Integer, no decimals) - Whole number: 15
+- **Licensed Since**: Number field type (Integer, no decimals) - Year only: 2010
+- **Insurance Amount**: Currency field type (USD, 2 decimals) - Dollar amount: $2,000,000.00
+- **BBB Rating**: Single select field type - Options: A+, A, B, C, D, F, Not Rated (Create all 7 options)
+- **Default Warranty Years**: Number field type (Integer, no decimals) - Years: 5, 10, or "Lifetime" as text field?
 
 **Metadata Fields:**
-- Total Pages: Rollup field (Count from Pages table - ADD LATER after Pages table exists)
-- Total Branches: Rollup field (Count from Branch Locations table - ADD LATER)
-- Created Date: Created time field
-- Last Modified: Last modified time field
+- **Total Pages**: Rollup field type → Count from Pages table's linked field - **ADD LATER** after Pages table exists
+- **Total Branches**: Rollup field type → Count from Branch Locations table's linked field - **ADD LATER** after Branch Locations exists
+- **Created Date**: Created time field type (Auto-populates when record created, displays date + time)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes, displays date + time)
 
 **Create These Views:**
 - All Clients (default, show all)
@@ -171,37 +173,45 @@ Create an Airtable table named "Clients" with these fields:
 
 Create an Airtable table named "Services" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Service ID: Auto-number **(PRIMARY KEY)**
-- Service Name: Single line text (Required) - e.g., "Bathroom Remodeling"
-- Service Slug: Single line text (Required) - e.g., "bathroom-remodeling"
-- Active: Checkbox (Default: true)
+- **Service ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Service Name**: Single line text field type (Required) - Display name: "Bathroom Remodeling"
+- **Service Slug**: Single line text field type (Required) - URL-friendly: "bathroom-remodeling" (lowercase, hyphens)
+- **Active**: Checkbox field type (Default: checked/true) - Indicates if service is offered
 
 **Keyword Grouping Fields (CRITICAL FOR SEO):**
-- Primary Keywords: Long text field (Required) - Format: Comma-separated, one per line
-- Canonical Keyword: Single line text (Required) - The ONE keyword for URLs/H1s
-- Keyword Group Notes: Long text field - Explain grouping decisions
+- **Primary Keywords**: Long text field type (Required) - Multiline list of keyword variations, one per line:
+  ```
+  bathroom remodeling
+  bathroom remodel
+  bath remodeling
+  bath renovation
+  ```
+- **Canonical Keyword**: Single line text field type (Required) - The ONE primary keyword for URLs and H1s: "bathroom remodeling"
+- **Keyword Group Notes**: Long text field type - Document WHY keywords are grouped together, explain decisions about which keywords to combine vs separate
 
 **SEO & Content Fields:**
-- Meta Description Template: Long text field
-- Icon Name: Single line text (e.g., "bathtub")
+- **Meta Description Template**: Long text field type - Template with variables: "Professional {service} in {location}. Licensed, insured, {years}+ years experience."
+- **Icon Name**: Single line text field type - Icon identifier for UI: "bathtub", "kitchen", "basement" (matches icon library)
 
 **Service Details Fields:**
-- Typical Timeline: Single line text (e.g., "2-3 weeks")
-- Price Range Low: Currency field
-- Price Range High: Currency field
-- Service Description: Long text field
+- **Typical Timeline**: Single line text field type - Human-readable duration: "2-3 weeks", "1-2 months"
+- **Price Range Low**: Currency field type (USD, 2 decimals) - Minimum typical price: $8,000.00
+- **Price Range High**: Currency field type (USD, 2 decimals) - Maximum typical price: $25,000.00
+- **Service Description**: Long text field type - Detailed description for AI context, 2-4 sentences about the service
 
 **AI Configuration Fields:**
-- AI Tone Preference: Single select (Options: Professional, Conversational, Urgent, Luxury)
-- AI Prompt Template: Long text field
-- Default Trust Bar Topics: Long text field (JSON format)
+- **AI Tone Preference**: Single select field type - Options: Professional, Conversational, Urgent, Luxury (Create all 4 options)
+- **AI Prompt Template**: Long text field type - Custom AI instructions: "Emphasize speed and quality. Mention licensed contractors and warranty."
+- **Default Trust Bar Topics**: Long text field type - JSON array format: `["Licensed & Insured", "Years in Business", "5-Star Reviews", "Lifetime Warranty"]`
 
 **Metadata Fields:**
-- Total Pages: Rollup field (Count from Pages table - ADD LATER)
-- Last Used: Rollup field (Max from Pages → Created Date - ADD LATER)
-- Created Date: Created time field
-- Last Modified: Last modified time field
+- **Total Pages**: Rollup field type → Count from Pages table's Service ID linked field - **ADD LATER** after Pages table exists
+- **Last Used**: Rollup field type → MAX(Pages.Created Date) where Service ID matches - **ADD LATER** after Pages table exists
+- **Created Date**: Created time field type (Auto-populates when record created, displays date + time)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes, displays date + time)
 
 **Create These Views:**
 - All Services (default)
@@ -228,32 +238,34 @@ Create an Airtable table named "Services" with these fields:
 
 Create an Airtable table named "Locations" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Location ID: Auto-number **(PRIMARY KEY)**
-- City: Single line text (Required) - e.g., "Strongsville"
-- State: Single select (Required) - Add options: OH, PA, NY, FL, TX, CA, AZ, NC, SC (add more as needed)
-- County: Single line text (e.g., "Cuyahoga")
-- URL Slug: Formula field = `LOWER(SUBSTITUTE({City}, " ", "-"))`
-- Active: Checkbox (Default: true)
+- **Location ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **City**: Single line text field type (Required) - City name: "Strongsville", "North Royalton"
+- **State**: Single select field type (Required) - Add options: OH, PA, NY, FL, TX, CA, AZ, NC, SC, GA, MI, IL (add more US states as needed)
+- **County**: Single line text field type - County name: "Cuyahoga", "Medina"
+- **URL Slug**: Formula field type = `LOWER(SUBSTITUTE({City}, " ", "-"))` - Auto-generates URL-friendly slug: "north-royalton"
+- **Active**: Checkbox field type (Default: checked/true) - Indicates if location is actively targeted
 
 **Geography Fields:**
-- Zip Codes: Long text field (comma-separated, e.g., "44136, 44149")
-- Primary Zip: Single line text (e.g., "44136")
+- **Zip Codes**: Long text field type - Comma-separated list: "44136, 44149, 44142"
+- **Primary Zip**: Single line text field type - Main zip code for mapping: "44136"
 
 **Demographics Fields (for AI context):**
-- Population: Number field
-- Median Income: Currency field
-- Median Home Value: Currency field
+- **Population**: Number field type (Integer, no decimals) - Whole number: 44750
+- **Median Income**: Currency field type (USD, 2 decimals) - Dollar amount: $72,500.00
+- **Median Home Value**: Currency field type (USD, 2 decimals) - Dollar amount: $185,000.00
 
 **SEO Fields:**
-- SEO Keywords: Long text field
-- Local Landmarks: Long text field
+- **SEO Keywords**: Long text field type - Comma-separated keywords: "strongsville, strongsville ohio, strongsville oh, 44136"
+- **Local Landmarks**: Long text field type - Comma-separated landmarks for AI: "Strongsville Commons, SouthPark Mall, Cleveland Metroparks"
 
 **Metadata Fields:**
-- Total Pages: Rollup field (Count from Pages table - ADD LATER)
-- Served By Branches: Rollup field (Count from Service Areas - ADD LATER)
-- Created Date: Created time field
-- Last Modified: Last modified time field
+- **Total Pages**: Rollup field type → Count from Pages table's Location ID linked field - **ADD LATER** after Pages table exists
+- **Served By Branches**: Rollup field type → Count from Service Areas table's Location ID linked field - **ADD LATER** after Service Areas table exists
+- **Created Date**: Created time field type (Auto-populates when record created, displays date + time)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes, displays date + time)
 
 **Create These Views:**
 - All Locations (default)
@@ -281,55 +293,62 @@ Create an Airtable table named "Locations" with these fields:
 
 Create an Airtable table named "Branch Locations" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Branch ID: Auto-number **(PRIMARY KEY)**
-- Branch Name: Single line text (Required) - e.g., "Medina Office"
-- Client Name: Linked record to Clients table **(FOREIGN KEY)** (Required)
-- Active: Checkbox (Default: true)
+- **Branch ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Branch Name**: Single line text field type (Required) - Office name: "Medina Office", "Downtown Branch"
+- **Client Name**: Link to another record field type → Links to Clients table **(FOREIGN KEY)** (Required) - Select which client owns this branch
+- **Active**: Checkbox field type (Default: checked/true) - Indicates if branch is operational
 
 **Location Fields:**
-- Street Address: Single line text
-- City: Single line text (Required)
-- State: Single select (Required) - Same options as Locations table
-- Zip Code: Single line text
-- Full Address: Formula field = `CONCATENATE({Street Address}, ", ", {City}, ", ", {State}, " ", {Zip Code})`
+- **Street Address**: Single line text field type - Street address: "123 Main Street"
+- **City**: Single line text field type (Required) - City name: "Medina"
+- **State**: Single select field type (Required) - Same options as Locations table: OH, PA, NY, FL, TX, CA, AZ, etc.
+- **Zip Code**: Single line text field type - 5-digit zip: "44256"
+- **Full Address**: Formula field type = `CONCATENATE({Street Address}, ", ", {City}, ", ", {State}, " ", {Zip Code})` - Auto-generates: "123 Main Street, Medina, OH 44256"
 
-**Timezone Fields (CRITICAL):**
-- Timezone: Single select (Required) - Options:
-  * America/New_York (EST/EDT)
-  * America/Chicago (CST/CDT)
-  * America/Denver (MST/MDT)
-  * America/Phoenix (MST - no DST)
-  * America/Los_Angeles (PST/PDT)
-  * America/Anchorage (AKST/AKDT)
-  * Pacific/Honolulu (HST)
+**Timezone Fields (CRITICAL FOR MULTI-STATE OPERATIONS):**
+- **Timezone**: Single select field type (Required) - IANA timezone identifiers (Create all 7 options):
+  * America/New_York (EST/EDT) - Eastern Time
+  * America/Chicago (CST/CDT) - Central Time
+  * America/Denver (MST/MDT) - Mountain Time
+  * America/Phoenix (MST - no DST) - Arizona
+  * America/Los_Angeles (PST/PDT) - Pacific Time
+  * America/Anchorage (AKST/AKDT) - Alaska Time
+  * Pacific/Honolulu (HST) - Hawaii Time
 
 **Contact Fields:**
-- Phone: Phone field (Required)
-- Email: Email field (Required)
-- After Hours Phone: Phone field
+- **Phone**: Phone number field type (Required) - Main office phone: "(330) 555-1234"
+- **Email**: Email field type (Required) - Office email: "medina@bathsrus.com"
+- **After Hours Phone**: Phone number field type - Emergency contact: "(330) 555-9999"
 
 **Metadata Fields:**
-- Google Maps Embed URL: URL field
-- Google Maps Place ID: Single line text
-- Office Photos: Attachment field
+- **Google Maps Embed URL**: URL field type - Full embed URL: "https://maps.google.com/..."
+- **Google Maps Place ID**: Single line text field type - Google Place ID: "ChIJ..."
+- **Office Photos**: Attachment field type - Upload office photos (images)
 
 **Hours Fields:**
-- Hours Summary: Long text field
-- Open Time Weekday: Single line text (e.g., "08:00")
-- Close Time Weekday: Single line text (e.g., "18:00")
-- Open Time Saturday: Single line text
-- Close Time Saturday: Single line text
-- Sunday Hours: Single line text (e.g., "Closed")
+- **Hours Summary**: Long text field type - Multiline formatted hours:
+  ```
+  Monday-Friday: 8:00 AM - 6:00 PM EST
+  Saturday: 9:00 AM - 4:00 PM EST
+  Sunday: Closed
+  ```
+- **Open Time Weekday**: Single line text field type - 24-hour format: "08:00"
+- **Close Time Weekday**: Single line text field type - 24-hour format: "18:00"
+- **Open Time Saturday**: Single line text field type - 24-hour format: "09:00"
+- **Close Time Saturday**: Single line text field type - 24-hour format: "16:00"
+- **Sunday Hours**: Single line text field type - Text: "Closed" or "10:00-14:00"
 
 **Service Area Field:**
-- Service Radius Miles: Number field (e.g., 25)
+- **Service Radius Miles**: Number field type (Integer, no decimals) - Whole number: 25
 
 **Rollup Fields:**
-- Total Cities Served: Rollup field (Count from Service Areas - ADD LATER)
-- Total Pages: Rollup field (Count from Pages where Matched Branch = this - ADD LATER)
-- Created Date: Created time field
-- Last Modified: Last modified time field
+- **Total Cities Served**: Rollup field type → Count from Service Areas table's Branch ID linked field - **ADD LATER** after Service Areas table exists
+- **Total Pages**: Rollup field type → Count from Pages table where Matched Branch = this branch - **ADD LATER** after Pages table exists
+- **Created Date**: Created time field type (Auto-populates when record created, displays date + time)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes, displays date + time)
 
 **Create These Views:**
 - All Branches (default)
@@ -356,23 +375,25 @@ Create an Airtable table named "Branch Locations" with these fields:
 
 Create an Airtable table named "Service Areas" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Service Area ID: Auto-number **(PRIMARY KEY)**
-- Branch ID: Linked record to Branch Locations table **(FOREIGN KEY)** (Required)
-- Location ID: Linked record to Locations table **(FOREIGN KEY)** (Required)
-- Active: Checkbox (Default: true)
+- **Service Area ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Branch ID**: Link to another record field type → Links to Branch Locations table **(FOREIGN KEY)** (Required) - Which branch serves this area
+- **Location ID**: Link to another record field type → Links to Locations table **(FOREIGN KEY)** (Required) - Which city is served
+- **Active**: Checkbox field type (Default: checked/true) - Indicates if this service area mapping is active
 
 **Computed Fields (Lookups):**
-- Branch Name: Lookup field from Branch ID → Branch Name
-- Branch City: Lookup field from Branch ID → City
-- Branch State: Lookup field from Branch ID → State
-- Service City: Lookup field from Location ID → City
-- Service State: Lookup field from Location ID → State
-- Unique Key: Formula field = `CONCATENATE({Branch ID}, "-", {Location ID})`
+- **Branch Name**: Lookup field type → From Branch ID, show Branch Name field
+- **Branch City**: Lookup field type → From Branch ID, show City field
+- **Branch State**: Lookup field type → From Branch ID, show State field
+- **Service City**: Lookup field type → From Location ID, show City field
+- **Service State**: Lookup field type → From Location ID, show State field
+- **Unique Key**: Formula field type = `CONCATENATE({Branch ID}, "-", {Location ID})` - Creates unique identifier: "rec123-rec456"
 
 **Metadata Fields:**
-- Pages in This Area: Rollup field (Count from Pages where Location ID = this Location - ADD LATER)
-- Created Date: Created time field
+- **Pages in This Area**: Rollup field type → Count from Pages table where Location ID = this Location - **ADD LATER** after Pages table exists
+- **Created Date**: Created time field type (Auto-populates when record created, displays date + time)
 
 **Create These Views:**
 - All Service Areas (default)
@@ -399,39 +420,41 @@ Create an Airtable table named "Service Areas" with these fields:
 
 Create an Airtable table named "Branch Staff" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Staff ID: Auto-number **(PRIMARY KEY)**
-- Full Name: Single line text (Required)
-- Branch ID: Linked record to Branch Locations table **(FOREIGN KEY)** (Required)
-- Active: Checkbox (Default: true)
+- **Staff ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Full Name**: Single line text field type (Required) - Employee name: "John Smith", "Sarah Johnson"
+- **Branch ID**: Link to another record field type → Links to Branch Locations table **(FOREIGN KEY)** (Required) - Which branch employs this person
+- **Active**: Checkbox field type (Default: checked/true) - Indicates if employee is currently active
 
 **Role Fields:**
-- Job Title: Single line text (Required) - e.g., "Lead Project Manager"
-- Role Type: Single select - Options: Sales, Project Manager, Installer, Admin, Owner
-- Primary Contact: Checkbox (Is this the main contact for the branch?)
+- **Job Title**: Single line text field type (Required) - Job title: "Lead Project Manager", "Senior Designer"
+- **Role Type**: Single select field type - Options: Sales, Project Manager, Installer, Admin, Owner (Create all 5 options)
+- **Primary Contact**: Checkbox field type - Is this the main point of contact for the branch?
 
 **Experience Fields:**
-- Years of Experience: Number field
-- Certifications: Long text field (comma-separated)
-- Specialties: Multiple select - Options: Bathroom, Kitchen, Basement, Flooring, Windows, Doors, Roofing, Siding
+- **Years of Experience**: Number field type (Integer, no decimals) - Whole number of years: 15
+- **Certifications**: Long text field type - Comma-separated list: "NARI Certified, OSHA 30-Hour, Lead-Safe Certified"
+- **Specialties**: Multiple select field type - Options: Bathroom, Kitchen, Basement, Flooring, Windows, Doors, Roofing, Siding (Create all 8 options, allow multiple selections)
 
-**Content Fields (for AI):**
-- Photo URL: URL field
-- Bio: Long text field (2-3 sentences)
-- Quote: Long text field
+**Content Fields (for AI-generated team pages):**
+- **Photo URL**: URL field type - Full URL to employee photo: "https://res.cloudinary.com/.../john-smith.jpg"
+- **Bio**: Long text field type - 2-3 sentence biography for website
+- **Quote**: Long text field type - Personal quote or motto: "Quality craftsmanship is our standard"
 
 **Contact Fields:**
-- Email: Email field
-- Phone Extension: Single line text (e.g., "ext. 205")
+- **Email**: Email field type - Employee email: "john.smith@bathsrus.com"
+- **Phone Extension**: Single line text field type - Extension: "ext. 205" or "x205"
 
 **Display Fields:**
-- Featured: Checkbox (Show on team pages)
-- Display Order: Number field (For team page ordering)
-- Hired Date: Date field
+- **Featured**: Checkbox field type - Show prominently on team/about pages
+- **Display Order**: Number field type (Integer, no decimals) - Sort order on team pages: 1, 2, 3...
+- **Hired Date**: Date field type - Date of hire: "2015-06-15"
 
 **Metadata Fields:**
-- Created Date: Created time field
-- Client: Lookup field from Branch → Client Name
+- **Created Date**: Created time field type (Auto-populates when record created, displays date + time)
+- **Client**: Lookup field type → From Branch ID → Client Name (shows which client this employee belongs to)
 
 **Create These Views:**
 - All Staff (default)
@@ -453,88 +476,90 @@ Create an Airtable table named "Branch Staff" with these fields:
 
 Create an Airtable table named "Pages" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below. This is the largest table with 50+ fields.
+
 **Identity & Routing Fields:**
-- Page ID: Auto-number **(PRIMARY KEY)**
-- Client Name: Linked record to Clients table **(FOREIGN KEY)** (Required)
-- Service ID: Linked record to Services table **(FOREIGN KEY)** (Required)
-- Location ID: Linked record to Locations table **(FOREIGN KEY)** (Optional - for non-location pages)
-- Unique Key: Formula field = `CONCATENATE({Client Name}, "-", {Service Slug}, "-", IF({Location Slug}, {Location Slug}, "national"))`
-- URL Slug: Formula field = `IF({Location ID} = BLANK(), {Service Slug}, CONCATENATE({Service Slug}, "/", {Location Slug}))`
-- Page URL: Formula field = `CONCATENATE("https://", {Client Domain}, "/", {URL Slug})`
+- **Page ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Client Name**: Link to another record field type → Links to Clients table **(FOREIGN KEY)** (Required)
+- **Service ID**: Link to another record field type → Links to Services table **(FOREIGN KEY)** (Required)
+- **Location ID**: Link to another record field type → Links to Locations table **(FOREIGN KEY)** (Optional - for national/non-location pages like "About Us")
+- **Unique Key**: Formula field type = `CONCATENATE({Client Name}, "-", {Service Slug}, "-", IF({Location Slug}, {Location Slug}, "national"))` - Prevents duplicates
+- **URL Slug**: Formula field type = `IF({Location ID} = BLANK(), {Service Slug}, CONCATENATE({Service Slug}, "/", {Location Slug}))` - Generates "bathroom-remodeling/strongsville"
+- **Page URL**: Formula field type = `CONCATENATE("https://", {Client Domain}, "/", {URL Slug})` - Full URL: "https://bathsrus.com/bathroom-remodeling/strongsville"
 
 **Workflow Status Fields:**
-- Status: Single select (Required, Default: Draft) - Options: Draft, AI Processing, Ready for Review, Approved, Published
-- Published: Checkbox
-- Publish Date: Date field
-- Unpublish Date: Date field
+- **Status**: Single select field type (Required, Default: Draft) - Options: Draft, AI Processing, Ready for Review, Approved, Published (Create all 5 options)
+- **Published**: Checkbox field type - Is page live on website?
+- **Publish Date**: Date field type - When page went live
+- **Unpublish Date**: Date field type - Scheduled removal (future feature)
 
-**Auto-Matched Data Fields (Lookups):**
-- Matched Branch: Linked record to Branch Locations table **(FOREIGN KEY)** (Auto-populated by automation)
-- Branch City: Lookup from Matched Branch → City
-- Branch State: Lookup from Matched Branch → State
-- Branch Timezone: Lookup from Matched Branch → Timezone
-- Branch Phone: Lookup from Matched Branch → Phone
-- Branch Address: Lookup from Matched Branch → Full Address
-- Branch Email: Lookup from Matched Branch → Email
+**Auto-Matched Data Fields (Lookups from Branch):**
+- **Matched Branch**: Link to another record field type → Links to Branch Locations table **(FOREIGN KEY)** - Auto-populated by Airtable automation
+- **Branch City**: Lookup field type → From Matched Branch, show City
+- **Branch State**: Lookup field type → From Matched Branch, show State
+- **Branch Timezone**: Lookup field type → From Matched Branch, show Timezone
+- **Branch Phone**: Lookup field type → From Matched Branch, show Phone
+- **Branch Address**: Lookup field type → From Matched Branch, show Full Address
+- **Branch Email**: Lookup field type → From Matched Branch, show Email
 
-**Additional Lookups Needed:**
-- Service Slug: Lookup from Service ID → Service Slug
-- Location Slug: Lookup from Location ID → URL Slug
-- Client Domain: Lookup from Client Name → Domain
+**Additional Lookups Needed (for URL/routing formulas):**
+- **Service Slug**: Lookup field type → From Service ID, show Service Slug field
+- **Location Slug**: Lookup field type → From Location ID, show URL Slug field
+- **Client Domain**: Lookup field type → From Client Name, show Domain field
 
-**Manual Input Fields:**
-- Special Instructions: Long text field
-- Campaign: Linked record to Campaigns table **(FOREIGN KEY)** (ADD LATER)
-- Offer: Linked record to Offers table **(FOREIGN KEY)** (ADD LATER)
-- Priority: Single select - Options: High, Medium, Low
-- Notes: Long text field
+**Manual Input Fields (Marketing Team fills these):**
+- **Special Instructions**: Long text field type - Context for AI: "Emphasize fast turnaround - client wants urgency angle"
+- **Campaign**: Link to another record field type → Links to Campaigns table **(FOREIGN KEY)** - **ADD LATER** after Campaigns table exists
+- **Offer**: Link to another record field type → Links to Offers table **(FOREIGN KEY)** - **ADD LATER** after Offers table exists
+- **Priority**: Single select field type - Options: High, Medium, Low (Create all 3 options)
+- **Notes**: Long text field type - Internal notes for team
 
 **AI-Generated Content Fields:**
-- SEO Title: Single line text
-- SEO Description: Long text field
-- H1 Headline: Single line text
-- Hero Subheadline: Long text field
-- Selected CTA ID: Linked record to CTAs table **(FOREIGN KEY)** (ADD LATER)
-- CTA Text: Lookup from Selected CTA → CTA Text (ADD LATER)
-- CTA Action Type: Lookup from Selected CTA → Action Type (ADD LATER)
-- CTA Action Value: Lookup from Selected CTA → Action Value (ADD LATER)
-- Selected Hero Image ID: Linked record to Hero Images Library table **(FOREIGN KEY)** (ADD LATER)
-- Hero Image URL: Lookup from Selected Hero Image → Cloudinary URL (ADD LATER)
-- Hero Image Alt Text: Lookup from Selected Hero Image → Alt Text Template (ADD LATER)
-- Trust Bar 1: Single line text
-- Trust Bar 2: Single line text
-- Trust Bar 3: Single line text
-- Trust Bar 4: Single line text
-- Trust Bar 5: Single line text
-- FAQs: Long text field (JSON array format)
-- Gallery Captions: Long text field (JSON array format)
+- **SEO Title**: Single line text field type - 60 chars max: "Bathroom Remodeling Strongsville | Licensed Contractor | Baths R Us"
+- **SEO Description**: Long text field type - 160 chars max meta description
+- **H1 Headline**: Single line text field type - Main page headline: "Bathroom Remodeling in Strongsville, Ohio"
+- **Hero Subheadline**: Long text field type - Supporting text below H1
+- **Selected CTA ID**: Link to another record field type → Links to CTAs table **(FOREIGN KEY)** - **ADD LATER**
+- **CTA Text**: Lookup field type → From Selected CTA ID, show CTA Text - **ADD LATER**
+- **CTA Action Type**: Lookup field type → From Selected CTA ID, show CTA Action Type - **ADD LATER**
+- **CTA Action Value**: Lookup field type → From Selected CTA ID, show Action Value - **ADD LATER**
+- **Selected Hero Image ID**: Link to another record field type → Links to Hero Images Library table **(FOREIGN KEY)** - **ADD LATER**
+- **Hero Image URL**: Lookup field type → From Selected Hero Image ID, show Cloudinary URL - **ADD LATER**
+- **Hero Image Alt Text**: Lookup field type → From Selected Hero Image ID, show Alt Text Template - **ADD LATER**
+- **Trust Bar 1**: Single line text field type - "Licensed & Insured"
+- **Trust Bar 2**: Single line text field type - "15+ Years Experience"
+- **Trust Bar 3**: Single line text field type - "500+ Projects Completed"
+- **Trust Bar 4**: Single line text field type - "A+ BBB Rating"
+- **Trust Bar 5**: Single line text field type - "Lifetime Warranty"
+- **FAQs**: Long text field type - JSON array: `[{"question":"...","answer":"..."}]`
+- **Gallery Captions**: Long text field type - JSON array: `["Caption 1", "Caption 2"]`
 
-**Version Control Fields (Future - Dormant for Now):**
-- AI Original Content: Long text field (JSON)
-- Content Version: Number field
-- Human Edited: Checkbox
+**Version Control Fields (Future - Fields exist but not used yet):**
+- **AI Original Content**: Long text field type - JSON blob of original AI output (dormant)
+- **Content Version**: Number field type (Integer) - Increments on edits (dormant)
+- **Human Edited**: Checkbox field type - Flagged if manually changed (dormant)
 
 **AI Metadata Fields:**
-- AI Generation Timestamp: Date field
-- AI Model Used: Single line text
-- AI Tokens Used: Number field
-- CTA Selection Reasoning: Long text field
-- AI Retry Count: Number field
-- AI Last Error: Long text field
+- **AI Generation Timestamp**: Date field type - When AI generated content
+- **AI Model Used**: Single line text field type - "claude-sonnet-4-5-20250929"
+- **AI Tokens Used**: Number field type (Integer) - Token count for billing
+- **CTA Selection Reasoning**: Long text field type - Why AI chose this CTA
+- **AI Retry Count**: Number field type (Integer) - Failed attempts (future: error handling)
+- **AI Last Error**: Long text field type - Error messages (future: error handling)
 
 **SEO Fields (Future):**
-- Canonical URL Override: URL field
-- Robots Meta: Single select - Options: index,follow, noindex,follow, index,nofollow, noindex,nofollow
+- **Canonical URL Override**: URL field type - If different from Page URL (future feature)
+- **Robots Meta**: Single select field type - Options: index,follow, noindex,follow, index,nofollow, noindex,nofollow
 
 **Approval Workflow Fields:**
-- Created By: User field
-- Approved By: User field
-- Approval Date: Date field
+- **Created By**: User field type - Airtable user who created record
+- **Approved By**: User field type - Airtable user who approved
+- **Approval Date**: Date field type - When approved for publish
 
 **Metadata Fields:**
-- Created Date: Created time field
-- Last Modified: Last modified time field
-- Last Export Date: Date field
+- **Created Date**: Created time field type (Auto-populates when record created)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes)
+- **Last Export Date**: Date field type - Updated by export script when pushed to GitHub
 
 **Create These Views:**
 - All Pages (default)
@@ -570,31 +595,33 @@ Create an Airtable table named "Pages" with these fields:
 
 Create an Airtable table named "CTAs" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- CTA ID: Auto-number **(PRIMARY KEY)**
-- CTA Text: Single line text (Required) - e.g., "Get Free Quote"
-- CTA Type: Single select (Required) - Options: Primary, Secondary, Urgency, Call
-- Active: Checkbox (Default: true)
+- **CTA ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **CTA Text**: Single line text field type (Required) - Button text: "Get Free Quote", "Call Now"
+- **CTA Type**: Single select field type (Required) - Options: Primary, Secondary, Urgency, Call (Create all 4 options)
+- **Active**: Checkbox field type (Default: checked/true) - Is CTA available for AI selection?
 
 **Action Fields:**
-- CTA Action Type: Single select (Required) - Options: Scroll to Form, Phone Call, External Link
-- Action Value: Single line text (Required) - Examples: "#contact-form", "tel:{client_phone}", "https://calendly.com/..."
+- **CTA Action Type**: Single select field type (Required) - Options: Scroll to Form, Phone Call, External Link (Create all 3 options)
+- **Action Value**: Single line text field type (Required) - Examples: "#contact-form", "tel:{client_phone}", "https://calendly.com/..."
 
 **Targeting Fields:**
-- Service Types: Multiple select - Options: bathroom-remodeling, kitchen-remodeling, basement-finishing, all
+- **Service Types**: Multiple select field type - Options: bathroom-remodeling, kitchen-remodeling, basement-finishing, all (Create all options, allows multiple)
 
 **AI Configuration Fields:**
-- Priority: Number field (Required, 1-10, where 1 = highest priority)
-- AI Selection Notes: Long text field
-- Tone Match: Multiple select - Options: Professional, Conversational, Urgent, Luxury
+- **Priority**: Number field type (Integer, Required, 1-10 where 1 = highest priority) - AI selection ranking: 1
+- **AI Selection Notes**: Long text field type - When to use: "Use for urgent, scarcity-driven copy with aggressive tone"
+- **Tone Match**: Multiple select field type - Options: Professional, Conversational, Urgent, Luxury (Create all 4 options, allows multiple)
 
 **Performance Fields (Future):**
-- Times Used: Rollup field (Count from Pages → Selected CTA ID)
-- Last Used Date: Rollup field (Max from Pages → Created Date where Selected CTA = this)
+- **Times Used**: Rollup field type → Count from Pages table's Selected CTA ID linked field - **ADD LATER** after Pages table created
+- **Last Used Date**: Rollup field type → MAX(Pages.Created Date) where Selected CTA ID = this - **ADD LATER**
 
 **Metadata Fields:**
-- Created Date: Created time field
-- Last Modified: Last modified time field
+- **Created Date**: Created time field type (Auto-populates when record created)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes)
 
 **Create These Views:**
 - All CTAs (default)
@@ -621,34 +648,36 @@ Create an Airtable table named "CTAs" with these fields:
 
 Create an Airtable table named "Hero Images Library" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Image ID: Auto-number **(PRIMARY KEY)**
-- Filename: Single line text (Required) - Format: {service}-{location}-{type}-{number}.jpg
-- Active: Checkbox (Default: true)
+- **Image ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Filename**: Single line text field type (Required) - Naming convention: "bathroom-remodeling-strongsville-hero-01.jpg"
+- **Active**: Checkbox field type (Default: checked/true) - Is image available for AI selection?
 
 **Categorization Fields:**
-- Service ID: Linked record to Services table **(FOREIGN KEY)** (Optional - blank = generic/any service)
-- Location ID: Linked record to Locations table **(FOREIGN KEY)** (Optional - blank = generic/any location)
-- Image Type: Single select (Required) - Options: Hero, Gallery, Before/After
+- **Service ID**: Link to another record field type → Links to Services table **(FOREIGN KEY)** (Optional - blank = generic, usable for any service)
+- **Location ID**: Link to another record field type → Links to Locations table **(FOREIGN KEY)** (Optional - blank = generic, usable for any location)
+- **Image Type**: Single select field type (Required) - Options: Hero, Gallery, Before/After (Create all 3 options)
 
 **URL Fields:**
-- Cloudinary URL: URL field (Required)
-- Netlify Path: Single line text (e.g., "/images/heroes/bathroom-strongsville-01.jpg")
+- **Cloudinary URL**: URL field type (Required) - Full CDN URL: "https://res.cloudinary.com/.../image.jpg"
+- **Netlify Path**: Single line text field type - Site-relative path: "/images/heroes/bathroom-strongsville-01.jpg"
 
 **Accessibility Fields:**
-- Alt Text Template: Long text field (Required)
+- **Alt Text Template**: Long text field type (Required) - Template: "Modern {service} in {location} - professional results"
 
 **Approval Fields:**
-- Upload Status: Single select (Default: Approved) - Options: Draft, Approved
-- Uploaded By: User field
-- Upload Date: Created time field
+- **Upload Status**: Single select field type (Default: Approved) - Options: Draft, Approved (Create both options)
+- **Uploaded By**: User field type - Airtable user who uploaded
+- **Upload Date**: Created time field type (Auto-populates when record created)
 
 **Performance Fields:**
-- Times Used: Rollup field (Count from Pages → Selected Hero Image ID)
-- Last Used Date: Rollup field (Max from Pages → Created Date where Selected Hero Image = this)
+- **Times Used**: Rollup field type → Count from Pages table's Selected Hero Image ID linked field - **ADD LATER** after Pages table created
+- **Last Used Date**: Rollup field type → MAX(Pages.Created Date) where Selected Hero Image ID = this - **ADD LATER**
 
 **Metadata Fields:**
-- Last Modified: Last modified time field
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes)
 
 **Create These Views:**
 - All Images (default)
@@ -678,41 +707,43 @@ Create an Airtable table named "Hero Images Library" with these fields:
 
 Create an Airtable table named "Testimonials" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Testimonial ID: Auto-number **(PRIMARY KEY)**
-- Client Name: Linked record to Clients table **(FOREIGN KEY)** (Required)
-- Active: Checkbox (Default: true)
-- Featured: Checkbox
+- **Testimonial ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Client Name**: Link to another record field type → Links to Clients table **(FOREIGN KEY)** (Required)
+- **Active**: Checkbox field type (Default: checked/true) - Is testimonial approved for use?
+- **Featured**: Checkbox field type - Show prominently on pages?
 
 **Customer Info Fields:**
-- Customer Name: Single line text (Required)
-- Customer City: Single line text
-- Customer State: Single select (Same options as Locations/Branches)
+- **Customer Name**: Single line text field type (Required) - "Sarah M.", "John D." (first name + last initial for privacy)
+- **Customer City**: Single line text field type - "Strongsville", "Brunswick"
+- **Customer State**: Single select field type - Same options as Locations/Branches: OH, PA, NY, FL, TX, etc.
 
 **Review Fields:**
-- Rating: Single select (Required) - Options: 1, 2, 3, 4, 5
-- Review Title: Single line text
-- Review Text: Long text field (Required)
-- Review Date: Date field (Required)
+- **Rating**: Single select field type (Required) - Options: 1, 2, 3, 4, 5 (Create all 5 options as text)
+- **Review Title**: Single line text field type - "Amazing bathroom transformation!"
+- **Review Text**: Long text field type (Required) - Full review text, 2-5 sentences
+- **Review Date**: Date field type (Required) - When review was posted: "2024-11-15"
 
 **Source Fields:**
-- Source: Single select (Required) - Options: Google, Yelp, Facebook, Angi, BBB, Direct
-- Source URL: URL field
-- Verified: Checkbox
+- **Source**: Single select field type (Required) - Options: Google, Yelp, Facebook, Angi, BBB, Direct (Create all 6 options)
+- **Source URL**: URL field type - Link to original review: "https://g.page/r/..."
+- **Verified**: Checkbox field type - Verified as real customer?
 
 **Context Fields:**
-- Service ID: Linked record to Services table **(FOREIGN KEY)** (Optional)
-- Branch ID: Linked record to Branch Locations table **(FOREIGN KEY)** (Optional)
-- Project Cost Range: Single select - Options: Under $5k, $5-15k, $15-30k, $30k+, Not Disclosed
+- **Service ID**: Link to another record field type → Links to Services table **(FOREIGN KEY)** (Optional - what service did they buy?)
+- **Branch ID**: Link to another record field type → Links to Branch Locations table **(FOREIGN KEY)** (Optional - which branch served them?)
+- **Project Cost Range**: Single select field type - Options: Under $5k, $5-15k, $15-30k, $30k+, Not Disclosed (Create all 5 options)
 
 **Media Fields:**
-- Before Photo URL: URL field
-- After Photo URL: URL field
-- Video Testimonial URL: URL field
+- **Before Photo URL**: URL field type - Before photo: "https://res.cloudinary.com/.../before.jpg"
+- **After Photo URL**: URL field type - After photo: "https://res.cloudinary.com/.../after.jpg"
+- **Video Testimonial URL**: URL field type - Video URL: "https://youtube.com/..."
 
 **Metadata Fields:**
-- Created Date: Created time field
-- Last Modified: Last modified time field
+- **Created Date**: Created time field type (Auto-populates when record created)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes)
 
 **Create These Views:**
 - All Testimonials (default)
@@ -739,46 +770,48 @@ Create an Airtable table named "Testimonials" with these fields:
 
 Create an Airtable table named "Offers" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Offer ID: Auto-number **(PRIMARY KEY)**
-- Offer Name: Single line text (Required) - e.g., "Spring 2025 Bathroom Promo"
-- Client Name: Linked record to Clients table **(FOREIGN KEY)** (Required)
-- Active: Checkbox (Default: true)
+- **Offer ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Offer Name**: Single line text field type (Required) - Internal name: "Spring 2025 Bathroom Promo"
+- **Client Name**: Link to another record field type → Links to Clients table **(FOREIGN KEY)** (Required)
+- **Active**: Checkbox field type (Default: checked/true) - Is offer currently available?
 
 **Offer Details Fields:**
-- Offer Type: Single select (Required) - Options: Percentage Discount, Dollar Amount Off, Free Upgrade, Bundle Deal, Financing
-- Discount Value: Single line text (e.g., "20%", "$1,000", "Free luxury faucet upgrade")
-- Offer Description: Long text field (Required)
-- Fine Print: Long text field
+- **Offer Type**: Single select field type (Required) - Options: Percentage Discount, Dollar Amount Off, Free Upgrade, Bundle Deal, Financing (Create all 5 options)
+- **Discount Value**: Single line text field type - Human-readable value: "20%", "$1,000", "Free luxury faucet upgrade"
+- **Offer Description**: Long text field type (Required) - Full description: "Save 20% on all bathroom remodeling projects over $10,000..."
+- **Fine Print**: Long text field type - Terms: "Minimum project value $10,000. Cannot be combined. New contracts only."
 
 **Validity Fields:**
-- Start Date: Date field (Required)
-- End Date: Date field (Required)
-- Status: Formula field = `IF(AND({Start Date} <= TODAY(), {End Date} >= TODAY()), "Active", IF({End Date} < TODAY(), "Expired", "Scheduled"))`
+- **Start Date**: Date field type (Required) - When offer begins: "2025-03-01"
+- **End Date**: Date field type (Required) - When offer expires: "2025-05-31"
+- **Status**: Formula field type = `IF(AND({Start Date} <= TODAY(), {End Date} >= TODAY()), "Active", IF({End Date} < TODAY(), "Expired", "Scheduled"))` - Auto-calculates status
 
-**Targeting Fields:**
-- Target Services: Linked record to Services table **(FOREIGN KEY)** (Multiple) - Blank = all services
-- Target Locations: Linked record to Locations table **(FOREIGN KEY)** (Multiple) - Blank = all locations
-- Target Branches: Linked record to Branch Locations table **(FOREIGN KEY)** (Multiple) - Blank = all branches
+**Targeting Fields (Leave blank to target ALL):**
+- **Target Services**: Link to another record field type → Links to Services table **(FOREIGN KEY)** (Multiple selections allowed) - Blank = all services
+- **Target Locations**: Link to another record field type → Links to Locations table **(FOREIGN KEY)** (Multiple selections allowed) - Blank = all locations
+- **Target Branches**: Link to another record field type → Links to Branch Locations table **(FOREIGN KEY)** (Multiple selections allowed) - Blank = all branches
 
 **AI Configuration Fields:**
-- AI Prompt Addition: Long text field
-- Headline Emphasis: Single select - Options: Discount Amount, Urgency, Value, Quality
-- CTA Override: Linked record to CTAs table **(FOREIGN KEY)** (Optional)
+- **AI Prompt Addition**: Long text field type - Extra AI instructions: "Emphasize limited-time 20% savings. Create urgency around May 31 deadline."
+- **Headline Emphasis**: Single select field type - Options: Discount Amount, Urgency, Value, Quality (Create all 4 options)
+- **CTA Override**: Link to another record field type → Links to CTAs table **(FOREIGN KEY)** (Optional - force specific CTA for this offer)
 
 **Tracking Fields:**
-- UTM Campaign: Single line text (e.g., "spring-2025-bathroom-20off")
-- Promo Code: Single line text (e.g., "SPRING20")
+- **UTM Campaign**: Single line text field type - Analytics tracking: "spring-2025-bathroom-20off"
+- **Promo Code**: Single line text field type - Coupon code: "SPRING20"
 
 **Performance Fields (Future):**
-- Total Pages Using: Rollup field (Count from Pages → Offer)
-- Total Conversions: Number field
-- Estimated Revenue: Currency field
+- **Total Pages Using**: Rollup field type → Count from Pages table's Offer linked field - **ADD LATER** after Pages table created
+- **Total Conversions**: Number field type (Integer) - From analytics webhook (future)
+- **Estimated Revenue**: Currency field type (USD, 2 decimals) - Projected revenue (future)
 
 **Metadata Fields:**
-- Created Date: Created time field
-- Last Modified: Last modified time field
-- Created By: User field
+- **Created Date**: Created time field type (Auto-populates when record created)
+- **Last Modified**: Last modified time field type (Auto-updates when any field changes)
+- **Created By**: User field type - Airtable user who created offer
 
 **Create These Views:**
 - All Offers (default)
@@ -810,40 +843,42 @@ Create an Airtable table named "Offers" with these fields:
 
 Create an Airtable table named "Campaigns" with these fields:
 
+**IMPORTANT:** Use these EXACT Airtable field types as specified below.
+
 **Identity Fields:**
-- Campaign ID: Auto-number **(PRIMARY KEY)**
-- Campaign Name: Single line text (Required) - e.g., "Q2 2025 Bathroom Push"
-- Client Name: Linked record to Clients table **(FOREIGN KEY)** (Required)
-- Active: Checkbox (Default: true)
+- **Campaign ID**: Auto-number field type **(PRIMARY KEY)** - Auto-increments starting at 1
+- **Campaign Name**: Single line text field type (Required) - Internal name: "Q2 2025 Bathroom Push"
+- **Client Name**: Link to another record field type → Links to Clients table **(FOREIGN KEY)** (Required)
+- **Active**: Checkbox field type (Default: checked/true) - Is campaign currently running?
 
 **Campaign Type Fields:**
-- Campaign Type: Single select (Required) - Options: Seasonal, Geographic Expansion, Service Launch, Product Launch
-- Start Date: Date field (Required)
-- End Date: Date field
-- Status: Single select - Options: Planning, Active, Paused, Completed
+- **Campaign Type**: Single select field type (Required) - Options: Seasonal, Geographic Expansion, Service Launch, Product Launch (Create all 4 options)
+- **Start Date**: Date field type (Required) - Campaign launch: "2025-04-01"
+- **End Date**: Date field type - Campaign completion: "2025-06-30"
+- **Status**: Single select field type - Options: Planning, Active, Paused, Completed (Create all 4 options)
 
 **Targeting Fields:**
-- Target Services: Linked record to Services table **(FOREIGN KEY)** (Multiple)
-- Target Locations: Linked record to Locations table **(FOREIGN KEY)** (Multiple)
-- Campaign Offer: Linked record to Offers table **(FOREIGN KEY)** (Single)
+- **Target Services**: Link to another record field type → Links to Services table **(FOREIGN KEY)** (Multiple selections allowed)
+- **Target Locations**: Link to another record field type → Links to Locations table **(FOREIGN KEY)** (Multiple selections allowed)
+- **Campaign Offer**: Link to another record field type → Links to Offers table **(FOREIGN KEY)** (Single selection) - Which offer is tied to this campaign?
 
 **Tracking Fields:**
-- UTM Campaign: Single line text (Required) - e.g., "q2-2025-bathroom"
-- UTM Source: Single line text (e.g., "google")
-- UTM Medium: Single line text (e.g., "cpc")
+- **UTM Campaign**: Single line text field type (Required) - Analytics tracking slug: "q2-2025-bathroom"
+- **UTM Source**: Single line text field type - Traffic source: "google", "facebook", "email"
+- **UTM Medium**: Single line text field type - Marketing medium: "cpc", "social", "email"
 
 **Budget Fields (Future ROI Tracking):**
-- Budget: Currency field
-- Total Spend: Currency field
+- **Budget**: Currency field type (USD, 2 decimals) - Total budget allocated: $15,000.00
+- **Total Spend**: Currency field type (USD, 2 decimals) - Actual spend to date (manually updated)
 
 **Content Fields:**
-- Campaign Description: Long text field
-- Campaign Goals: Long text field
+- **Campaign Description**: Long text field type - Overview and strategy
+- **Campaign Goals**: Long text field type - Success metrics and objectives
 
 **Metadata Fields:**
-- Total Pages: Rollup field (Count from Pages → Campaign)
-- Created Date: Created time field
-- Created By: User field
+- **Total Pages**: Rollup field type → Count from Pages table's Campaign linked field - **ADD LATER** after Pages table created
+- **Created Date**: Created time field type (Auto-populates when record created)
+- **Created By**: User field type - Airtable user who created campaign
 
 **Create These Views:**
 - All Campaigns (default)

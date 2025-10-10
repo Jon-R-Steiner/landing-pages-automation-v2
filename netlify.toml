@@ -1,0 +1,19 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--legacy-peer-deps"
+
+# Redirect rules (optional for future)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Cache optimization
+[[headers]]
+  for = "/out/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

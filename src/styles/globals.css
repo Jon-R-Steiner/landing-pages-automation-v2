@@ -1,0 +1,19 @@
+/* Import Tailwind CSS v4 */
+@import "tailwindcss";
+
+/* CSS-first theme configuration (replaces tailwind.config.js) */
+@theme {
+  /* Custom brand colors */
+  --color-primary: #0ea5e9;
+  --color-secondary: #8b5cf6;
+
+  /* Typography */
+  --font-sans: system-ui, -apple-system, sans-serif;
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

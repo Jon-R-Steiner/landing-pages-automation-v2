@@ -298,32 +298,68 @@ LOOKUP FIELDS (from linked records):
 
 ### AI Service Hosting
 
-**Recommended: Railway or Render (Always-On Node.js Server)**
+**Recommended: Netlify Functions (Serverless)**
 
 ```yaml
-Service Type: Node.js Express API
-Hosting: Railway ($5/month) or Render ($7/month)
-Endpoint: https://ai-service.yourapp.com/generate-content
+Service Type: Serverless Function
+Hosting: Netlify Functions (FREE - included with Netlify account)
+Endpoint: https://yourdomain.netlify.app/.netlify/functions/generate-ai-content
 
-Why NOT Netlify Functions:
-  - AI generation happens BEFORE build
-  - Netlify Functions run DURING build
-  - Airtable needs to trigger AI, not Netlify
+Why Netlify Functions:
+  - Zero cost (free tier covers this usage)
+  - Zero maintenance (auto-scales, no servers to manage)
+  - Deploy alongside Next.js site (same repo)
+  - AI generation happens BEFORE build (webhook-triggered)
 
-Repository: landing-pages-ai-service (separate repo)
+Trade-off:
+  - Cold start adds 3-10s on first request
+  - Total response time: 18-40s (vs 15-30s always-on)
+  - Acceptable for Marketing approval workflow
+
+Repository: Same repo as Next.js site (netlify/functions/)
 ```
 
 ### AI Service Setup
 
-```javascript
-// server.js - Express API for AI generation
+**Option 1: Separate Netlify Site for Functions (Recommended)**
 
-import express from 'express'
+```yaml
+Why separate site:
+  - AI function doesn't need to redeploy when content changes
+  - Faster CI/CD (main site only rebuilds on content changes)
+  - Cleaner separation of concerns
+
+Setup:
+  1. Create new Netlify site: "landing-pages-ai-service"
+  2. Connect to same GitHub repo
+  3. Configure build:
+     - Base directory: (leave blank)
+     - Build command: (leave blank)
+     - Publish directory: netlify/functions
+  4. Set environment variables in Netlify UI
+```
+
+**File Structure:**
+```
+landing-pages-automation-v2/
+├── netlify/
+│   └── functions/
+│       ├── generate-ai-content.js      # Main function
+│       └── shared/
+│           ├── airtable-client.js      # Shared Airtable logic
+│           ├── claude-client.js        # Shared Claude API logic
+│           └── prompts.js              # AI prompt templates
+├── src/                                # Next.js app
+├── scripts/                            # Export scripts
+└── netlify.toml                        # Netlify config
+```
+
+**Function Code:**
+```javascript
+// netlify/functions/generate-ai-content.js
+
 import Anthropic from '@anthropic-ai/sdk'
 import Airtable from 'airtable'
-
-const app = express()
-app.use(express.json())
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
@@ -333,11 +369,19 @@ const airtableBase = new Airtable({
   apiKey: process.env.AIRTABLE_API_KEY
 }).base(process.env.AIRTABLE_BASE_ID)
 
-// Webhook endpoint for Airtable
-app.post('/generate-content', async (req, res) => {
-  const { pageId } = req.body
+// Netlify Function handler
+export async function handler(event, context) {
+  // Only allow POST requests
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Method not allowed' })
+    }
+  }
 
   try {
+    const { pageId } = JSON.parse(event.body)
+
     // Step 1: Fetch page data + guardrails
     const pageData = await fetchPageData(pageId)
 
@@ -352,17 +396,46 @@ app.post('/generate-content', async (req, res) => {
       'Status': 'Ready for Review'
     })
 
-    res.json({ success: true, pageId, tokensUsed: aiContent.totalTokens })
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        success: true,
+        pageId,
+        tokensUsed: aiContent.totalTokens
+      })
+    }
 
   } catch (error) {
     console.error('AI generation failed:', error)
-    res.status(500).json({ error: error.message })
-  }
-})
 
-app.listen(3000, () => {
-  console.log('🤖 AI Service running on port 3000')
-})
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: error.message })
+    }
+  }
+}
+```
+
+**Airtable Automation Configuration:**
+```yaml
+Automation Name: "Trigger AI Generation"
+
+Trigger:
+  When: Record matches conditions
+  Conditions:
+    - Status = "AI Processing"
+    - Table: Pages
+
+Actions:
+  1. Send Webhook
+     Method: POST
+     URL: https://landing-pages-ai-service.netlify.app/.netlify/functions/generate-ai-content
+     Headers:
+       Content-Type: application/json
+     Body:
+       {
+         "pageId": "{Page ID}"
+       }
 ```
 
 ---
@@ -1220,15 +1293,17 @@ Monthly (100 new pages/month):
 ### Infrastructure Costs
 
 ```yaml
-AI Service Hosting (Railway):
-  - $5/month (always-on server)
+AI Service Hosting (Netlify Functions):
+  - $0/month (free tier - serverless)
+  - Limits: 125K requests/month, 100 hours runtime/month
+  - Usage: ~100-500 requests/month (well within free tier)
 
 GitHub Actions:
   - Free tier: 2000 minutes/month
   - Usage: ~2 minutes per export
   - Capacity: 1000 exports/month (way more than needed)
 
-Netlify:
+Netlify (Main Site):
   - Free tier: 300 build minutes/month
   - Usage: ~1.5 minutes per build
   - Capacity: 200 builds/month
@@ -1237,10 +1312,12 @@ Airtable:
   - Team Plan: $20/month (5 users)
   - Records: Unlimited
 
-Total Monthly Cost: ~$26/month
-  - Covers unlimited AI generation
-  - Unlimited builds/deploys
-  - Team collaboration
+Total Monthly Cost: ~$20/month
+  - Covers unlimited AI generation (free serverless)
+  - Unlimited builds/deploys (free tiers)
+  - Team collaboration (Airtable Team plan)
+
+Cost Savings vs Always-On Server: $5-7/month saved
 ```
 
 ---
@@ -1322,12 +1399,29 @@ Alerts:
 
 ## Next Steps
 
-1. **Set up AI Service** (Railway deployment)
-2. **Configure Airtable Automations** (branch matching, webhooks)
+1. **Set up AI Service** (Netlify Functions - serverless deployment)
+   - Create `netlify/functions/generate-ai-content.js`
+   - Deploy to separate Netlify site or alongside main site
+   - Configure environment variables in Netlify UI
+2. **Configure Airtable Automations** (branch matching, AI trigger webhooks)
+   - Auto-match Branch Location automation
+   - AI Generation trigger (Status → "AI Processing")
+   - Export trigger (Status → "Approved")
 3. **Create GitHub Actions workflow** (export script)
+   - `.github/workflows/export-and-deploy.yml`
+   - `scripts/export-airtable-to-json.js`
 4. **Configure Netlify** (auto-deploy on push)
+   - `netlify.toml` configuration
+   - Environment variables for build
 5. **Test end-to-end** (draft → AI → review → live)
+   - Create test page in Airtable
+   - Verify AI generation writes back
+   - Test approval workflow
+   - Confirm deployment to CDN
 6. **Monitor & optimize** (track costs, performance, errors)
+   - Set up error monitoring (Sentry recommended)
+   - Track AI token usage
+   - Monitor build times
 
 ---
 

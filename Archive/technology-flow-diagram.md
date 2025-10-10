@@ -9,200 +9,373 @@
 
 ## Purpose
 
-This document provides a step-by-step flow diagram showing how all technologies work together across three distinct phases:
-1. **Pre-Build Phase** (Local/CI) - Content preparation
-2. **Build Phase** (Netlify) - Static site generation
-3. **Runtime Phase** (User Browser) - User interaction and conversion
+This document provides a step-by-step flow diagram showing how all technologies work together across four distinct phases:
+1. **Phase 1: Airtable Workflow** - Content creation, AI generation, approval
+2. **Phase 2: Export & Deploy** - GitHub Actions export, Git commit, Netlify trigger
+3. **Phase 3: Build Phase** (Netlify) - Static site generation
+4. **Phase 4: Runtime Phase** (User Browser) - User interaction and conversion
 
 This helps identify any missing tools, validate technology choices, and spot potential integration gaps.
 
 ---
 
-## Phase 1: Pre-Build (Content Preparation)
+## Phase 1: Airtable Workflow (Content Management & AI Generation)
 
-**Location:** Developer Machine or GitHub Actions CI
-**Trigger:** Content updated in Airtable OR manual script execution
-**Frequency:** On-demand or scheduled (e.g., nightly)
+**Location:** Airtable + Netlify Functions (serverless)
+**Trigger:** Marketing creates/updates pages in Airtable
+**Frequency:** On-demand (Marketing-driven)
 
-### Step 1: Export Airtable Content
+### Step 1: Marketing Creates Draft Page
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  AIRTABLE BASE (External Service)                       │
+│  AIRTABLE BASE: Landing Pages Content Management        │
+│  Base ID: appATvatPtaoJ8MmS                              │
 │                                                          │
-│  Tables:                                                 │
-│  - Pages (service, location, meta data)                 │
-│  - Content (hero copy, CTAs, features)                  │
-│  - Media (image URLs, alt text)                         │
-│  - Client Config (branding, colors, fonts)              │
+│  Tables (12 total):                                      │
+│  FOUNDATION TABLES:                                      │
+│  - Clients (client config, branding, tracking IDs)      │
+│  - Services (service definitions with keywords)          │
+│  - Locations (validated city master data)               │
+│  - Branch Locations (physical offices)                  │
+│  - Service Areas (branch-to-city mappings)              │
+│  - Branch Staff (team profiles)                         │
 │                                                          │
-│  View: "Approved" (only approved content)               │
+│  CONTENT TABLES:                                         │
+│  - Pages (landing page workflow & AI-generated content) │
+│  - CTAs (call-to-action library for AI selection)       │
+│  - Hero Images Library (image assets)                   │
+│  - Testimonials (customer reviews)                      │
+│                                                          │
+│  MARKETING TABLES:                                       │
+│  - Offers (promotional campaigns)                       │
+│  - Campaigns (marketing campaign tracking)              │
+│                                                          │
+│  Schema Status: LOCKED (Phase 1 complete)               │
 └─────────────────────────────────────────────────────────┘
                         ↓
-              [Script: export-airtable-to-json.js]
-                        ↓
-           Uses: Airtable SDK ^0.12.2
-           Authentication: AIRTABLE_API_KEY
-           Rate Limit: 5 req/sec (handled by script)
+              [Marketing Manager: Creates New Page]
                         ↓
 ┌─────────────────────────────────────────────────────────┐
-│  OUTPUT: content.json                                    │
+│  NEW RECORD IN PAGES TABLE                               │
 │                                                          │
-│  {                                                       │
-│    "pages": [                                            │
-│      {                                                   │
-│        "service": "bathroom-remodeling",                 │
-│        "location": "charlotte",                          │
-│        "heroHeadline": "...",                            │
-│        "metaTitle": "...",                               │
-│        "metaDescription": "...",                         │
-│        "features": [...],                                │
-│        "images": {...}                                   │
-│      }                                                   │
-│    ],                                                    │
-│    "clientConfig": {...}                                 │
-│  }                                                       │
+│  Manual Input:                                           │
+│  - Service: bathroom-remodeling                          │
+│  - Location: strongsville                                │
+│  - Client Name: Baths R Us (linked)                     │
+│  - Status: Draft                                         │
+│  - Special Instructions: "Emphasize urgency"            │
 │                                                          │
-│  Size: ~500KB for 500 pages                             │
-│  Location: /content.json (project root)                 │
+│  Auto-Populated (Airtable Automation):                   │
+│  - Matched Branch: Medina Office (lookup)               │
+│  - Branch City: Medina (lookup)                         │
+│  - Branch Phone: (330) 555-1234 (lookup)                │
+│  - Page URL: /bathroom-remodeling/strongsville (formula)│
 └─────────────────────────────────────────────────────────┘
+                        ↓
+        [Marketing Reviews, Changes Status → "AI Processing"]
 ```
 
 **Technologies:**
-- Airtable SDK ^0.12.2
-- Node.js script
-- Environment Variable: `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID`
+- Airtable (12-table schema)
+- Airtable Automations (branch matching)
+- Airtable Formulas (URL generation)
 
 **Performance:**
-- Duration: 1-2 minutes (500 pages, 5 req/sec limit)
-- Output: Single JSON file committed to Git
+- Duration: 30 seconds (manual input)
+- Auto-matching: <1 second
 
 ---
 
-### Step 2: Generate AI Content (Parallel)
+### Step 2: AI Generation (Netlify Functions - Serverless)
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  INPUT: content.json                                     │
-│  Read all page data (500 pages)                          │
+│  AIRTABLE AUTOMATION: Trigger AI Generation             │
+│                                                          │
+│  Trigger: Status = "AI Processing"                      │
+│  Action: Send webhook POST to Netlify Function          │
+│                                                          │
+│  Webhook URL:                                            │
+│  https://ai-service.netlify.app/.netlify/functions/      │
+│    generate-ai-content                                   │
+│                                                          │
+│  Payload: { "pageId": "recXXXXXXXXX" }                  │
 └─────────────────────────────────────────────────────────┘
                         ↓
-              [Script: generate-ai-content.js]
+              [Netlify Function: generate-ai-content.js]
                         ↓
-           Parallel Processing (10 concurrent requests)
+           Cold Start: 3-10s (first request)
+           Warm: <500ms (subsequent requests)
+                        ↓
+        ┌───────────────────────────────────┐
+        │ STEP 1: Fetch Page Data           │
+        │ - Read page record from Airtable   │
+        │ - Lookup branch metadata           │
+        │ - Fetch available CTAs (guardrails)│
+        │ - Fetch hero images (guardrails)   │
+        └───────────────────────────────────┘
+                        ↓
+        ┌───────────────────────────────────┐
+        │ STEP 2: Parallel AI Generation     │
+        │ (4 simultaneous Claude API calls)  │
+        └───────────────────────────────────┘
                         ↓
         ┌───────────────┴───────────────┬─────────────────┐
         ↓                               ↓                 ↓
-   Trust Bar                        Gallery             FAQ
-   Generation                    Generation         Generation
-        │                               │                 │
    ┌────────────────────┐   ┌────────────────────┐   ┌────────────────────┐
-   │ Claude API Call    │   │ Claude API Call    │   │ Claude API Call    │
+   │ Hero Content       │   │ Trust Bars         │   │ FAQs               │
+   │ (Claude API)       │   │ (Claude API)       │   │ (Claude API)       │
    │                    │   │                    │   │                    │
    │ Model:             │   │ Model:             │   │ Model:             │
    │ claude-sonnet-     │   │ claude-sonnet-     │   │ claude-sonnet-     │
    │ 4-5-20250929       │   │ 4-5-20250929       │   │ 4-5-20250929       │
    │                    │   │                    │   │                    │
-   │ Input: service +   │   │ Input: service +   │   │ Input: service +   │
-   │ location           │   │ location + images  │   │ location           │
-   │                    │   │                    │   │                    │
-   │ Output: 5 trust    │   │ Output: 8 gallery  │   │ Output: 6 Q&A      │
-   │ signals            │   │ items with captions│   │ pairs              │
+   │ Output:            │   │ Output:            │   │ Output:            │
+   │ - SEO title/desc   │   │ - 5 trust signals  │   │ - 6 Q&A pairs      │
+   │ - H1 headline      │   │                    │   │                    │
+   │ - Hero subheadline │   │                    │   │                    │
+   │ - CTA selection    │   │                    │   │                    │
+   │ - Image selection  │   │                    │   │                    │
    └────────────────────┘   └────────────────────┘   └────────────────────┘
+        │                               │                 │
+        │                               │                 │
+   ┌────────────────────┐                                 │
+   │ Gallery Captions   │                                 │
+   │ (Claude API)       │                                 │
+   │                    │                                 │
+   │ Model:             │                                 │
+   │ claude-sonnet-     │                                 │
+   │ 4-5-20250929       │                                 │
+   │                    │                                 │
+   │ Output:            │                                 │
+   │ - 8 captions       │                                 │
+   └────────────────────┘                                 │
         │                               │                 │
         └───────────────┬───────────────┴─────────────────┘
                         ↓
-┌─────────────────────────────────────────────────────────┐
-│  OUTPUT: ai-content.json                                 │
-│                                                          │
-│  {                                                       │
-│    "bathroom-remodeling/charlotte": {                    │
-│      "trustBar": [                                       │
-│        "Licensed & Insured Since 2010",                  │
-│        "4.9★ Rating - 850+ Reviews",                     │
-│        "Free In-Home Consultation",                      │
-│        "Lifetime Craftsmanship Warranty",                │
-│        "Financing Options Available"                     │
-│      ],                                                  │
-│      "gallery": [...],                                   │
-│      "faq": [...]                                        │
-│    },                                                    │
-│    ...                                                   │
-│  }                                                       │
-│                                                          │
-│  Size: ~2MB for 500 pages × 3 sections                  │
-│  Location: /ai-content.json (project root)              │
-└─────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────┐
+        │ STEP 3: Write Back to Airtable    │
+        │ - Update all AI-generated fields   │
+        │ - Save SEO title, H1, subheadline  │
+        │ - Link selected CTA & hero image   │
+        │ - Save trust bars (5 fields)      │
+        │ - Save FAQs (JSON)                 │
+        │ - Save gallery captions (JSON)     │
+        │ - Update Status → "Ready for Review"│
+        └───────────────────────────────────┘
 ```
 
 **Technologies:**
+- Netlify Functions (serverless)
 - Anthropic SDK ^0.65.0
 - Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`)
-- Node.js script with parallel processing
-- Environment Variable: `ANTHROPIC_API_KEY`
+- Airtable SDK ^0.12.2
+- Environment Variables: `ANTHROPIC_API_KEY`, `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID`
 
 **Performance:**
-- Duration: 5-10 minutes (1500 API calls, 10 concurrent)
-- Cost: $0.75-1.50 per build
-- Output: Single JSON file committed to Git
+- Cold start: 3-10 seconds
+- AI generation: 15-30 seconds (parallel calls)
+- Total: 18-40 seconds
+- Cost: $0.008-0.010 per page
 
 **Error Handling:**
-- Retry failed API calls (3 attempts)
-- Fallback to generic content if API fails
-- Log all errors to `ai-generation.log`
+- Retry failed API calls (3 attempts with exponential backoff)
+- Update Airtable Status → "AI Failed" on error
+- Log errors to Netlify Function logs
 
 ---
 
-### Step 3: Commit to Git
+### Step 3: Marketing Review & Approval
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  LOCAL GIT REPOSITORY                                    │
+│  AIRTABLE VIEW: "Ready for Review"                       │
 │                                                          │
-│  New/Modified Files:                                     │
-│  - content.json (Airtable export)                        │
-│  - ai-content.json (Claude API generated)                │
+│  Marketing Manager sees AI-generated content:            │
+│  - SEO Title: "Bathroom Remodeling Strongsville OH..."  │
+│  - H1 Headline: "Transform Your Strongsville Bathroom..." │
+│  - Hero Subheadline: "Licensed, insured, trusted..."    │
+│  - Selected CTA: "Get Free Quote"                       │
+│  - Selected Hero Image: bathroom-strongsville-01.jpg    │
+│  - Trust Bars (5): "Licensed & Insured...", etc.        │
+│  - FAQs (6 Q&A pairs)                                    │
+│  - Gallery Captions (8)                                  │
 │                                                          │
-│  Git Operations:                                         │
-│  1. git add content.json ai-content.json                 │
-│  2. git commit -m "Update content: [timestamp]"          │
-│  3. git push origin main                                 │
+│  Actions:                                                │
+│  1. Review content quality                               │
+│  2. OPTIONAL: Edit any AI-generated field               │
+│  3. Approve: Change Status → "Approved"                 │
 └─────────────────────────────────────────────────────────┘
                         ↓
-                   [Git Push]
+        [Status → "Approved" triggers export workflow]
+```
+
+**Technologies:**
+- Airtable Views (filtered by Status)
+- Airtable Automations (approval trigger)
+
+**Performance:**
+- Duration: 1-5 minutes (human review, variable)
+
+---
+
+## Phase 2: Export & Deploy (GitHub Actions)
+
+**Location:** GitHub Actions CI
+**Trigger:** Airtable Status → "Approved" (webhook to GitHub API)
+**Frequency:** On-demand (approval-driven)
+
+### Step 4: Airtable Triggers GitHub Actions
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  AIRTABLE AUTOMATION: Trigger Export on Approval        │
+│                                                          │
+│  Trigger: Status = "Approved"                           │
+│  Action: Send webhook POST to GitHub API                │
+│                                                          │
+│  Webhook URL:                                            │
+│  https://api.github.com/repos/{owner}/{repo}/dispatches  │
+│                                                          │
+│  Headers:                                                │
+│  - Authorization: Bearer {GITHUB_PAT}                   │
+│  - Accept: application/vnd.github.v3+json               │
+│                                                          │
+│  Payload:                                                │
+│  {                                                       │
+│    "event_type": "airtable_export",                     │
+│    "client_payload": {                                   │
+│      "trigger": "page_approved",                         │
+│      "page_id": "recXXXXXXXXX",                         │
+│      "service": "bathroom-remodeling",                   │
+│      "location": "strongsville"                          │
+│    }                                                     │
+│  }                                                       │
+└─────────────────────────────────────────────────────────┘
+                        ↓
+              [GitHub Actions Workflow Triggered]
+```
+
+**Technologies:**
+- Airtable Automations (webhook sender)
+- GitHub API (repository_dispatch)
+- GitHub Personal Access Token (PAT)
+
+**Performance:**
+- Duration: 1-2 seconds (webhook delivery)
+
+---
+
+### Step 5: GitHub Actions Export & Commit
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  GITHUB ACTIONS: .github/workflows/export-and-deploy.yml│
+│                                                          │
+│  Trigger: repository_dispatch (airtable_export)         │
+│                                                          │
+│  Steps:                                                  │
+│  1. Checkout repository                                  │
+│  2. Setup Node.js 20                                     │
+│  3. npm ci (install dependencies)                        │
+│  4. npm run export (scripts/export-airtable-to-json.js)  │
+│  5. npm run validate-content (validation script)         │
+│  6. git commit content.json                              │
+│  7. git push origin main                                 │
+└─────────────────────────────────────────────────────────┘
+                        ↓
+        [Script: scripts/export-airtable-to-json.js]
+                        ↓
+┌─────────────────────────────────────────────────────────┐
+│  AIRTABLE API: Fetch Approved Pages                      │
+│                                                          │
+│  Query:                                                  │
+│  - Table: Pages                                          │
+│  - Filter: Status = "Approved"                          │
+│  - Fields: All content fields + lookups                 │
+│  - Sort: Client Name (asc)                              │
+│                                                          │
+│  Also Fetch:                                             │
+│  - Clients table (active clients only)                  │
+│                                                          │
+│  Rate Limiting: 5 req/sec (handled by SDK)              │
+└─────────────────────────────────────────────────────────┘
+                        ↓
+┌─────────────────────────────────────────────────────────┐
+│  OUTPUT: content.json (Single File)                      │
+│                                                          │
+│  {                                                       │
+│    "clients": [                                          │
+│      {                                                   │
+│        "clientId": "recXXX",                             │
+│        "clientName": "Baths R Us",                      │
+│        "domain": "bathsrus.com",                        │
+│        "branding": { colors, fonts, logo },             │
+│        "tracking": { gtmId, callrail, recaptcha },      │
+│        ...                                               │
+│      }                                                   │
+│    ],                                                    │
+│    "pages": [                                            │
+│      {                                                   │
+│        "pageId": "recYYY",                               │
+│        "service": "bathroom-remodeling",                 │
+│        "location": "strongsville",                       │
+│        "seo": { title, description },                    │
+│        "hero": { h1, subheadline, cta, image },         │
+│        "trustBars": [...],                               │
+│        "faqs": [...],                                    │
+│        "galleryCaptions": [...],                         │
+│        "branchMetadata": { city, phone, address }       │
+│      }                                                   │
+│    ],                                                    │
+│    "exportMetadata": {                                   │
+│      "exportDate": "2025-01-09T10:30:00Z",              │
+│      "totalPages": 523,                                  │
+│      "totalClients": 3                                   │
+│    }                                                     │
+│  }                                                       │
+│                                                          │
+│  Size: ~500KB for 500 pages                             │
+│  Location: /content.json (project root)                 │
+│  Contains: ALL content including AI-generated fields    │
+└─────────────────────────────────────────────────────────┘
+                        ↓
+              [Git Commit & Push to main]
                         ↓
 ┌─────────────────────────────────────────────────────────┐
 │  GITHUB REPOSITORY (Remote)                              │
 │                                                          │
-│  - content.json (latest version)                         │
-│  - ai-content.json (latest version)                      │
-│  - Source code (Next.js 15 app)                          │
+│  Updated File:                                           │
+│  - content.json (single file with all data)             │
 │                                                          │
-│  Triggers: Netlify webhook on push to main               │
+│  Triggers: Netlify auto-deploy webhook                  │
 └─────────────────────────────────────────────────────────┘
                         ↓
-              [Netlify Webhook Trigger]
-                        ↓
-                  NETLIFY BUILD STARTS
+              [Netlify Detects Push → Triggers Build]
 ```
 
 **Technologies:**
-- Git
-- GitHub (or GitLab/Bitbucket)
-- Netlify webhook integration
+- GitHub Actions (CI/CD)
+- Airtable SDK ^0.12.2 (export script)
+- Node.js 20 (GitHub Actions runner)
+- Git (version control)
 
 **Performance:**
-- Duration: 30-60 seconds (push + webhook trigger)
+- Duration: 45-90 seconds total
+  - npm ci: 5-10 seconds (cached)
+  - Export: 20-40 seconds (API calls)
+  - Commit + Push: 5-10 seconds
 
 ---
 
-## Phase 2: Netlify Build (Static Site Generation)
+## Phase 3: Build Phase (Netlify - Static Site Generation)
 
 **Location:** Netlify Build Agent (US-East)
-**Trigger:** Git push to main branch
-**Frequency:** Every content update
+**Trigger:** Git push to main branch (from GitHub Actions)
+**Frequency:** Every approved page
 
-### Step 4: Netlify Build Environment Setup
+### Step 6: Netlify Build Environment Setup
 
 ```
 ┌─────────────────────────────────────────────────────────┐

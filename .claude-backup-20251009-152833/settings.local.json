@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__sequential-thinking__sequentialthinking",
+      "WebSearch",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "Bash(mkdir:*)",
+      "SlashCommand(/sc:research:*)",
+      "SlashCommand(/bmad-*)",
+      "SlashCommand(/BMad:*)",
+      "SlashCommand(/bmad-cw-*)",
+      "SlashCommand(/bmad-infra-*)",
+      "Bash(claude mcp add airtable --env AIRTABLE_API_KEY=patyuvJmt85Nk5jN5.f37be8cd139c3132ce51e5841615ad46039f4b5904ad85403bb935b2a6a31c3 -- npx -y airtable-mcp-server)",
+      "Read(//c/Users/JonSteiner/AppData/Roaming/Claude/**)",
+      "Read(//c/Users/JonSteiner/.claude/**)",
+      "Bash(claude --version)",
+      "Bash(test:*)",
+      "Read(//c/Users/JonSteiner/**)",
+      "Bash(cat:*)",
+      "Bash(claude mcp:*)",
+      "Bash(ls:*)",
+      "Bash(bash:*)",
+      "mcp__airtable__list_bases",
+      "mcp__airtable__list_tables",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(where claude)",
+      "Bash(claude config show)",
+      "Bash(find:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

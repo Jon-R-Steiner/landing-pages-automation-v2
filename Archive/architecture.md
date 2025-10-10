@@ -25,17 +25,13 @@
 5. [External APIs](#external-apis)
 6. [Components](#components)
 7. [Core Workflows](#core-workflows)
-8. [Database Schema](#database-schema)
-9. [Frontend Architecture](#frontend-architecture)
-10. [Backend Architecture](#backend-architecture)
-11. [Unified Project Structure](#unified-project-structure)
-12. [Development Workflow](#development-workflow)
-13. [Deployment Architecture](#deployment-architecture)
-14. [Security & Performance](#security--performance)
-15. [Testing Strategy](#testing-strategy)
-16. [Coding Standards](#coding-standards)
-17. [Error Handling Strategy](#error-handling-strategy)
-18. [Monitoring and Observability](#monitoring-and-observability)
+8. [Frontend Architecture](#frontend-architecture)
+9. [Development Workflow](#development-workflow)
+10. [Coding Standards](#coding-standards)
+11. [Error Handling Strategy](#error-handling-strategy)
+12. [Monitoring and Observability](#monitoring-and-observability)
+13. [Security & Performance](#security--performance)
+14. [Testing Strategy](#testing-strategy)
 
 ---
 
@@ -49,7 +45,7 @@ This unified approach combines frontend and backend architectural concerns into 
 
 **Primary Goal:** Generate static landing pages optimized for Google Ads Quality Score (LCP <2.5s critical) with conversion tracking via GTM, CallRail, and GA4.
 
-**Key Constraint:** **NO serverless functions** - Previous deployment failed with monorepo + Netlify Functions. This architecture uses build-time static generation ONLY.
+**Key Constraint:** **NO serverless functions for runtime/user-facing operations** - Previous deployment failed with monorepo + Netlify Functions. This architecture uses static-only CDN for all user-facing pages. However, **serverless functions ARE used for backend workflows** (AI content generation via Airtable webhooks) that occur BEFORE publishing.
 
 **Target Scale:** 500+ landing pages per client, with support for multiple clients.
 
@@ -142,9 +138,9 @@ Runtime (User visits page)
 
 **Locked Decisions (from PRD v2.1):**
 - ✅ Next.js 15 App Router (static export mode)
-- ✅ Netlify CDN hosting (NO serverless functions)
+- ✅ Netlify CDN hosting (static-only for runtime; Netlify Functions for backend workflows)
 - ✅ Airtable for data storage and approval workflow
-- ✅ Claude API (Anthropic) for AI content generation
+- ✅ Claude API (Anthropic) for AI content generation via Netlify Functions
 - ✅ GTM + CallRail + GA4 for conversion tracking
 - ✅ Make.com for form submission → Salesforce integration
 - ✅ 3-stage progressive forms (Name/Phone → Service/Location → Details/Submit)
@@ -196,17 +192,17 @@ Runtime (User visits page)
 
 ## Technical Summary
 
-Landing Pages Automation v2 is a **Jamstack application** built with **Next.js 15 App Router in static export mode** (`output: 'export'`), deployed to **Netlify CDN** for global edge distribution. The system generates conversion-optimized landing pages at build time by fetching content from **Airtable** (exported to JSON) and enriching it with AI-generated content from **Claude API** (Trust Bar, Gallery, FAQ). At runtime, static pages load instantly from CDN (<50ms globally), achieving **LCP <2.5s** through critical CSS inlining, self-hosted fonts (WOFF2), build-time image optimization (AVIF/WebP), and deferred third-party scripts (`strategy="lazyOnload"`). Client-side hydration enables interactive **3-stage progressive forms** that submit to **Make.com webhooks** for **Salesforce lead creation** via OAuth 2. Conversion tracking is handled by **GTM, CallRail, and GA4** with all scripts loaded post-LCP to preserve sub-2.5s targets critical for Google Ads Quality Score.
+Landing Pages Automation v2 is a **Jamstack application** built with **Next.js 15 App Router in static export mode** (`output: 'export'`), deployed to **Netlify CDN** for global edge distribution. The system uses an **Airtable-centric workflow** where Marketing creates pages in Airtable, triggers AI content generation via **Netlify Functions** (serverless) that call **Claude API** to generate Hero, Trust Bar, Gallery, and FAQ content and write it back to Airtable for review and approval. Once approved, **GitHub Actions** exports all content (including AI-generated) to a single `content.json` file, which Next.js uses at build time to generate 500+ static pages. At runtime, static pages load instantly from CDN (<50ms globally), achieving **LCP <2.5s** through critical CSS inlining, self-hosted fonts (WOFF2), build-time image optimization (AVIF/WebP), and deferred third-party scripts (`strategy="lazyOnload"`). Client-side hydration enables interactive **3-stage progressive forms** that submit to **Make.com webhooks** for **Salesforce lead creation** via OAuth 2. Conversion tracking is handled by **GTM, CallRail, and GA4** with all scripts loaded post-LCP to preserve sub-2.5s targets critical for Google Ads Quality Score.
 
-This architecture achieves PRD goals through **performance** (static CDN + aggressive optimization = 0.8-2.0s LCP), **scalability** (proven Next.js 15 static export handles 5000+ pages), **maintainability** (flat structure, clear separation of concerns), and **cost efficiency** (no serverless functions, Netlify free tier: 100GB bandwidth, 300 build mins/month).
+This architecture achieves PRD goals through **performance** (static CDN + aggressive optimization = 0.8-2.0s LCP), **scalability** (proven Next.js 15 static export handles 5000+ pages), **maintainability** (flat structure, clear separation of concerns), and **cost efficiency** (~$20-30/month total, leveraging free tiers: Netlify 100GB bandwidth, 300 build mins/mo, Netlify Functions 125K requests/mo for backend workflows).
 
 ## Platform and Infrastructure Choice
 
 **Selected Platform:** Netlify CDN
 
 **Rationale:**
-- PRD constraint: "NO serverless functions" (locked from previous deployment failure)
-- Static CDN hosting is the ONLY viable architecture
+- PRD constraint: "NO serverless functions for runtime" - Static CDN hosting for user-facing pages, with Netlify Functions for backend workflows (AI generation)
+- Static CDN architecture for all user-facing pages
 - Next.js 15 static export validated: **community testing shows 5000+ pages successfully built**
 - Netlify advantages: Global CDN, automatic HTTPS, branch previews, build caching, generous free tier
 
@@ -230,79 +226,132 @@ This architecture achieves PRD goals through **performance** (static CDN + aggre
 - **Data Sources:** Airtable US, Claude API US-East
 
 **Estimated Costs (per client/month):**
-- Netlify: $0 (free tier sufficient for pilot, $19/mo Pro if >100GB bandwidth)
-- Claude API: $0.50-1.00 (500 pages × 3 AI sections × ~2K tokens @ $0.003/1K)
-- Make.com: $9/mo (Core tier for >1000 form submissions/month)
-- **Total:** ~$10-30/month per client
+- Airtable: $20/mo (Team plan required for automations/webhooks)
+- Netlify: $0 (free tier sufficient - 100GB bandwidth, 300 build mins/mo)
+- Netlify Functions: $0 (free tier - AI generation well within 125K requests, 100 hrs/mo)
+- Claude API: $0.50-1.00 (500 pages × 4 AI sections × ~2K tokens @ $0.003/1K)
+- Make.com: $0-9/mo (Free tier: 1000 ops/mo, Core tier: $9/mo if >1000 form submissions)
+- GitHub Actions: $0 (free tier - 2000 mins/mo)
+- **Total:** ~$20-30/month per client (depending on Make.com tier)
 
 **Infrastructure Diagram:**
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                   PRE-BUILD (Local/CI)                           │
-│  (Developer Machine or GitHub Actions)                           │
+│          PHASE 1: AIRTABLE WORKFLOW (Marketing + AI)             │
+│  (Airtable + Netlify Functions - serverless backend)            │
 └──────────────────────────────────────────────────────────────────┘
                               ↓
               ┌──────────────────────────────────┐
-              │  1. Export from Airtable         │
-              │     - Fetch approved content     │
-              │     - Save to content.json       │
+              │  1. Marketing Creates Draft      │
+              │     - Page setup in Airtable     │
+              │     - Status: "Draft"            │
               └──────────────────────────────────┘
                               ↓
               ┌──────────────────────────────────┐
-              │  2. Call Claude API (parallel)   │
-              │     - Generate Trust Bar         │
-              │     - Generate Gallery           │
-              │     - Generate FAQ               │
-              │     - Save to ai-content.json    │
-              │     (500 pages × 3 sections)     │
+              │  2. Marketing Triggers AI        │
+              │     - Update Status field        │
+              │     - Status: "AI Processing"    │
+              └──────────────────────────────────┘
+                              ↓
+              ┌──────────────────────────────────┐
+              │  3. Airtable Webhook Fires       │
+              │     - Trigger: Status changed    │
+              │     - POST to Netlify Function   │
+              │     - Endpoint: .netlify/        │
+              │       functions/generate-ai      │
+              └──────────────────────────────────┘
+                              ↓
+              ┌──────────────────────────────────┐
+              │  4. Netlify Function (Serverless)│
+              │     - Cold start: 3-10s          │
+              │     - Fetch page data from       │
+              │       Airtable                   │
+              │     - Call Claude API (parallel):│
+              │       * Hero + Trust Bars        │
+              │       * Gallery Captions         │
+              │       * FAQs                     │
+              │     - Write back to Airtable     │
+              │       (all AI-generated fields)  │
+              │     - Update Status:             │
+              │       "Ready for Review"         │
+              │     - Total time: 18-40s         │
+              └──────────────────────────────────┘
+                              ↓
+              ┌──────────────────────────────────┐
+              │  5. Marketing Reviews & Approves │
+              │     - Edit AI content if needed  │
+              │     - Status: "Approved"         │
+              └──────────────────────────────────┘
+                              ↓
+                    **Triggers GitHub Actions**
+
+┌──────────────────────────────────────────────────────────────────┐
+│          PHASE 2: EXPORT & DEPLOY (GitHub Actions)               │
+│  (CI/CD automation triggered by Airtable approval)               │
+└──────────────────────────────────────────────────────────────────┘
+                              ↓
+              ┌──────────────────────────────────┐
+              │  1. Airtable Webhook Fires       │
+              │     - Trigger: Status="Approved" │
+              │     - POST to GitHub Actions     │
+              │     - repository_dispatch event  │
+              └──────────────────────────────────┘
+                              ↓
+              ┌──────────────────────────────────┐
+              │  2. GitHub Actions Workflow      │
+              │     - Export from Airtable       │
+              │     - Fetch ALL approved pages   │
+              │     - AI content already in      │
+              │       Airtable (no separate AI   │
+              │       generation needed)         │
+              │     - Save to content.json       │
+              │       (single file)              │
               └──────────────────────────────────┘
                               ↓
               ┌──────────────────────────────────┐
               │  3. Commit to Git                │
-              │     - content.json               │
-              │     - ai-content.json            │
+              │     - content.json (single file) │
               │     - Git push → main branch     │
               └──────────────────────────────────┘
                               ↓
                      **Triggers Netlify Build**
 
 ┌──────────────────────────────────────────────────────────────────┐
-│                    NETLIFY BUILD TIME                            │
-│  (Netlify Build Agent: 4-8GB RAM, 120-180s timeout per page)    │
+│             PHASE 3: BUILD PHASE (Netlify Build)                 │
+│  (Static site generation - NO serverless at runtime)             │
 └──────────────────────────────────────────────────────────────────┘
                               ↓
     Git Push → Netlify Webhook → Netlify Build Starts
                               ↓
               ┌──────────────────────────────────┐
               │  1. Read content.json from Git   │
-              │     (NO Airtable API calls)      │
+              │     - Single JSON file           │
+              │     - Contains ALL content       │
+              │       (including AI-generated)   │
+              │     - NO Airtable API calls      │
+              │     - NO Claude API calls        │
               └──────────────────────────────────┘
                               ↓
               ┌──────────────────────────────────┐
-              │  2. Read ai-content.json         │
-              │     (NO Claude API calls)        │
-              └──────────────────────────────────┘
-                              ↓
-              ┌──────────────────────────────────┐
-              │  3. next build (App Router)      │
+              │  2. next build (App Router)      │
               │     - generateStaticParams()     │
               │       → 500+ routes              │
               │     - generateMetadata()         │
               │       → SEO meta tags            │
               │     - Build static HTML/CSS/JS   │
-              │     (Reads from JSON files)      │
+              │     - Reads from content.json    │
               └──────────────────────────────────┘
                               ↓
               ┌──────────────────────────────────┐
-              │  4. Post-Build Optimization      │
+              │  3. Post-Build Optimization      │
               │     - Extract critical CSS       │
               │     - Optimize images (Sharp)    │
               │     - Generate sitemap.xml       │
               └──────────────────────────────────┘
                               ↓
               ┌──────────────────────────────────┐
-              │  5. Deploy to Netlify CDN        │
+              │  4. Deploy to Netlify CDN        │
               │     - Upload static files        │
               │     - Invalidate cache           │
               │     - Publish to edge (global)   │
@@ -370,23 +419,33 @@ This architecture achieves PRD goals through **performance** (static CDN + aggre
               └──────────────────────────────────┘
 ```
 
-**Build Performance Estimates (500 pages):**
+**Performance Estimates (500 pages):**
 
-**Pre-Build (Local/CI - one time per content update):**
+**Phase 1: AI Generation (per page, on-demand via Netlify Function):**
+- **Netlify Function Cold Start:** 3-10s (first request, then warm)
+- **Claude API Calls:** 4 parallel requests (Hero, Trust Bars, FAQs, Gallery)
+- **Airtable Write-Back:** ~2-5s (update AI-generated fields)
+- **Total per page:** 18-40s (Marketing waits for this before review)
+- **Marketing Review:** Variable (manual approval workflow)
+
+**Phase 2: Export & Deploy (GitHub Actions, triggered by approval):**
 - **Airtable Export:** 1-2 minutes (fetch all approved content → content.json)
-- **Claude API Calls:** 500 pages × 3 sections = 1500 calls (~5-10 mins with parallel batching, rate limits)
-- **Git Commit & Push:** 30-60 seconds (content.json + ai-content.json)
-- **Pre-Build Total:** ~7-13 minutes
+- **Git Commit & Push:** 30-60 seconds (content.json only)
+- **GitHub Actions Total:** ~2-3 minutes
 
-**Netlify Build (every deployment):**
-- **Build Time:** 5-10 minutes (Next.js 15 static generation, reads from JSON files)
+**Phase 3: Netlify Build (every deployment):**
+- **Build Time:** 5-10 minutes (Next.js 15 static generation, reads from content.json)
 - **Memory Usage:** 4-8GB peak (Next.js 15 with `webpackMemoryOptimizations`)
 - **Airtable API Calls:** 0 (reads from committed content.json)
-- **Claude API Calls:** 0 (reads from committed ai-content.json)
+- **Claude API Calls:** 0 (AI content already in content.json from Airtable)
 - **CDN Deploy Time:** 1-2 minutes (Netlify upload + cache invalidation)
 - **Netlify Build Total:** ~6-12 minutes
 
-**Key Benefit:** Netlify builds are FAST (6-12 mins) because no external API calls. Pre-build only runs when content changes.
+**Key Benefits:**
+- AI generation happens BEFORE Marketing review (not during build)
+- Netlify builds are FAST (6-12 mins) because no external API calls
+- Marketing can review and edit AI content before publishing
+- Single source of truth: content.json contains ALL content (including AI-generated)
 
 **Runtime Performance Targets:**
 - **LCP:** 0.8-2.0s (mobile), 0.6-1.5s (desktop)
@@ -496,8 +555,7 @@ landing-pages-automation-v2/
 - ✅ `next.config.js` - Next.js configuration
 - ✅ `tsconfig.json` - TypeScript compiler configuration
 - ✅ `tailwind.config.js` - Tailwind CSS configuration (if using Tailwind)
-- ✅ `content.json` - Pre-generated Airtable export (committed to Git)
-- ✅ `ai-content.json` - Pre-generated Claude API content (committed to Git)
+- ✅ `content.json` - Pre-exported Airtable data including AI-generated content (committed to Git)
 
 **What Netlify DOESN'T NEED (development/documentation only):**
 - ❌ `.bmad-core/` - BMAD framework (tasks, templates, agents) - development/planning only
@@ -986,49 +1044,99 @@ export async function fetchAllPages() {
 
 ---
 
-### Airtable MCP Server (Alternative/Enhancement)
+### Airtable REST API (Direct Integration)
 
-**Version:** Multiple options available (domdomegg/airtable-mcp-server, felores/airtable-mcp, @loticdigital/airtable-mcp-server)
+**API Version:** v0 (stable)
 
-**Purpose:** Enable AI-assisted Airtable operations during development and pre-build scripting
+**Purpose:** Direct API integration for build-time data export and record management
 
-**Why Consider MCP:**
-- ✅ Natural language queries to Airtable during development
-- ✅ Schema inspection and validation
-- ✅ Automated data transformations
-- ✅ AI-assisted content approval workflows
-- ✅ Integration with Claude Code for development
+**Why REST API:**
+- ✅ Reliable and well-documented
+- ✅ Works with any programming language
+- ✅ No additional dependencies or MCP servers required
+- ✅ Production-ready with official support
+- ✅ Fine-grained control over data operations
 
-**Recommended MCP Server:** `domdomegg/airtable-mcp-server` (most comprehensive coverage)
+**Authentication:** Personal Access Token (PAT) or API Key
 
-**Configuration (Claude Desktop):**
-```json
-{
-  "mcpServers": {
-    "airtable": {
-      "command": "npx",
-      "args": ["-y", "airtable-mcp-server"],
-      "env": {
-        "AIRTABLE_API_KEY": "your_api_key_here"
-      }
-    }
-  }
-}
+**Base Configuration:**
+```bash
+# Environment Variables (.env.local)
+AIRTABLE_API_KEY=patR2szOO0tU7ZsP2.your_token_here
+AIRTABLE_BASE_ID=appATvatPtaoJ8MmS
 ```
 
-**Required Scopes:**
-- `schema.bases:read` - Read base schemas
-- `data.records:read` - Read records
-- `schema.bases:write` (optional) - Modify schemas
-- `data.records:write` (optional) - Write records
+**Key Endpoints:**
+
+1. **List Records:**
+   ```
+   GET https://api.airtable.com/v0/{baseId}/{tableName}
+   ```
+
+2. **Get Record:**
+   ```
+   GET https://api.airtable.com/v0/{baseId}/{tableName}/{recordId}
+   ```
+
+3. **Create Records:**
+   ```
+   POST https://api.airtable.com/v0/{baseId}/{tableName}
+   ```
+
+4. **Update Records:**
+   ```
+   PATCH https://api.airtable.com/v0/{baseId}/{tableName}
+   ```
+
+**Usage Example (Node.js with Airtable SDK):**
+```javascript
+// Using the official Airtable.js SDK (recommended)
+import Airtable from 'airtable'
+
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
+  .base(process.env.AIRTABLE_BASE_ID)
+
+// Fetch approved pages
+const records = await base('Pages')
+  .select({
+    view: 'Approved',
+    filterByFormula: 'AND({Status} = "Approved", {Published} = TRUE())',
+    fields: ['Service ID', 'Location ID', 'SEO Title', 'H1 Headline']
+  })
+  .all()
+```
+
+**Usage Example (Direct REST API with fetch):**
+```javascript
+// Direct API call without SDK
+const response = await fetch(
+  `https://api.airtable.com/v0/${baseId}/Pages`,
+  {
+    headers: {
+      'Authorization': `Bearer ${process.env.AIRTABLE_API_KEY}`,
+      'Content-Type': 'application/json'
+    }
+  }
+)
+const data = await response.json()
+```
+
+**Rate Limits:**
+- 5 requests/second per base
+- Mitigation: Batch operations, export to JSON for build-time use
+
+**Required Scopes (for Personal Access Tokens):**
+- `data.records:read` - Read records (required)
+- `data.records:write` - Create/update records (required for automation)
+- `schema.bases:read` - Read schema (optional, for validation)
 
 **Use Cases:**
-- Development: Query Airtable data naturally during coding
-- Pre-build: AI-assisted data validation and transformation
-- Testing: Generate test data fixtures from Airtable
-- Documentation: Auto-generate docs from Airtable schema
+- Pre-build: Export approved pages to JSON
+- Development: Create test records, validate data
+- Automation: Update page status, trigger workflows
+- Integration: Connect with GitHub Actions, Netlify build hooks
 
-**Decision:** Use traditional SDK for production builds, MCP for development enhancement (optional)
+**Decision:** Use REST API with official Airtable SDK for all operations. No MCP server required.
 
 ---
 
@@ -1346,7 +1454,6 @@ NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX
 | **Images** | Sharp | ^0.33.0 | **^0.34.4** | ⚠️ Minor | 15-20% faster AVIF encoding |
 | **Critical CSS** | Critters | ^0.0.20 | **Beasties ^0.1.0** | 🚨 Replace | Critters archived, Beasties maintained |
 | **Content Source** | Airtable SDK | ^0.12.0 | **^0.12.2** | ⚠️ Patch | Latest available (stale package) |
-| **Airtable MCP** | N/A | N/A | **airtable-mcp-server** | ➕ Add | Optional dev enhancement |
 | **AI Content** | Claude API | ^0.20.0 | **^0.65.0** | 🚨 Major | Claude 4 support (CRITICAL) |
 | **Forms** | Make.com | N/A | N/A | ✅ Keep | Runtime form submission → Salesforce |
 | **Analytics** | GTM + GA4 | N/A | N/A | ✅ Keep | Conversion tracking, deferred loading |
@@ -1381,9 +1488,6 @@ NEXT_PUBLIC_GA4_MEASUREMENT_ID=G-XXXXXXXXXX
 9. **Sharp 0.33 → 0.34** - Faster image optimization
 10. **Playwright 1.41 → 1.55** - AI test generation features
 11. **Airtable SDK 0.12.0 → 0.12.2** - Latest patch
-
-### 🔍 Low Priority (Future Consideration):
-12. **Airtable MCP Server** - Optional development enhancement
 
 ---
 
@@ -1438,96 +1542,79 @@ The system uses three distinct data storage strategies:
 
 ### 1. Airtable Data Model
 
+> **⚠️ IMPORTANT - BACKEND SCHEMA STATUS:**
+>
+> **✅ AIRTABLE BACKEND IS COMPLETE AND PRODUCTION-READY**
+>
+> The Airtable base structure with all 12 tables, relationships, rollup fields, and automations has been **fully built and tested**.
+>
+> **🔒 Schema is LOCKED:**
+> - Dev should **NOT modify the schema** (add/remove/change tables or fields) without explicit approval from Owner and Architect
+> - Dev should **ONLY use the Airtable API** to create, read, and update records within the existing structure
+> - Any schema changes require coordination with the Owner and Architect to ensure system integrity
+>
+> **📖 Full Schema Reference:** See `Archive/airtable-schema-phase1.md` for complete field definitions, relationships, automations, and examples.
+
 **Base Name:** `Landing Pages Content Management`
+
+**Base ID:** `appATvatPtaoJ8MmS`
 
 **Purpose:** Central content repository managed by non-technical stakeholders
 
-#### Table 1: `Pages`
+**Schema Status:** Phase 1 MVP - Production Ready (12 tables, 3,000 page capacity)
 
-**Purpose:** Define which landing pages should be generated
+**Tables:** 12 core tables organized into 3 categories
 
-| Field Name | Type | Required | Description | Example |
-|------------|------|----------|-------------|---------|
-| `Page ID` | Auto Number | Yes | Unique identifier | `1234` |
-| `Service` | Single Line Text | Yes | Service type (URL slug) | `bathroom-remodeling` |
-| `Location` | Single Line Text | Yes | City name (URL slug) | `charlotte` |
-| `Status` | Single Select | Yes | `Draft \| Approved \| Archived` | `Approved` |
-| `Client Name` | Link to `Clients` | Yes | Link to client configuration | `Baths R Us` |
-| `SEO Title` | Single Line Text | Yes | Meta title (50-60 chars) | `Bathroom Remodeling Charlotte NC \| Baths R Us` |
-| `SEO Description` | Long Text | Yes | Meta description (150-160 chars) | `Top-rated bathroom remodeling in Charlotte...` |
-| `H1 Headline` | Single Line Text | Yes | Page hero headline | `Transform Your Bathroom in Charlotte` |
-| `Hero Subheadline` | Long Text | Yes | Supporting hero text | `Licensed, insured, and trusted by 500+ homeowners` |
-| `CTA Text` | Single Line Text | Yes | Primary CTA button text | `Get Free Quote` |
-| `CTA URL` | URL | No | External CTA destination (if any) | `https://example.com/quote` |
-| `Hero Image URL` | URL | Yes | Cloudinary/external image URL | `https://res.cloudinary.com/...` |
-| `Created Date` | Created Time | Auto | When record was created | `2025-01-08` |
-| `Last Modified` | Last Modified | Auto | Last edit timestamp | `2025-01-09` |
-| `Notes` | Long Text | No | Internal notes/comments | `Client requested emphasis on speed` |
+#### Table Structure Overview
 
-**View: `Approved`** - Filtered to `Status = "Approved"` (only these pages are exported)
+**FOUNDATION TABLES** (6 tables)
+1. **Clients** - Business information, branding, tracking IDs, contact info
+2. **Services** - Service definitions with keyword grouping for SEO
+3. **Locations** - Validated city master data with demographics
+4. **Branch Locations** - Physical office locations with timezone support
+5. **Service Areas** - Junction table (which branches serve which cities)
+6. **Branch Staff** - Team member profiles for AI personalization
 
----
+**CORE CONTENT TABLE** (1 table)
+7. **Pages** - Landing page content and workflow management (50+ fields including auto-matched branch data, AI-generated content, SEO metadata)
 
-#### Table 2: `Clients`
+**CONTENT LIBRARIES** (3 tables)
+8. **CTAs** - Call-to-action library for AI selection
+9. **Hero Images Library** - Image asset management with categorization
+10. **Testimonials** - Customer reviews with service/branch targeting
 
-**Purpose:** Store client-specific branding and configuration
+**MARKETING TABLES** (2 tables)
+11. **Offers** - Promotional campaigns with targeting rules
+12. **Campaigns** - Marketing campaign tracking and UTM management
 
-| Field Name | Type | Required | Description | Example |
-|------------|------|----------|-------------|---------|
-| `Client ID` | Auto Number | Yes | Unique identifier | `42` |
-| `Client Name` | Single Line Text | Yes | Business name | `Baths R Us` |
-| `Domain` | URL | Yes | Production domain | `https://bathsrus.com` |
-| `Primary Color` | Single Line Text | Yes | Brand color (hex) | `#0ea5e9` |
-| `Secondary Color` | Single Line Text | Yes | Accent color (hex) | `#8b5cf6` |
-| `Logo URL` | URL | Yes | Cloudinary logo URL | `https://res.cloudinary.com/client-logo.png` |
-| `Phone Number` | Phone | Yes | Business phone | `(704) 555-1234` |
-| `Email` | Email | Yes | Contact email | `info@bathsrus.com` |
-| `Google Fonts` | Single Line Text | No | Font family to load | `Inter, Roboto` |
-| `GTM Container ID` | Single Line Text | No | Google Tag Manager ID | `GTM-XXXXXXX` |
-| `CallRail Swap Target` | Single Line Text | No | CallRail number swap script | `CR-123456` |
-| `Make.com Webhook URL` | URL | Yes | Form submission endpoint | `https://hook.us1.make.com/abc123` |
-| `reCAPTCHA Site Key` | Single Line Text | Yes | reCAPTCHA v3 public key | `6Lc...` |
-| `Salesforce Campaign ID` | Single Line Text | No | Campaign tracking ID | `7012A000000ABCD` |
-| `Active` | Checkbox | Yes | Client is active | `true` |
-| `Pages` | Link to `Pages` | Auto | Linked pages | `[1234, 1235, ...]` |
+**Key Features:**
+- ✅ Auto-number primary keys on all tables
+- ✅ Linked records for relationships (Foreign Keys)
+- ✅ 14 rollup fields for aggregated counts and metadata
+- ✅ Formula fields for URL generation, slugs, and computed values
+- ✅ 3 automations ready: Auto-Match Branch, Trigger AI Generation, Export on Approval
+- ✅ Multiple views per table for different workflows
 
----
+**For detailed field specifications, relationships, example records, and automation logic, see:**
+📄 `Archive/airtable-schema-phase1.md` (Complete 1,700+ line schema specification)
 
-#### Table 3: `Content Blocks`
+#### Detailed Table Specifications
 
-**Purpose:** Reusable content sections (features, trust signals, FAQs)
+The complete field-by-field specifications for all 12 tables are documented in the archived schema file. This includes:
 
-| Field Name | Type | Required | Description | Example |
-|------------|------|----------|-------------|---------|
-| `Block ID` | Auto Number | Yes | Unique identifier | `789` |
-| `Block Type` | Single Select | Yes | `Feature \| Trust Signal \| FAQ \| Testimonial` | `Feature` |
-| `Page ID` | Link to `Pages` | Yes | Associated page | `1234` |
-| `Heading` | Single Line Text | No | Block title | `Licensed & Insured` |
-| `Body Text` | Long Text | Yes | Main content | `Fully licensed contractors with $2M insurance` |
-| `Icon Name` | Single Line Text | No | Icon identifier (if any) | `shield-check` |
-| `Image URL` | URL | No | Optional image | `https://res.cloudinary.com/...` |
-| `Order` | Number | Yes | Display order (1, 2, 3...) | `1` |
-| `AI Generated` | Checkbox | Auto | Was content generated by Claude? | `true` |
-| `Generated Date` | Created Time | Auto | When AI content was created | `2025-01-08` |
+- Complete field lists with types, required/optional flags, and examples
+- Formula field definitions (URL slugs, unique keys, computed values)
+- Lookup and rollup field configurations
+- Relationship mappings between tables
+- View configurations for each table
+- Example records for reference
+- Automation logic specifications
 
----
-
-#### Table 4: `AI Content Queue`
-
-**Purpose:** Track which content blocks need AI generation or regeneration
-
-| Field Name | Type | Required | Description | Example |
-|------------|------|----------|-------------|---------|
-| `Queue ID` | Auto Number | Yes | Unique identifier | `99` |
-| `Page ID` | Link to `Pages` | Yes | Target page | `1234` |
-| `Content Type` | Single Select | Yes | `Trust Signals \| Features \| FAQ \| Meta Description` | `Trust Signals` |
-| `Status` | Single Select | Yes | `Pending \| Processing \| Complete \| Failed` | `Pending` |
-| `Prompt Template` | Long Text | Yes | Claude API prompt | `Generate 5 trust signals for {service}...` |
-| `Generated Content` | Long Text | No | Claude API response | `[JSON array of trust signals]` |
-| `Token Count` | Number | No | API tokens used | `342` |
-| `Error Message` | Long Text | No | If generation failed | `API rate limit exceeded` |
-| `Created Date` | Created Time | Auto | When queued | `2025-01-08 10:30` |
-| `Completed Date` | Last Modified | Auto | When processing finished | `2025-01-08 10:31` |
+**See:** `Archive/airtable-schema-phase1.md` for full details on:
+- Foundation Tables (Clients, Services, Locations, Branch Locations, Service Areas, Branch Staff)
+- Core Content Table (Pages with 50+ fields)
+- Content Libraries (CTAs, Hero Images Library, Testimonials)
+- Marketing Tables (Offers, Campaigns)
 
 ---
 
@@ -2359,6 +2446,340 @@ END TRY
 
 ---
 
+# Components
+
+> **📖 Complete Component Specifications:**
+> See **`docs/front-end-spec.md`** for comprehensive component documentation (198KB, 100+ pages)
+
+## Overview
+
+This project uses a component-based architecture with React 19 and Next.js 15. Components are organized into reusable, conversion-optimized modules that work consistently across all generated landing pages.
+
+## Component Structure
+
+The component library is fully documented in `docs/front-end-spec.md` and includes:
+
+### **Conversion Components**
+- **ThreeStageForm** - Progressive disclosure form (Stage 1: Contact info, Stage 2: Project details, Stage 3: Timeline/budget)
+- **TrustBar** - Dynamic trust signals with icons (licensing, insurance, years in business, reviews)
+- **Gallery** - Before/after image slider with lightbox and captions
+- **FAQ** - Accordion-style frequently asked questions with structured data
+- **Testimonials** - Customer review cards with ratings and location attribution
+
+### **Layout Components**
+- **Header** - Navigation with phone number (CallRail dynamic insertion), logo, CTA button
+- **Footer** - Links, contact info, schema.org LocalBusiness markup
+- **Hero** - Above-fold section with H1, subheadline, CTA, hero image
+
+### **UI Primitives**
+- **Button** - Primary, secondary, and urgency variants
+- **Input** - Form fields with validation states
+- **Modal** - Accessible dialog for lightbox and confirmations
+
+## Component Library Strategy
+
+**Source:** Hybrid approach combining:
+- **Headless UI** (`@headlessui/react`) - Unstyled, accessible React components (Dialog, Disclosure, Transition)
+- **Tailwind CSS v4** - Utility-first styling system
+- **Custom Components** - Built for conversion optimization (not generic UI kit)
+
+**Installation:**
+```bash
+npm install @headlessui/react
+```
+
+**Key Features:**
+- ✅ **Server Components by default** - All components are React Server Components unless marked with `'use client'`
+- ✅ **Accessibility built-in** - WCAG 2.1 AA compliant (ARIA labels, keyboard navigation, focus management)
+- ✅ **Performance-optimized** - Minimal JavaScript, CSS purging, lazy loading for below-fold content
+- ✅ **Mobile-first** - All components responsive and touch-optimized for 60%+ mobile traffic
+
+## Component Documentation Location
+
+**Full specifications in `docs/front-end-spec.md` include:**
+- Component API (props, variants, states)
+- Usage examples with code samples
+- Accessibility guidelines
+- Design tokens and spacing
+- Mobile responsiveness patterns
+- Integration with Tailwind CSS v4
+- Performance optimization patterns
+
+**For detailed component specifications, API documentation, and implementation examples:**
+👉 See **`docs/front-end-spec.md`** (Sections 4.5-5.0)
+
+---
+
+# Core Workflows
+
+> **📖 Complete Workflow Documentation:**
+> See **`docs/airtable-to-production-workflow.md`** for end-to-end workflow specifications
+
+## Overview
+
+The system orchestrates three primary workflows that automate the journey from content creation to live pages:
+
+## 1. Content Creation Workflow
+
+**Flow:** Airtable → AI Service → Approval → Production
+
+```
+STEP 1: Marketing creates draft page in Airtable
+  ↓ (minimal input: client, service, location, special instructions)
+STEP 2: Status → "AI Processing" triggers AI Service webhook
+  ↓
+STEP 3: AI Service (Claude API) generates all content in parallel
+  - SEO Title & Meta Description
+  - H1 Headline & Hero Subheadline
+  - Trust Bar signals (5 items)
+  - FAQs (5 Q&A pairs)
+  - CTA selection + reasoning
+  - Hero image selection from library
+  ↓
+STEP 4: AI writes content back to Airtable record
+  ↓
+STEP 5: Marketing reviews + approves (Status → "Approved")
+```
+
+**Key Features:**
+- ✅ Parallel generation (all content types generated simultaneously)
+- ✅ Automatic rollup data (branch info, client branding pulled from relationships)
+- ✅ AI selection reasoning stored (CTA choice, image choice documented)
+- ✅ Version control ready (original AI content saved for rollback)
+
+## 2. Build & Deployment Workflow
+
+**Flow:** Approval → Export → Build → Deploy
+
+```
+STEP 1: Status → "Approved" triggers Airtable automation
+  ↓
+STEP 2: Airtable automation POSTs to GitHub Actions webhook
+  ↓
+STEP 3: GitHub Actions runs export script
+  - Fetches all approved pages from Airtable API
+  - Transforms to content.json format
+  - Commits to Git (triggers Netlify auto-deploy)
+  ↓
+STEP 4: Netlify Build
+  - Runs Next.js 15 static export
+  - Lighthouse quality gate (LCP <2.5s, accessibility >90)
+  - Cache plugin optimizes build speed
+  - Generates 500+ static HTML pages
+  ↓
+STEP 5: CDN Deployment
+  - Pages deployed to Netlify CDN
+  - Cache headers set (1 year for assets, revalidate HTML)
+  - Site live with atomic deploy (no partial updates)
+```
+
+**Key Features:**
+- ✅ Atomic deploys (all-or-nothing, no partial updates)
+- ✅ Automatic rollback on quality gate failure
+- ✅ Build caching (50% faster incremental builds)
+- ✅ Zero-downtime deploys
+
+## 3. Form Submission Workflow
+
+**Flow:** User → Make.com → Salesforce → Notifications
+
+```
+STEP 1: User completes 3-stage form
+  ↓
+STEP 2: Client-side POST to Make.com webhook
+  ↓
+STEP 3: Make.com Scenario (10 steps)
+  1. Receive webhook payload
+  2. Verify reCAPTCHA token (server-side)
+  3. Validate required fields
+  4. Look up client config in Airtable
+  5. Map form fields to Salesforce Lead object
+  6. Check for duplicate lead (email/phone)
+  7. Create or update Salesforce Lead
+  8. Tag with campaign ID and UTM parameters
+  9. Send confirmation email to user
+  10. Notify sales team (Slack/email)
+  ↓
+STEP 4: Salesforce Assignment Rules
+  - Territory-based lead routing
+  - Auto-assign to sales rep
+  - Trigger follow-up task creation
+```
+
+**Key Features:**
+- ✅ Server-side reCAPTCHA validation (score threshold >0.5)
+- ✅ Duplicate lead prevention
+- ✅ Multi-client support (Airtable lookup determines Salesforce org)
+- ✅ UTM parameter preservation (campaign attribution)
+
+## Workflow Documentation
+
+**For complete step-by-step workflows with Airtable field mappings, AI prompts, GitHub Actions YAML, and Make.com scenario configurations:**
+👉 See **`docs/airtable-to-production-workflow.md`**
+
+**Additional workflow diagrams:**
+👉 See **`docs/technology-flow-diagram.md`** for visual flow diagrams
+
+---
+
+# Frontend Architecture
+
+> **📖 Detailed Frontend Specifications:**
+> See **`docs/front-end-spec.md`** for comprehensive UI/UX specifications and design system
+
+## Overview
+
+The frontend is built on **Next.js 15 (App Router)** with **React 19** and **Tailwind CSS v4**, optimized for Google Ads Quality Score and conversion rate optimization.
+
+## Architecture Principles
+
+### 1. **Static-First Generation**
+
+**Approach:** Pre-render all pages at build time (Static Site Generation)
+
+```typescript
+// app/[service]/[location]/page.tsx
+export async function generateStaticParams() {
+  // Generate paths for all approved pages
+  const pages = await getApprovedPages() // Reads from content.json
+
+  return pages.map((page) => ({
+    service: page.serviceSlug,
+    location: page.locationSlug,
+  }))
+}
+
+export default async function Page({ params }) {
+  const { service, location } = await params // Next.js 15 async params
+  const pageData = await getPageData(service, location)
+
+  return <LandingPage data={pageData} />
+}
+```
+
+**Benefits:**
+- ✅ LCP <2.5s (pre-rendered HTML, no data fetching)
+- ✅ SEO-friendly (crawlers get full HTML immediately)
+- ✅ CDN-cacheable (pages cached globally for instant delivery)
+- ✅ Zero runtime API calls (no Airtable/Claude API calls on page load)
+
+### 2. **App Router Structure**
+
+```
+app/
+├── layout.tsx                    # Root layout (fonts, GTM, analytics)
+├── [service]/[location]/         # Dynamic route for landing pages
+│   ├── page.tsx                  # Page component
+│   └── layout.tsx                # Optional nested layout
+├── globals.css                   # Tailwind v4 imports
+└── not-found.tsx                 # 404 page
+```
+
+**Key Features:**
+- ✅ File-based routing (no manual route configuration)
+- ✅ Nested layouts (shared header/footer)
+- ✅ React Server Components by default
+- ✅ Client Components only where needed (`'use client'` directive)
+
+### 3. **Server vs Client Components**
+
+**Server Components (default):**
+- Layout, Header, Footer (static HTML, no interactivity)
+- LandingPage wrapper (data fetching, SSG)
+- Trust Bar, Testimonials (static content display)
+
+**Client Components (`'use client'`):**
+- ThreeStageForm (form state, validation, submission)
+- Gallery (image slider, lightbox)
+- FAQ (accordion expand/collapse)
+- Any component using `useState`, `useEffect`, `onClick`
+
+**Why this matters:**
+- ✅ Reduces JavaScript bundle size (Server Components send zero JS)
+- ✅ Improves LCP (less JS to parse and execute)
+- ✅ Better SEO (search engines see full content immediately)
+
+### 4. **Data Flow**
+
+```
+Build Time:
+  content.json (Git) → getPageData() → React Server Component → Static HTML
+
+Runtime (User Visit):
+  Static HTML (CDN) → Client-side hydration → Interactive form/gallery
+```
+
+**No Runtime API Calls:**
+- ❌ No Airtable API calls on page load
+- ❌ No Claude API calls on page load
+- ✅ All data baked into static HTML at build time
+- ✅ Forms POST directly to Make.com webhook
+
+### 5. **Performance Optimization**
+
+**LCP Optimization (<2.5s target):**
+- ✅ Inline critical CSS (Beasties plugin)
+- ✅ Defer third-party scripts (GTM, CallRail, GA4 load after LCP)
+- ✅ Hero image preload (`<link rel="preload">`)
+- ✅ Font optimization (next/font with display=swap)
+- ✅ Tailwind CSS purging (only used classes included)
+
+**JavaScript Optimization:**
+- ✅ Code splitting (dynamic imports for below-fold components)
+- ✅ Tree shaking (unused code removed)
+- ✅ Minification (Next.js production build)
+
+**Image Optimization:**
+- ✅ Next.js Image component (`next/image`)
+- ✅ Sharp for build-time optimization (AVIF/WebP generation)
+- ✅ Responsive images (srcset with multiple sizes)
+- ✅ Lazy loading (images below fold load on scroll)
+
+### 6. **Styling Approach**
+
+**Tailwind CSS v4.0** (utility-first CSS framework)
+
+```css
+/* globals.css */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0ea5e9;
+  --color-secondary: #8b5cf6;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+```
+
+**Why Tailwind:**
+- ✅ 5x faster builds (v4 performance improvements)
+- ✅ Minimal CSS bundle (only used utilities included)
+- ✅ Consistent design system (spacing, colors, typography)
+- ✅ No CSS-in-JS runtime overhead
+
+### 7. **Accessibility (WCAG 2.1 AA)**
+
+**Built-in accessibility features:**
+- ✅ Semantic HTML (`<header>`, `<nav>`, `<main>`, `<footer>`)
+- ✅ ARIA labels on interactive elements
+- ✅ Keyboard navigation (tab order, focus styles)
+- ✅ Color contrast ratio >4.5:1 (automated checking)
+- ✅ Alt text on all images (AI-generated with context)
+- ✅ Form validation with error messages
+
+## Frontend Documentation
+
+**For complete frontend specifications including:**
+- UI/UX design principles
+- Component library details
+- Design tokens and spacing system
+- Mobile responsiveness patterns
+- Conversion optimization strategies
+- Accessibility guidelines
+
+👉 See **`docs/front-end-spec.md`** (Sections 1-5)
+
+---
+
 ## Netlify Build Plugins
 
 ### Overview
@@ -3006,7 +3427,131 @@ All build hook triggers are logged:
 
 ---
 
-## Why NOT Use Netlify Functions
+## When DO We Use Netlify Functions
+
+### Decision: Use Netlify Functions for AI Content Generation
+
+**Use Case:** Backend workflow automation (Airtable webhook → AI generation → write back to Airtable)
+
+**Decision:** ✅ DO use Netlify Functions for AI content generation
+
+**Architecture:**
+
+```
+Airtable Automation (Status="AI Processing")
+  ↓
+  POST webhook to Netlify Function
+  ↓
+netlify/functions/generate-ai-content.js (Serverless)
+  ↓
+  1. Fetch page data from Airtable
+  2. Call Claude API (4 parallel requests)
+  3. Write AI-generated content back to Airtable fields
+  4. Update Status → "Ready for Review"
+  ↓
+Marketing reviews AI content in Airtable
+  ↓
+Marketing approves → Status="Approved"
+  ↓
+Triggers GitHub Actions export & deploy
+```
+
+**Rationale:**
+
+#### 1. Backend Workflow (Not User-Facing)
+
+**Key Distinction:**
+- ❌ **Runtime serverless** (user-facing, page load) - NOT USED (static CDN only)
+- ✅ **Backend serverless** (pre-publish workflows) - USED for AI generation
+
+This function runs BEFORE publishing, not during user page loads. It's part of the content creation workflow, not the runtime architecture.
+
+#### 2. Marketing Approval Workflow
+
+**Problem:**
+- Marketing needs to review/edit AI-generated content before publishing
+- Cannot run AI during build (no review opportunity)
+
+**Solution:**
+- AI generates content when Marketing triggers it (on-demand)
+- AI writes back to Airtable
+- Marketing reviews in Airtable interface
+- Only approved content gets exported to production
+
+**Cold Start Trade-Off:**
+- Cold start: 3-10s (acceptable for Marketing workflow)
+- Marketing waits 18-40s total for AI generation
+- This is FASTER than waiting for full build cycle (6-12 minutes)
+
+#### 3. Cost Efficiency
+
+**Netlify Functions (Serverless):**
+- Free tier: 125K requests/month, 100 hours runtime/month
+- Estimated usage: 100-500 AI generations/month
+- Cost: **$0/month** (well within free tier)
+
+**Alternative: Always-On Server (Railway/Render):**
+- Cost: $5-7/month (always running)
+- Overkill for infrequent AI generation requests
+
+**Cost Savings:** $5-7/month saved vs always-on server
+
+#### 4. Simple Deployment
+
+**Same Repository:**
+```
+landing-pages-automation-v2/
+├── app/                        # Next.js App Router (static pages)
+├── netlify/functions/          # Serverless backend (AI generation)
+│   └── generate-ai-content.js
+├── netlify.toml                # Deploy config for both
+└── content.json                # Single source of truth
+```
+
+**No Separate Backend:**
+- No Railway/Render account needed
+- No separate deployment pipeline
+- Same environment variables (Netlify console)
+- Single Git repository
+
+#### 5. Airtable Write-Back Pattern
+
+**Workflow:**
+1. Marketing creates page in Airtable → Status: "Draft"
+2. Marketing triggers AI → Status: "AI Processing"
+3. Airtable webhook → Netlify Function
+4. Function writes AI content to Airtable fields:
+   - SEO Title, H1, Subheadline
+   - Trust Bar (5 fields)
+   - FAQs (JSON)
+   - Gallery Captions (JSON)
+5. Function updates Status → "Ready for Review"
+6. Marketing reviews/edits in Airtable
+7. Marketing approves → Status: "Approved"
+8. Airtable webhook → GitHub Actions export
+9. GitHub Actions exports content.json (includes AI content)
+10. Git push → Netlify build
+
+**Key Benefit:** Single source of truth (Airtable) for all content, including AI-generated.
+
+#### 6. Serverless Architecture Alignment
+
+**Clarification:**
+
+The "NO serverless functions" constraint applies to **runtime/user-facing operations**, NOT backend workflows.
+
+| Operation Type | Use Serverless? | Rationale |
+|----------------|-----------------|-----------|
+| **User page loads** | ❌ NO | Static CDN for performance (LCP <2.5s) |
+| **Form submissions** | ❌ NO | Make.com handles (OAuth abstraction, visual workflow) |
+| **AI content generation** | ✅ YES | Backend workflow (pre-publish), cost-effective, Marketing approval |
+| **GitHub Actions** | ✅ YES | CI/CD automation (export Airtable to JSON) |
+
+**Summary:** Serverless is appropriate for backend automation, not user-facing pages.
+
+---
+
+## Why NOT Use Netlify Functions for Form Processing
 
 ### Decision: Keep Make.com for Form Submissions
 
@@ -3206,4 +3751,2050 @@ async function getSalesforceAccessToken() {
 **Final Recommendation:** ✅ **Keep Make.com for form submissions**, use Netlify Plugins + Build Hooks for build-time automation only.
 
 ---
+
+# Development Workflow
+
+## Overview
+
+This section defines the development workflow, Git branching strategy, local development setup, and deployment procedures for the Landing Pages Automation v2 project.
+
+## Local Development Setup
+
+### 1. Prerequisites
+
+**Required Software:**
+```bash
+Node.js: v20.x or later (LTS recommended)
+npm: v10.x or later (comes with Node.js)
+Git: v2.x or later
+```
+
+**Recommended Tools:**
+- VS Code with extensions:
+  - ESLint
+  - Prettier
+  - Tailwind CSS IntelliSense
+  - TypeScript and JavaScript Language Features
+
+### 2. Initial Setup
+
+**Clone and Install:**
+```bash
+# Clone repository
+git clone https://github.com/your-org/landing-pages-automation-v2.git
+cd landing-pages-automation-v2
+
+# Install dependencies
+npm install
+
+# Copy environment template
+cp .env.local.example .env.local
+
+# Edit .env.local with your API keys
+# (See Environment Variables section for required keys)
+```
+
+**Environment Variables:**
+```bash
+# .env.local (required for local development)
+AIRTABLE_API_KEY=patXXXXXXXXXXXXXX
+AIRTABLE_BASE_ID=appXXXXXXXXXXXXXX
+ANTHROPIC_API_KEY=sk-ant-XXXXXXXXXXXXXXXX
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcXXXXXXXXXXXXX
+NEXT_PUBLIC_MAKE_WEBHOOK_URL=https://hook.us1.make.com/XXXXXXXX
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+```
+
+### 3. Run Development Server
+
+```bash
+# Start Next.js development server
+npm run dev
+
+# Server runs at http://localhost:3000
+# Hot reload enabled (changes reflect immediately)
+```
+
+### 4. Build and Test
+
+```bash
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+
+# Run tests (when implemented)
+npm test
+
+# Build production bundle
+npm run build
+
+# Preview production build locally
+npm run start
+```
+
+## Git Workflow
+
+### Branch Strategy
+
+**Main Branches:**
+- `main` - Production-ready code, deploys to Netlify automatically
+- `develop` - Integration branch for feature development (optional)
+
+**Feature Branches:**
+```bash
+# Feature branch naming convention
+feature/short-description
+
+# Examples:
+feature/three-stage-form
+feature/trust-bar-component
+feature/airtable-export-script
+```
+
+**Bugfix Branches:**
+```bash
+# Bugfix branch naming convention
+bugfix/issue-description
+
+# Examples:
+bugfix/form-validation-error
+bugfix/lcp-optimization
+```
+
+**Hotfix Branches:**
+```bash
+# Hotfix branch naming convention (for production emergencies)
+hotfix/critical-issue
+
+# Example:
+hotfix/api-key-exposure
+```
+
+### Feature Development Workflow
+
+**Step 1: Create Feature Branch**
+```bash
+# Ensure main is up to date
+git checkout main
+git pull origin main
+
+# Create and switch to feature branch
+git checkout -b feature/trust-bar-component
+```
+
+**Step 2: Develop and Commit**
+```bash
+# Make changes, test locally
+
+# Stage changes
+git add .
+
+# Commit with descriptive message
+git commit -m "Add TrustBar component with icon support
+
+- Create TrustBar component with dynamic icons
+- Add Heroicons integration
+- Implement responsive grid layout
+- Add accessibility labels for screen readers
+
+Relates to #42"
+```
+
+**Commit Message Format:**
+```
+<type>: <subject>
+
+<body>
+
+<footer>
+```
+
+**Types:**
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `refactor:` - Code refactoring (no functional change)
+- `style:` - Formatting, whitespace changes
+- `docs:` - Documentation updates
+- `test:` - Test additions or updates
+- `chore:` - Build process, dependencies, tooling
+
+**Step 3: Push and Create Pull Request**
+```bash
+# Push feature branch to remote
+git push origin feature/trust-bar-component
+
+# Create Pull Request on GitHub
+# - Add description of changes
+# - Reference related issues
+# - Request review from team
+```
+
+### Pull Request Process
+
+**PR Template:**
+```markdown
+## Description
+Brief description of changes
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Testing
+- [ ] Tested locally
+- [ ] Lighthouse score checked (LCP <2.5s)
+- [ ] Accessibility tested (keyboard navigation, screen reader)
+- [ ] Mobile tested (responsive design)
+
+## Screenshots (if UI changes)
+[Add screenshots]
+
+## Related Issues
+Closes #42
+```
+
+**Review Checklist:**
+- ✅ Code follows TypeScript and React best practices
+- ✅ No `console.log` or debugging code left in
+- ✅ Environment variables properly configured (no hardcoded secrets)
+- ✅ Components use Server Components by default (Client Components only when needed)
+- ✅ Tailwind CSS classes used (no inline styles)
+- ✅ Accessibility: semantic HTML, ARIA labels, keyboard navigation
+- ✅ Performance: LCP target met, images optimized
+- ✅ Tests pass (when implemented)
+
+### Merging Strategy
+
+**Option A: Squash and Merge (Recommended for Feature Branches)**
+- Combines all commits into single commit on main
+- Cleaner Git history
+- Easier to revert if needed
+
+**Option B: Merge Commit (For Major Features with Meaningful History)**
+- Preserves all commits
+- Useful for complex features with multiple logical steps
+
+**After Merge:**
+```bash
+# Delete local feature branch
+git branch -d feature/trust-bar-component
+
+# Delete remote feature branch (usually automatic on GitHub)
+git push origin --delete feature/trust-bar-component
+
+# Update local main
+git checkout main
+git pull origin main
+```
+
+## Deployment Workflow
+
+### Automatic Deployment (Main Branch)
+
+```
+Developer merges PR to main
+  ↓
+GitHub triggers Netlify webhook
+  ↓
+Netlify Build starts
+  1. npm install (with caching)
+  2. npm run build (Next.js static export)
+  3. Lighthouse plugin checks LCP <2.5s
+  4. If pass: Deploy to CDN
+  5. If fail: Abort deploy, notify team
+  ↓
+Production site updated (atomic deploy)
+  - New pages live immediately
+  - Old pages remain until deploy completes
+  - Zero downtime
+```
+
+### Manual Deployment (Netlify UI)
+
+**When to use:**
+- Emergency rollback (revert to previous deploy)
+- Testing a specific commit without merging
+
+**Steps:**
+```
+1. Log into Netlify Dashboard
+2. Select site (landing-pages-automation-v2)
+3. Navigate to Deploys tab
+4. Options:
+   - "Trigger deploy" - Manual rebuild from main
+   - "Deploy preview" - Deploy from any branch
+   - "Publish deploy" - Rollback to previous successful deploy
+```
+
+## Code Review Guidelines
+
+### Reviewer Responsibilities
+
+**What to Check:**
+1. **Functionality** - Does it work as intended?
+2. **Code Quality** - Is it readable, maintainable, efficient?
+3. **Best Practices** - Follows project standards and patterns?
+4. **Security** - No exposed secrets, proper input validation?
+5. **Performance** - No performance regressions?
+6. **Accessibility** - WCAG 2.1 AA compliant?
+7. **Tests** - Are tests included (when applicable)?
+
+**Review Feedback Format:**
+- ✅ **Approve** - Looks good, ready to merge
+- 💬 **Comment** - Suggestions for improvement (not blocking)
+- ⚠️ **Request Changes** - Issues must be fixed before merge
+
+**Example Comments:**
+```
+💡 Suggestion: Consider extracting this logic into a helper function for reusability
+
+⚠️ Issue: This hardcodes the API key - should use environment variable
+
+✅ Looks good: Nice use of Server Components to reduce JS bundle
+```
+
+### Author Responsibilities
+
+**Before Requesting Review:**
+- ✅ Self-review code (catch obvious issues)
+- ✅ Run linter and fix all issues
+- ✅ Test locally (including edge cases)
+- ✅ Check Lighthouse score (LCP <2.5s)
+- ✅ Write clear PR description
+
+**During Review:**
+- ✅ Respond to comments promptly
+- ✅ Ask clarifying questions if feedback unclear
+- ✅ Push fixes to same branch (no new PR needed)
+- ✅ Re-request review after addressing feedback
+
+## Development Best Practices
+
+### 1. Keep PRs Small
+
+**Recommended Size:**
+- 200-400 lines of code (max)
+- Single logical change (one feature/bug fix)
+- Easy to review in 15-30 minutes
+
+**If PR is too large:**
+- Break into multiple smaller PRs
+- Create parent tracking issue
+- Link related PRs together
+
+### 2. Write Descriptive Commits
+
+**Good Commit:**
+```
+feat: Add TrustBar component with dynamic icons
+
+- Implement responsive grid layout (2 col mobile, 5 col desktop)
+- Add Heroicons integration for trust signal icons
+- Include ARIA labels for screen reader accessibility
+- Add props interface with TypeScript
+
+Relates to #42
+```
+
+**Bad Commit:**
+```
+fix stuff
+```
+
+### 3. Test Before Committing
+
+**Pre-Commit Checklist:**
+```bash
+# 1. Type check
+npm run type-check
+
+# 2. Lint
+npm run lint
+
+# 3. Format
+npm run format
+
+# 4. Build (catch build errors early)
+npm run build
+
+# 5. Visual check in browser
+npm run dev  # Test the changes
+```
+
+### 4. Use Feature Flags (For Large Features)
+
+**When building major features over multiple PRs:**
+```typescript
+// src/lib/feature-flags.ts
+export const FEATURES = {
+  THREE_STAGE_FORM: process.env.NEXT_PUBLIC_ENABLE_THREE_STAGE_FORM === 'true',
+  NEW_GALLERY: process.env.NEXT_PUBLIC_ENABLE_NEW_GALLERY === 'true',
+}
+
+// Usage in component
+import { FEATURES } from '@/lib/feature-flags'
+
+export default function ContactSection() {
+  if (FEATURES.THREE_STAGE_FORM) {
+    return <ThreeStageForm />
+  }
+  return <LegacyForm />
+}
+```
+
+**Benefits:**
+- ✅ Ship code to production without activating
+- ✅ Test in production environment (behind flag)
+- ✅ Easy rollback (toggle flag off)
+- ✅ Gradual rollout possible
+
+---
+
+# Coding Standards
+
+## Overview
+
+This section defines coding conventions, naming patterns, file organization, and best practices for TypeScript, React, and Next.js development.
+
+## TypeScript Standards
+
+### 1. Strict Mode Enabled
+
+**tsconfig.json:**
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true
+  }
+}
+```
+
+**What this means:**
+- ❌ No `any` types (use `unknown` if type is truly unknown)
+- ❌ No implicit `undefined` returns
+- ✅ All variables must have explicit or inferable types
+- ✅ Null and undefined checks required
+
+### 2. Type Definitions
+
+**Prefer Interfaces for Objects:**
+```typescript
+// ✅ Good
+interface PageData {
+  pageId: string
+  service: string
+  location: string
+  seo: {
+    title: string
+    description: string
+  }
+}
+
+// ❌ Avoid (unless you need union types or primitives)
+type PageData = {
+  pageId: string
+  service: string
+}
+```
+
+**Use Type for Unions and Utilities:**
+```typescript
+// ✅ Good
+type Status = 'draft' | 'processing' | 'approved' | 'published'
+type ReadonlyPageData = Readonly<PageData>
+```
+
+### 3. No `any` Type
+
+**❌ Never use `any`:**
+```typescript
+// ❌ BAD
+function processData(data: any) {
+  return data.value
+}
+```
+
+**✅ Use `unknown` and type guards:**
+```typescript
+// ✅ GOOD
+function processData(data: unknown) {
+  if (typeof data === 'object' && data !== null && 'value' in data) {
+    return (data as { value: string }).value
+  }
+  throw new Error('Invalid data format')
+}
+```
+
+**✅ Or create proper types:**
+```typescript
+// ✅ BEST
+interface DataWithValue {
+  value: string
+}
+
+function processData(data: DataWithValue) {
+  return data.value
+}
+```
+
+### 4. Const Assertions
+
+**Use `as const` for literal types:**
+```typescript
+// ✅ Good
+const STATUSES = ['draft', 'approved', 'published'] as const
+type Status = typeof STATUSES[number] // 'draft' | 'approved' | 'published'
+
+// ❌ Avoid
+const STATUSES = ['draft', 'approved', 'published'] // string[]
+```
+
+## React Standards
+
+### 1. Server Components by Default
+
+**❌ Don't add 'use client' unless needed:**
+```typescript
+// ✅ Good (Server Component by default)
+export default function TrustBar({ signals }: { signals: string[] }) {
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      {signals.map((signal, i) => (
+        <div key={i}>{signal}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+**✅ Only use 'use client' for interactivity:**
+```typescript
+// ✅ Good (Client Component when needed)
+'use client'
+
+import { useState } from 'react'
+
+export default function ThreeStageForm() {
+  const [stage, setStage] = useState(1)
+
+  return <form>...</form>
+}
+```
+
+### 2. Component File Structure
+
+**One component per file:**
+```typescript
+// ✅ Good
+// src/components/TrustBar/TrustBar.tsx
+export default function TrustBar() { ... }
+
+// src/components/TrustBar/index.ts
+export { default } from './TrustBar'
+```
+
+**File naming:**
+- Component files: `PascalCase.tsx` (e.g., `TrustBar.tsx`)
+- Utility files: `camelCase.ts` (e.g., `formatDate.ts`)
+- Type files: `camelCase.types.ts` (e.g., `airtable.types.ts`)
+
+### 3. Props Interface
+
+**Define props interface explicitly:**
+```typescript
+// ✅ Good
+interface TrustBarProps {
+  signals: string[]
+  className?: string
+  variant?: 'default' | 'compact'
+}
+
+export default function TrustBar({ signals, className, variant = 'default' }: TrustBarProps) {
+  return <div className={className}>...</div>
+}
+```
+
+**Use React.FC sparingly (prefer explicit typing):**
+```typescript
+// ❌ Avoid
+const TrustBar: React.FC<TrustBarProps> = ({ signals }) => { ... }
+
+// ✅ Prefer
+export default function TrustBar({ signals }: TrustBarProps) { ... }
+```
+
+### 4. Hooks Rules
+
+**Only call hooks at top level:**
+```typescript
+// ✅ Good
+export default function Form() {
+  const [value, setValue] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  // ...
+}
+
+// ❌ Bad
+export default function Form() {
+  if (someCondition) {
+    const [value, setValue] = useState('') // ❌ Conditional hook
+  }
+}
+```
+
+**Custom hooks must start with `use`:**
+```typescript
+// ✅ Good
+function useFormValidation(value: string) {
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (value.length < 3) {
+      setError('Too short')
+    } else {
+      setError(null)
+    }
+  }, [value])
+
+  return error
+}
+```
+
+## File Organization
+
+### Project Structure
+
+```
+src/
+├── app/                          # Next.js App Router pages
+│   ├── [service]/[location]/    # Dynamic routes
+│   ├── layout.tsx               # Root layout
+│   └── globals.css              # Global styles
+├── components/                   # React components
+│   ├── TrustBar/
+│   │   ├── TrustBar.tsx
+│   │   ├── TrustBar.test.tsx
+│   │   └── index.ts
+│   ├── ThreeStageForm/
+│   └── Gallery/
+├── lib/                          # Utilities and helpers
+│   ├── airtable.ts              # Airtable SDK wrapper
+│   ├── claude.ts                # Claude API wrapper
+│   └── utils.ts                 # Generic utilities
+├── types/                        # TypeScript type definitions
+│   ├── airtable.types.ts
+│   ├── page.types.ts
+│   └── index.ts
+└── styles/                       # Additional styles (if needed)
+```
+
+### Import Order
+
+**Organized imports:**
+```typescript
+// 1. React and Next.js imports
+import { useState, useEffect } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+
+// 2. Third-party libraries
+import { Dialog } from '@headlessui/react'
+import clsx from 'clsx'
+
+// 3. Internal imports (absolute paths with @/ alias)
+import { TrustBar } from '@/components/TrustBar'
+import { getPageData } from '@/lib/airtable'
+import type { PageData } from '@/types/page.types'
+
+// 4. Relative imports
+import { helper } from './utils'
+
+// 5. CSS imports (last)
+import styles from './Component.module.css'
+```
+
+## Naming Conventions
+
+### Variables and Functions
+
+```typescript
+// ✅ camelCase for variables and functions
+const pageData = await getPageData()
+const userEmail = form.email
+
+function calculateTotal(items: Item[]) {
+  return items.reduce((sum, item) => sum + item.price, 0)
+}
+```
+
+### Constants
+
+```typescript
+// ✅ UPPER_SNAKE_CASE for true constants
+const API_BASE_URL = 'https://api.airtable.com/v0'
+const MAX_RETRIES = 3
+const DEFAULT_TIMEOUT = 5000
+
+// ✅ PascalCase for config objects
+const ApiConfig = {
+  baseUrl: 'https://api.airtable.com/v0',
+  timeout: 5000,
+} as const
+```
+
+### Components
+
+```typescript
+// ✅ PascalCase for components
+function TrustBar() { ... }
+function ThreeStageForm() { ... }
+function Hero() { ... }
+```
+
+### Types and Interfaces
+
+```typescript
+// ✅ PascalCase for types and interfaces
+interface PageData { ... }
+type Status = 'draft' | 'approved'
+interface FormValues { ... }
+```
+
+## Code Style
+
+### 1. Use Early Returns
+
+```typescript
+// ✅ Good (early return)
+function validateEmail(email: string): string | null {
+  if (!email) {
+    return 'Email is required'
+  }
+
+  if (!email.includes('@')) {
+    return 'Invalid email format'
+  }
+
+  return null // Valid
+}
+
+// ❌ Avoid (nested ifs)
+function validateEmail(email: string): string | null {
+  if (email) {
+    if (email.includes('@')) {
+      return null
+    } else {
+      return 'Invalid email format'
+    }
+  } else {
+    return 'Email is required'
+  }
+}
+```
+
+### 2. Destructure Props
+
+```typescript
+// ✅ Good
+function TrustBar({ signals, className }: TrustBarProps) {
+  return <div className={className}>...</div>
+}
+
+// ❌ Avoid
+function TrustBar(props: TrustBarProps) {
+  return <div className={props.className}>...</div>
+}
+```
+
+### 3. Use Template Literals
+
+```typescript
+// ✅ Good
+const greeting = `Hello, ${name}!`
+const url = `https://bathsrus.com/${service}/${location}`
+
+// ❌ Avoid
+const greeting = 'Hello, ' + name + '!'
+```
+
+### 4. Prefer `const` Over `let`
+
+```typescript
+// ✅ Good
+const pages = await getApprovedPages()
+const totalPages = pages.length
+
+// ❌ Avoid (unless value actually changes)
+let pages = await getApprovedPages()
+let totalPages = pages.length
+```
+
+## Tailwind CSS Standards
+
+### 1. Class Organization
+
+**Order classes by category:**
+```tsx
+// ✅ Good (organized by layout, spacing, typography, colors, effects)
+<div className="
+  flex flex-col items-center
+  p-6 mx-auto max-w-7xl
+  text-lg font-semibold text-gray-900
+  bg-white rounded-lg shadow-lg
+  hover:shadow-xl transition-shadow
+">
+```
+
+### 2. Use `clsx` for Conditional Classes
+
+```tsx
+import clsx from 'clsx'
+
+// ✅ Good
+<button
+  className={clsx(
+    'px-4 py-2 rounded-lg font-semibold',
+    variant === 'primary' && 'bg-blue-600 text-white',
+    variant === 'secondary' && 'bg-gray-200 text-gray-900',
+    disabled && 'opacity-50 cursor-not-allowed'
+  )}
+>
+```
+
+### 3. Extract Repeated Patterns to Components
+
+```tsx
+// ❌ Bad (repeated classes everywhere)
+<button className="px-4 py-2 bg-blue-600 text-white rounded-lg">Submit</button>
+<button className="px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button>
+
+// ✅ Good (component with variants)
+<Button variant="primary">Submit</Button>
+<Button variant="primary">Save</Button>
+```
+
+## Comments and Documentation
+
+### 1. JSDoc for Public APIs
+
+```typescript
+/**
+ * Fetches approved pages from Airtable
+ *
+ * @param {string} view - Airtable view name (default: 'Approved')
+ * @returns {Promise<PageData[]>} Array of page data objects
+ * @throws {Error} If Airtable API call fails
+ *
+ * @example
+ * const pages = await getApprovedPages('Approved')
+ */
+export async function getApprovedPages(view = 'Approved'): Promise<PageData[]> {
+  // ...
+}
+```
+
+### 2. Inline Comments for Complex Logic
+
+```typescript
+// ✅ Good (explains WHY, not WHAT)
+// Delay between batches to respect Claude API rate limit (50 req/min)
+await sleep(1200)
+
+// ❌ Bad (obvious, doesn't add value)
+// Increment counter
+counter++
+```
+
+### 3. TODO Comments
+
+```typescript
+// TODO(username): Add error retry logic for 429 rate limit errors
+// TODO: Optimize image loading with next/image priority prop
+// FIXME: Form validation breaks on empty phone number
+```
+
+---
+
+# Error Handling Strategy
+
+## Overview
+
+This section defines error handling patterns across the application stack, including API errors, build-time errors, runtime errors, and user-facing error messages.
+
+## Error Handling Principles
+
+### 1. Fail Fast
+
+**Catch errors early in the pipeline:**
+- Build-time validation (TypeScript, ESLint)
+- API errors (Airtable, Claude) should fail build
+- Lighthouse quality gate prevents bad deploys
+
+### 2. Graceful Degradation
+
+**When appropriate, degrade gracefully:**
+- Missing hero image → Use placeholder
+- API timeout → Retry with exponential backoff
+- Third-party script failure → Log error, continue page load
+
+### 3. User-Friendly Messages
+
+**Never expose technical errors to users:**
+```typescript
+// ❌ Bad
+catch (error) {
+  alert(error.message) // "TypeError: Cannot read property 'value' of undefined"
+}
+
+// ✅ Good
+catch (error) {
+  console.error('Form submission error:', error)
+  setErrorMessage('We couldn't submit your request. Please try again or call us at (555) 123-4567.')
+}
+```
+
+## API Error Handling
+
+### Airtable API Errors
+
+**Common errors and handling:**
+```typescript
+// src/lib/airtable.ts
+import Airtable from 'airtable'
+
+const base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY })
+  .base(process.env.AIRTABLE_BASE_ID!)
+
+export async function fetchApprovedPages(): Promise<PageData[]> {
+  try {
+    const records = await base('Pages')
+      .select({ view: 'Approved' })
+      .all()
+
+    return records.map(transformRecord)
+
+  } catch (error) {
+    // Type guard for Airtable errors
+    if (error instanceof Error) {
+      // Rate limit (429)
+      if ('statusCode' in error && error.statusCode === 429) {
+        console.warn('Airtable rate limit hit, retrying in 1s...')
+        await sleep(1000)
+        return fetchApprovedPages() // Retry once
+      }
+
+      // Invalid API key (401)
+      if ('statusCode' in error && error.statusCode === 401) {
+        throw new Error('Airtable API key is invalid. Check AIRTABLE_API_KEY in .env.local')
+      }
+
+      // Network errors
+      if (error.message.includes('ENOTFOUND') || error.message.includes('ETIMEDOUT')) {
+        throw new Error('Cannot connect to Airtable. Check your internet connection.')
+      }
+    }
+
+    // Unknown error
+    console.error('Airtable API error:', error)
+    throw new Error('Failed to fetch pages from Airtable')
+  }
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+```
+
+### Claude API Errors
+
+**Retry logic with exponential backoff:**
+```typescript
+// src/lib/claude.ts
+import Anthropic from '@anthropic-ai/sdk'
+
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+export async function generateContent(
+  prompt: string,
+  maxRetries = 3
+): Promise<string> {
+  let lastError: Error | null = null
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const message = await client.messages.create({
+        model: 'claude-sonnet-4-5-20250929',
+        max_tokens: 2048,
+        messages: [{ role: 'user', content: prompt }]
+      })
+
+      return message.content[0].text
+
+    } catch (error) {
+      lastError = error as Error
+
+      // Rate limit (429) - wait and retry
+      if ('status' in error && error.status === 429) {
+        const waitTime = Math.pow(2, attempt) * 1000 // Exponential backoff
+        console.warn(`Claude API rate limit (attempt ${attempt}/${maxRetries}), waiting ${waitTime}ms...`)
+        await sleep(waitTime)
+        continue
+      }
+
+      // Invalid API key (401) - don't retry
+      if ('status' in error && error.status === 401) {
+        throw new Error('Claude API key is invalid. Check ANTHROPIC_API_KEY in .env.local')
+      }
+
+      // Server error (500-599) - retry
+      if ('status' in error && error.status >= 500) {
+        console.warn(`Claude API server error (attempt ${attempt}/${maxRetries})`)
+        await sleep(2000)
+        continue
+      }
+
+      // Other errors - fail immediately
+      throw error
+    }
+  }
+
+  throw new Error(`Claude API failed after ${maxRetries} retries: ${lastError?.message}`)
+}
+```
+
+## Build-Time Error Handling
+
+### Export Script Errors
+
+**Validation before export:**
+```typescript
+// scripts/export-airtable-to-json.ts
+async function exportPages() {
+  try {
+    console.log('Fetching pages from Airtable...')
+    const pages = await fetchApprovedPages()
+
+    // Validation
+    if (pages.length === 0) {
+      throw new Error('No approved pages found in Airtable')
+    }
+
+    // Check required fields
+    const invalidPages = pages.filter(p =>
+      !p.seoTitle || !p.h1Headline || !p.heroImage
+    )
+
+    if (invalidPages.length > 0) {
+      throw new Error(
+        `${invalidPages.length} pages missing required fields:\n` +
+        invalidPages.map(p => `- ${p.pageId}: ${p.service}/${p.location}`).join('\n')
+      )
+    }
+
+    // Write to file
+    const json = JSON.stringify({ pages }, null, 2)
+    await fs.promises.writeFile('content.json', json, 'utf-8')
+
+    console.log(`✅ Exported ${pages.length} pages to content.json`)
+
+  } catch (error) {
+    console.error('❌ Export failed:', error.message)
+    process.exit(1) // Fail the build
+  }
+}
+```
+
+### Lighthouse Quality Gate Errors
+
+**Netlify plugin catches performance issues:**
+```yaml
+# netlify.toml
+[[plugins]]
+package = "@netlify/plugin-lighthouse"
+
+  [plugins.inputs.thresholds]
+    performance = 90
+    accessibility = 90
+    best-practices = 90
+    seo = 90
+
+  [plugins.inputs.audit_urls]
+    "/" = ["mobile", "desktop"]
+    "/bathroom-remodeling/charlotte" = ["mobile"]
+```
+
+**When Lighthouse fails:**
+1. Build aborts (no deploy)
+2. Netlify shows error in build log
+3. Developer fixes performance issue
+4. Re-run build
+
+## Runtime Error Handling
+
+### Form Submission Errors
+
+**Client-side validation + server-side verification:**
+```typescript
+'use client'
+
+import { useState } from 'react'
+
+export default function ThreeStageForm() {
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      const response = await fetch(process.env.NEXT_PUBLIC_MAKE_WEBHOOK_URL!, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`)
+      }
+
+      // Success
+      router.push('/thank-you')
+
+    } catch (error) {
+      console.error('Form submission error:', error)
+      setError(
+        'We couldn\'t submit your request. Please try again or call us directly at ' +
+        clientPhone
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800">{error}</p>
+        </div>
+      )}
+
+      {/* Form fields */}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="px-6 py-3 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+      >
+        {loading ? 'Submitting...' : 'Submit'}
+      </button>
+    </form>
+  )
+}
+```
+
+### Error Boundaries (React)
+
+**Catch rendering errors:**
+```typescript
+// src/app/error.tsx (Next.js App Router error boundary)
+'use client'
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string }
+  reset: () => void
+}) {
+  console.error('Page error:', error)
+
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-md text-center">
+        <h1 className="text-2xl font-bold mb-4">Something went wrong</h1>
+        <p className="text-gray-600 mb-6">
+          We're sorry, but something unexpected happened. Please try refreshing the page.
+        </p>
+        <button
+          onClick={reset}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Try Again
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+## Logging and Monitoring
+
+### Console Logging Standards
+
+**Development vs Production:**
+```typescript
+// Development: Verbose logging
+if (process.env.NODE_ENV === 'development') {
+  console.log('Fetching page data:', { service, location })
+}
+
+// Production: Error logging only
+console.error('Critical error:', error)
+console.warn('Non-critical warning:', warning)
+
+// ❌ Never in production
+console.log('Debug info:', data) // Remove before committing
+```
+
+### Error Tracking (Future)
+
+**When ready to add error tracking:**
+```typescript
+// Example: Sentry integration (not implemented in MVP)
+import * as Sentry from '@sentry/nextjs'
+
+try {
+  await fetchApprovedPages()
+} catch (error) {
+  Sentry.captureException(error, {
+    tags: { function: 'fetchApprovedPages' },
+    extra: { baseId: process.env.AIRTABLE_BASE_ID }
+  })
+  throw error
+}
+```
+
+## Error Recovery Strategies
+
+### 1. Retry with Exponential Backoff
+
+**For transient failures (rate limits, network issues):**
+```typescript
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries = 3,
+  initialDelay = 1000
+): Promise<T> {
+  let lastError: Error | null = null
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn()
+    } catch (error) {
+      lastError = error as Error
+
+      if (attempt < maxRetries) {
+        const delay = initialDelay * Math.pow(2, attempt - 1)
+        console.warn(`Retry attempt ${attempt}/${maxRetries} after ${delay}ms`)
+        await sleep(delay)
+      }
+    }
+  }
+
+  throw lastError
+}
+
+// Usage
+const pages = await retryWithBackoff(() => fetchApprovedPages())
+```
+
+### 2. Circuit Breaker (Advanced)
+
+**For protecting against cascading failures:**
+```typescript
+// Not implemented in MVP, but pattern for future
+class CircuitBreaker {
+  private failures = 0
+  private readonly threshold = 5
+  private state: 'closed' | 'open' | 'half-open' = 'closed'
+
+  async execute<T>(fn: () => Promise<T>): Promise<T> {
+    if (this.state === 'open') {
+      throw new Error('Circuit breaker is open')
+    }
+
+    try {
+      const result = await fn()
+      this.onSuccess()
+      return result
+    } catch (error) {
+      this.onFailure()
+      throw error
+    }
+  }
+
+  private onSuccess() {
+    this.failures = 0
+    this.state = 'closed'
+  }
+
+  private onFailure() {
+    this.failures++
+    if (this.failures >= this.threshold) {
+      this.state = 'open'
+      setTimeout(() => this.state = 'half-open', 60000) // 1 min timeout
+    }
+  }
+}
+```
+
+---
+
+# Monitoring and Observability
+
+## Overview
+
+This section defines monitoring, logging, alerting, and observability strategies for production systems.
+
+## Analytics and Tracking
+
+### Google Tag Manager (GTM)
+
+**Purpose:** Centralized tag management for conversion tracking
+
+**Setup:**
+```tsx
+// src/app/layout.tsx
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID
+
+  return (
+    <html lang="en">
+      <head>
+        {/* GTM Script */}
+        {gtmId && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','${gtmId}');
+              `
+            }}
+          />
+        )}
+      </head>
+      <body>
+        {/* GTM noscript */}
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
+        {children}
+      </body>
+    </html>
+  )
+}
+```
+
+**Events tracked:**
+- Page views (automatic)
+- Form submissions (3-stage form progress)
+- Phone clicks (CallRail integration)
+- CTA button clicks
+- Scroll depth (engagement metric)
+
+### Google Analytics 4 (GA4)
+
+**Metrics to track:**
+- **Traffic:** Sessions, users, page views by source/medium
+- **Engagement:** Bounce rate, time on page, scroll depth
+- **Conversions:** Form submissions, phone calls (via CallRail)
+- **Quality Score Proxies:** LCP, CLS, FID (via Web Vitals)
+
+**Custom Events:**
+```typescript
+// Send custom event to GA4 (via GTM dataLayer)
+declare global {
+  interface Window {
+    dataLayer: any[]
+  }
+}
+
+export function trackFormSubmission(stage: number) {
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'form_progress',
+      form_stage: stage,
+      form_name: 'three_stage_contact'
+    })
+  }
+}
+
+export function trackCTAClick(ctaText: string, location: string) {
+  if (typeof window !== 'undefined' && window.dataLayer) {
+    window.dataLayer.push({
+      event: 'cta_click',
+      cta_text: ctaText,
+      cta_location: location
+    })
+  }
+}
+```
+
+### CallRail Integration
+
+**Dynamic number insertion:**
+- CallRail swaps phone numbers based on ad source
+- Tracks which ads drive phone calls
+- Attribution preserved in GTM → GA4
+
+**Setup:**
+```tsx
+// src/components/Header.tsx
+export function Header({ clientPhone }: { clientPhone: string }) {
+  return (
+    <header>
+      <a
+        href={`tel:${clientPhone}`}
+        className="callrail-phone-number" // CallRail targets this class
+        data-callrail-swap={clientPhone}
+      >
+        {clientPhone}
+      </a>
+    </header>
+  )
+}
+```
+
+## Performance Monitoring
+
+### Core Web Vitals Tracking
+
+**Web Vitals API:**
+```typescript
+// src/lib/web-vitals.ts
+export function reportWebVitals(metric: any) {
+  if (metric.label === 'web-vital') {
+    // Send to GA4
+    if (typeof window !== 'undefined' && window.dataLayer) {
+      window.dataLayer.push({
+        event: 'web_vitals',
+        event_category: 'Web Vitals',
+        event_action: metric.name,
+        event_value: Math.round(metric.value),
+        event_label: metric.id
+      })
+    }
+
+    // Log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Web Vitals]', metric.name, Math.round(metric.value))
+    }
+  }
+}
+```
+
+```tsx
+// src/app/layout.tsx
+import { reportWebVitals } from '@/lib/web-vitals'
+
+export { reportWebVitals } // Next.js automatically calls this
+```
+
+**Metrics tracked:**
+- **LCP (Largest Contentful Paint)** - Target: <2.5s
+- **FID (First Input Delay)** - Target: <100ms
+- **CLS (Cumulative Layout Shift)** - Target: <0.1
+- **TTFB (Time to First Byte)** - Target: <800ms
+
+### Lighthouse CI (Build-Time Monitoring)
+
+**Automated performance checks:**
+```yaml
+# netlify.toml
+[[plugins]]
+package = "@netlify/plugin-lighthouse"
+
+  [plugins.inputs.thresholds]
+    performance = 90
+    accessibility = 90
+    best-practices = 90
+    seo = 90
+```
+
+**Lighthouse reports stored in:**
+- Netlify build logs
+- Optional: Upload to Lighthouse CI server for historical tracking
+
+## Build Monitoring
+
+### Netlify Build Notifications
+
+**Setup Slack/Email notifications:**
+```
+Netlify Dashboard → Site Settings → Build & Deploy → Deploy Notifications
+
+Add notifications for:
+- Deploy started
+- Deploy succeeded
+- Deploy failed
+- Deploy rolled back
+```
+
+**Notification includes:**
+- Build log URL
+- Commit that triggered deploy
+- Build duration
+- Lighthouse scores (if failed quality gate)
+
+### Build Time Tracking
+
+**Monitor build performance:**
+- Track build duration over time
+- Alert if build time exceeds threshold (>15 min)
+- Investigate slow builds (check cache hit rate)
+
+**Metrics to track:**
+- Total build time
+- npm install time
+- next build time
+- Lighthouse plugin time
+
+## Error Monitoring (Future Enhancement)
+
+### Sentry Integration (Not in MVP)
+
+**When ready to add:**
+```bash
+npm install @sentry/nextjs
+```
+
+```typescript
+// sentry.client.config.ts
+import * as Sentry from '@sentry/nextjs'
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  environment: process.env.NODE_ENV,
+  tracesSampleRate: 1.0,
+})
+```
+
+**Benefits:**
+- Real-time error tracking
+- Stack traces and context
+- Performance monitoring (APM)
+- Release tracking
+- User session replays
+
+## Health Checks
+
+### Uptime Monitoring
+
+**Tools (choose one):**
+- **UptimeRobot** (free, simple)
+- **Pingdom** (paid, advanced features)
+- **StatusCake** (free tier available)
+
+**Setup:**
+```
+Monitor URL: https://bathsrus.com
+Check interval: 5 minutes
+Alert on: 2 consecutive failures
+Notification: Email + Slack
+```
+
+### Synthetic Monitoring
+
+**Periodic checks:**
+- Home page loads successfully
+- Form submission works
+- Phone number displays correctly (CallRail)
+- GTM + GA4 firing correctly
+
+## Alerting Strategy
+
+### Alert Levels
+
+**1. Critical (Page owner immediately):**
+- Site down (5+ min outage)
+- Build failing (3+ consecutive failures)
+- Form submissions failing (100% error rate)
+- LCP exceeds 5s (2x target)
+
+**2. Warning (Team channel, review within 24hr):**
+- Build time >15 min (performance regression)
+- LCP between 2.5s-5s (approaching threshold)
+- Form submission error rate >5%
+- Lighthouse score drops below 85
+
+**3. Info (Log only, weekly review):**
+- Build succeeded with warnings
+- Lighthouse score drops 5-10 points
+- CDN cache hit rate <90%
+
+### Alert Channels
+
+**Primary:** Email notifications
+**Secondary:** Slack integration (optional)
+
+**Example Slack alert:**
+```
+🚨 Critical: Site Down
+URL: https://bathsrus.com
+Status: 503 Service Unavailable
+Duration: 6 minutes
+Action: Investigate immediately
+```
+
+## Dashboards
+
+### Netlify Dashboard
+
+**Built-in metrics:**
+- Deploy history and status
+- Build logs
+- Bandwidth usage
+- CDN cache hit rate
+- Form submissions (if using Netlify Forms)
+
+### Google Analytics Dashboard
+
+**Custom dashboard for:**
+- Traffic by source/medium
+- Conversion rate by landing page
+- Top performing services/locations
+- Bounce rate and engagement
+- Core Web Vitals distribution
+
+### Make.com Monitoring
+
+**Monitor scenarios:**
+- Execution count (form submissions)
+- Error rate
+- Average execution time
+- Operations consumed
+
+**Alert on:**
+- Scenario disabled
+- Error rate >10%
+- Operations limit approaching (90% of plan)
+
+---
+
+# Security & Performance
+
+## Overview
+
+This section consolidates security best practices and performance optimization strategies.
+
+## Security
+
+### Environment Variables
+
+**Never commit secrets to Git:**
+```bash
+# .gitignore (ensure these are present)
+.env.local
+.env*.local
+*.pem
+*.key
+```
+
+**Required environment variables:**
+```bash
+# Build-time (server-side only)
+AIRTABLE_API_KEY=patXXXXXXXXXXXXXX
+AIRTABLE_BASE_ID=appXXXXXXXXXXXXXX
+ANTHROPIC_API_KEY=sk-ant-XXXXXXXXXXXXXXXX
+
+# Runtime (client-side - public)
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcXXXXXXXXXXXXX
+NEXT_PUBLIC_MAKE_WEBHOOK_URL=https://hook.us1.make.com/XXXXXXXX
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+```
+
+**Rules:**
+- ✅ Server-side secrets: NO `NEXT_PUBLIC_` prefix
+- ✅ Client-side values: MUST have `NEXT_PUBLIC_` prefix
+- ✅ Obscure webhook URLs acceptable (not guessable)
+- ❌ NEVER expose API keys to client-side
+
+### API Key Security
+
+**Airtable API:**
+- Store in `.env.local` (gitignored)
+- Use build-time only (no runtime access)
+- Rotate periodically (every 90 days)
+
+**Claude API:**
+- Store in `.env.local` (gitignored)
+- Use build-time only
+- Monitor usage (prevent overages)
+
+**reCAPTCHA:**
+- Site key: Public (safe to expose)
+- Secret key: Stored in Make.com (never in Git)
+- Verify server-side (Make.com scenario)
+
+### Content Security
+
+**Headers (Netlify):**
+```toml
+# netlify.toml
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+```
+
+### Form Security
+
+**Client-side validation + Server-side verification:**
+- Client: Basic validation (required fields, email format)
+- Server (Make.com): reCAPTCHA verification, TCPA compliance check
+
+**Rate limiting:**
+- Make.com: Built-in rate limiting per IP
+- Honeypot field: Catch bots (hidden field)
+
+## Performance Optimization
+
+### LCP Optimization (Target: <2.5s)
+
+**Critical strategies:**
+1. **Inline critical CSS** (Beasties plugin)
+2. **Preload hero image** (`<link rel="preload">`)
+3. **Defer third-party scripts** (GTM, CallRail load after LCP)
+4. **Font optimization** (next/font with `display=swap`)
+5. **Server Components** (reduce client-side JS)
+
+**Hero image preload:**
+```tsx
+// app/[service]/[location]/page.tsx
+export default async function Page({ params }) {
+  const { heroImageUrl } = await getPageData(params)
+
+  return (
+    <>
+      <link rel="preload" as="image" href={heroImageUrl} />
+      <Hero imageUrl={heroImageUrl} />
+    </>
+  )
+}
+```
+
+### JavaScript Optimization
+
+**Bundle size targets:**
+- First Load JS: <100KB (gzipped)
+- Route-level JS: <50KB per page
+
+**Strategies:**
+- ✅ Server Components by default (zero JS)
+- ✅ Dynamic imports for below-fold components
+- ✅ Tree shaking (unused code removed)
+- ✅ Code splitting (automatic in Next.js)
+
+**Example dynamic import:**
+```tsx
+import dynamic from 'next/dynamic'
+
+// Load Gallery only when needed (below fold)
+const Gallery = dynamic(() => import('@/components/Gallery'), {
+  loading: () => <div>Loading gallery...</div>,
+})
+```
+
+### Image Optimization
+
+**Next.js Image component:**
+```tsx
+import Image from 'next/image'
+
+<Image
+  src={heroImageUrl}
+  alt={heroImageAlt}
+  width={1200}
+  height={675}
+  priority // Preload (above fold)
+  quality={85}
+/>
+```
+
+**Benefits:**
+- ✅ Automatic AVIF/WebP generation
+- ✅ Responsive images (srcset)
+- ✅ Lazy loading (below fold)
+- ✅ Blur placeholder (LQIP)
+
+### Caching Strategy
+
+**Cache headers (Netlify):**
+```toml
+# netlify.toml
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+```
+
+**Strategy:**
+- Static assets: 1 year cache (immutable)
+- HTML pages: Revalidate on every request
+- API responses: No cache (build-time only)
+
+### Build Performance
+
+**Netlify Cache Plugin:**
+```toml
+# netlify.toml
+[[plugins]]
+package = "netlify-plugin-cache"
+
+  [plugins.inputs]
+    paths = ["node_modules", ".next/cache"]
+```
+
+**Results:**
+- First build: ~10 min
+- Cached builds: ~5 min (50% faster)
+
+---
+
+# Testing Strategy
+
+## Overview
+
+This section expands on testing approaches, tools, and coverage expectations.
+
+## Testing Philosophy
+
+**MVP Testing Approach:**
+- ✅ Automated quality checks (Lighthouse, type checking, linting)
+- ✅ Manual spot-checks (content quality, visual review)
+- ⚠️ Unit/integration tests deferred to Phase 2 (not in MVP scope)
+
+**Rationale:**
+- Focus is on content quality and system capability validation
+- Traditional test suites deferred until patterns stabilize
+- Manual testing appropriate for MVP iteration speed
+
+## Testing Types
+
+### 1. Type Checking (TypeScript)
+
+**Run on every commit:**
+```bash
+npm run type-check
+```
+
+**What it catches:**
+- Type mismatches
+- Missing properties
+- Incorrect function signatures
+- Null/undefined errors
+
+**Coverage: 100% (strict mode enabled)**
+
+### 2. Linting (ESLint)
+
+**Run on every commit:**
+```bash
+npm run lint
+```
+
+**What it catches:**
+- Code style violations
+- React anti-patterns
+- Accessibility issues (jsx-a11y rules)
+- Unused variables
+- Missing dependencies in hooks
+
+**Rules:**
+```javascript
+// .eslintrc.js
+module.exports = {
+  extends: [
+    'next/core-web-vitals',
+    'plugin:@typescript-eslint/recommended',
+    'prettier'
+  ],
+  rules: {
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-unused-vars': 'error',
+    'react-hooks/exhaustive-deps': 'error'
+  }
+}
+```
+
+### 3. Formatting (Prettier)
+
+**Auto-format on save:**
+```bash
+npm run format
+```
+
+**Config:**
+```javascript
+// .prettierrc
+{
+  "semi": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "es5"
+}
+```
+
+### 4. Lighthouse (Performance & Accessibility)
+
+**Automated on every deploy:**
+- Performance score ≥90
+- Accessibility score ≥90
+- Best practices score ≥90
+- SEO score ≥90
+
+**LCP target:** <2.5s (enforced)
+
+**If thresholds not met:** Build aborts, no deploy
+
+### 5. Manual Testing (MVP Approach)
+
+**Pre-Deploy Checklist:**
+- [ ] Visual review (3 sample pages)
+- [ ] Mobile responsiveness (iPhone, Android)
+- [ ] Form submission works (test lead in Salesforce)
+- [ ] Phone number displays (CallRail swap working)
+- [ ] GTM + GA4 tracking fires
+- [ ] Accessibility: Keyboard navigation, screen reader
+- [ ] Content quality: No AI hallucinations, TCPA compliance
+
+### 6. E2E Testing (Playwright - Future)
+
+**When implemented (Phase 2):**
+```typescript
+// tests/e2e/form-submission.spec.ts
+import { test, expect } from '@playwright/test'
+
+test('three-stage form submission', async ({ page }) => {
+  await page.goto('/bathroom-remodeling/charlotte')
+
+  // Stage 1: Contact info
+  await page.fill('[name="name"]', 'John Doe')
+  await page.fill('[name="email"]', 'john@example.com')
+  await page.fill('[name="phone"]', '555-123-4567')
+  await page.click('button:has-text("Next")')
+
+  // Stage 2: Project details
+  await page.selectOption('[name="projectType"]', 'full-remodel')
+  await page.click('button:has-text("Next")')
+
+  // Stage 3: Timeline
+  await page.selectOption('[name="timeline"]', '1-3-months')
+  await page.click('button:has-text("Submit")')
+
+  // Verify success
+  await expect(page).toHaveURL('/thank-you')
+})
+```
+
+**Coverage targets (Phase 2):**
+- Critical user paths: 100%
+- All components: 80%
+- Utilities: 70%
+
+## Quality Gates
+
+### Pre-Commit Checks
+
+**Git hooks (husky + lint-staged):**
+```json
+// package.json
+{
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md}": ["prettier --write"]
+  }
+}
+```
+
+**Runs automatically on `git commit`:**
+1. Lint staged files
+2. Format staged files
+3. If errors: Abort commit
+
+### Pre-Deploy Checks
+
+**Netlify Build:**
+1. Type checking (`tsc --noEmit`)
+2. Linting (`eslint`)
+3. Build (`next build`)
+4. Lighthouse quality gate
+5. If all pass: Deploy to CDN
+
+### Manual QA (MVP)
+
+**Before merging PR:**
+- [ ] Deploy preview link works
+- [ ] Visual review (Desktop + Mobile)
+- [ ] Lighthouse report reviewed
+- [ ] No console errors in browser
+- [ ] Content quality spot-checked
+
+## Test Data
+
+### Sample Pages for Testing
+
+**Minimum test set:**
+- 3 services × 3 locations = 9 pages
+- 1 page with offer
+- 1 page with testimonials
+- 1 page with before/after gallery
+
+**Test data location:**
+```
+Airtable → "Test Pages" view
+- Status: "Approved"
+- Tagged: "Test Data"
+```
+
+### Test Leads (Form Submissions)
+
+**Salesforce test records:**
+- Use test email domain (@example.com)
+- Tag with "Test Lead" campaign
+- Delete after testing
+
+---
+
+**End of Architecture Document**
 

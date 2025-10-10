@@ -936,6 +936,172 @@ Create a complete test record chain:
 
 ---
 
+## AIRTABLE EXTENSIONS SETUP
+
+### Task 4: Install Recommended Marketplace Extensions
+
+**Date Installed:** 2025-01-10
+**Installed By:** Jon Steiner
+**Airtable Plan Required:** Team plan or higher ($20/user/month)
+
+Install these 7 official Airtable Marketplace extensions to enhance workflow capabilities:
+
+#### 1. **Scripting Extension** (HIGH PRIORITY)
+**Purpose:** Custom JavaScript automation, API integrations, complex data operations
+**Use Cases for Landing Pages System:**
+- Claude API integration for AI content generation
+- Bulk page generation from templates
+- Custom data transformations for export to GitHub/Netlify
+- Webhook triggers to Make.com scenarios
+- Relationship validation (ensure Pages have required CTAs, Hero Images)
+
+**How to Install:**
+1. Click Extensions button (puzzle piece icon) in top-right
+2. Click "+ Add an extension"
+3. Search "Scripting"
+4. Click "Add extension"
+
+---
+
+#### 2. **Batch Update Extension** (HIGH PRIORITY)
+**Purpose:** Update multiple records with multiple actions simultaneously
+**Use Cases:**
+- Bulk status updates (Draft → Ready for Review across 50 pages)
+- Campaign assignment (add Campaign ID to all pages in a view)
+- CTA rotation (switch all "bathroom-remodeling" pages to new CTA)
+- Hero image updates (update Selected Hero Image for multiple pages)
+- Service updates (apply new description across related pages)
+
+**Common Workflows:**
+- Update Status for all pages in specific locations
+- Change Offer field for all pages in a campaign
+- Set Published = true for approved pages
+- Update Priority to "High" for pages missing CTAs
+
+---
+
+#### 3. **Base Schema Extension** (HIGH PRIORITY)
+**Purpose:** Visualize all tables, fields, and relationships
+**Use Cases:**
+- Onboard new team members with visual database structure
+- Audit data model to verify relationships are correct
+- Document 12-table schema for technical documentation
+- Troubleshoot relationship issues
+
+**What It Shows:** Visual diagram of:
+- All 12 tables with field counts
+- Foreign key relationships (arrows between tables)
+- Field types and configurations
+
+---
+
+#### 4. **CSV Import Extension** (HIGH PRIORITY)
+**Purpose:** Import/merge data from CSV files
+**Use Cases:**
+- Initial data population (100+ locations from spreadsheet)
+- Client onboarding (import client list with all fields)
+- Service library setup (import standard services from template)
+- Testimonial import (bulk import reviews from Google/Yelp exports)
+- Location demographics (import census data: population, income, home values)
+
+**Features:**
+- Add new records OR merge with existing (by unique field)
+- Field mapping interface
+- Preview before import
+- Limits: 25,000 rows, 5MB file size
+
+---
+
+#### 5. **Chart Extension** (HIGH PRIORITY)
+**Purpose:** Visualize data with charts and graphs
+**Use Cases:**
+- Page status dashboard (pie chart: Draft/Review/Approved/Published)
+- Pages by branch (bar chart showing page count per branch)
+- Campaign performance (line chart: pages published over time)
+- Service distribution (which services have most pages)
+- Location coverage (geographic spread visualization)
+
+**Chart Types Available:**
+- Bar: Pages by Location/Branch/Service
+- Line: Pages published per month
+- Pie: Status distribution, CTA usage
+- Scatter: Engagement metrics by attributes
+
+---
+
+#### 6. **Pivot Table Extension** (HIGH PRIORITY)
+**Purpose:** Summarize and analyze data in pivot tables
+**Use Cases:**
+- Branch × Service matrix (how many pages per combination?)
+- Campaign analysis (Pages by Campaign × Location × Status)
+- CTA effectiveness (which CTAs used most per service?)
+- Content audit (Pages by Status × Service × Priority)
+- Resource planning (Branch Staff × Specialties × Pages)
+
+**Example Pivot:**
+```
+Rows: Branch Locations
+Columns: Services
+Values: COUNT of Pages
+Filter: Status = "Published"
+Result: See which branches have pages for which services
+```
+
+---
+
+#### 7. **Summary Extension** (HIGH PRIORITY)
+**Purpose:** Display summary values from views
+**Use Cases:**
+- Total pages counter (show total published pages prominently)
+- Active campaigns (count campaigns with Status = "Active")
+- Pending approvals (show pages in "Ready for Review" status)
+- Branch performance (count pages per branch real-time)
+- Content gaps (show services with < 5 pages)
+
+**Display Options:**
+- Large number display
+- Percentage calculations
+- Sparkline trends
+
+---
+
+### Extensions NOT Installed (Lower Priority)
+
+These official extensions are available but not currently needed:
+
+**May Install Later:**
+- **Gantt**: Campaign timeline visualization (install if date-driven campaigns)
+- **Map**: Geographic visualization of locations (requires Google Maps API key)
+- **Search**: Advanced record searching (native search usually sufficient)
+- **Dedupe**: Find/merge duplicate records (for quarterly data cleanup)
+- **Page Designer**: Export PDFs (manual only, cannot automate)
+- **JSON Editor**: Edit JSON in text fields (nice for debugging)
+
+**Skip These:**
+- Org Chart, Flowchart, Vega-Lite, Matrix: Not applicable to workflow
+- SendGrid, Twilio (SMS): Better handled by Make.com automation
+- Jira Cloud: Using GitHub for task management
+- Vision, Translate: Require paid Google Cloud APIs
+- Utility extensions: Countdown, World Clock, Chime, Flashcard, Color Palette, etc.
+
+---
+
+### Extension Management Best Practices
+
+**Performance Considerations:**
+- Extensions load when you open their tab
+- Too many extensions can slow base loading
+- Archive unused extensions via Extensions menu
+
+**Recommended Usage Pattern:**
+- **Daily:** Scripting, Batch Update, Chart
+- **Weekly:** Pivot Table, Summary
+- **Monthly:** CSV Import, Base Schema (for audits)
+
+**Cost:** All installed extensions are FREE with Team plan ($20/user/month)
+
+---
+
 ## AUTOMATION SETUP (After All Tables Created)
 
 ### Automation 1: Auto-Match Branch to Page

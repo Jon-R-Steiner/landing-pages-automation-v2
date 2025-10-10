@@ -13,6 +13,11 @@
 **Priority:** Critical (Blocks all subsequent development)
 **Status:** Ready for Development
 
+**Netlify Configuration:**
+- **Project URL:** https://landing-pages-automation-v2.netlify.app
+- **Project ID:** f9c8e0d6-235a-4aa5-b98c-9f21ee840831
+- **Status:** Connected and configured (awaiting code)
+
 ---
 
 ## User Story
@@ -581,34 +586,34 @@ npm run build
 
 **Steps:**
 
-#### 4.1 Connect GitHub Repository to Netlify
-1. Push code to GitHub (main branch)
-2. Log in to Netlify (https://app.netlify.com)
-3. Click "Add new site" → "Import an existing project"
-4. Connect to GitHub repository
-5. Select repository: `landing-pages-automation-v2`
+#### 4.1 Netlify Already Configured ✅
 
-#### 4.2 Configure Netlify Build Settings
-- **Base directory:** (leave empty)
+**Good news!** Netlify is already set up and ready:
+- **Project URL:** https://landing-pages-automation-v2.netlify.app
+- **GitHub repo:** Connected to `Jon-R-Steiner/landing-pages-automation-v2`
+- **Branch:** master
 - **Build command:** `npm run build`
 - **Publish directory:** `out`
-- **Deploy settings:** Auto-deploy on push to `main`
+- **Auto-deploy:** Enabled
 
-#### 4.3 Set Environment Variables
-(None needed for Phase 0.2 - will add in Phase 0.3+)
+#### 4.2 Push Code to Trigger Deployment
+1. Commit all source code (Tasks 1-3)
+2. Push to GitHub master branch
+3. Netlify will automatically detect push and start build
+4. Monitor build at: https://app.netlify.com/sites/landing-pages-automation-v2/deploys
 
-#### 4.4 Trigger First Deployment
-- Click "Deploy site"
+#### 4.3 Monitor Build Progress
 - Wait 5-10 minutes for build
-- Monitor build logs for errors
+- Watch build logs for errors
+- Verify successful deployment
 
 **Validation:**
 ```bash
 # After successful deployment, test all routes:
-curl https://[your-netlify-site].netlify.app/
-curl https://[your-netlify-site].netlify.app/bathroom-remodeling/chicago-il/
-curl https://[your-netlify-site].netlify.app/walk-in-showers/naperville-il/
-curl https://[your-netlify-site].netlify.app/tub-to-shower/aurora-il/
+curl https://landing-pages-automation-v2.netlify.app/
+curl https://landing-pages-automation-v2.netlify.app/bathroom-remodeling/chicago-il/
+curl https://landing-pages-automation-v2.netlify.app/walk-in-showers/naperville-il/
+curl https://landing-pages-automation-v2.netlify.app/tub-to-shower/aurora-il/
 
 # All should return 200 OK with HTML content
 ```
@@ -634,7 +639,7 @@ curl https://[your-netlify-site].netlify.app/tub-to-shower/aurora-il/
 npm install -g @lhci/cli
 
 # Run Lighthouse on production URL
-lhci autorun --collect.url=https://[your-netlify-site].netlify.app/
+lhci autorun --collect.url=https://landing-pages-automation-v2.netlify.app/
 
 # Or use Chrome DevTools:
 # 1. Open production URL in Chrome
@@ -675,7 +680,7 @@ Create `docs/qa/phase-0.2-performance-baseline.md`:
 # Phase 0.2 Performance Baseline
 
 **Date:** [YYYY-MM-DD]
-**Deployment URL:** https://[your-site].netlify.app/
+**Deployment URL:** https://landing-pages-automation-v2.netlify.app/
 
 ## Lighthouse Scores (Mobile)
 - Performance: XX/100

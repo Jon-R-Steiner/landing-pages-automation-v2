@@ -437,7 +437,7 @@ module.exports = withBeasties({
 
 ## Development Tools
 
-**Node.js:** v20+ (required for Tailwind CSS v4)
+**Node.js:** v22+ (required for Netlify MCP; supports Tailwind CSS v4)
 
 **Package Manager:** npm (default)
 

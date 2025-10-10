@@ -64,7 +64,7 @@ This is NOT a simple `console.log()` demo. This is a **production-ready deployme
 |-----|----------|------------------------------|
 | **ADR-001** | Flat repository (not monorepo) | Simple Next.js project structure |
 | **ADR-003** | npm package manager | `package-lock.json` committed |
-| **ADR-004** | Node.js v20+ | `.nvmrc` file + Netlify build |
+| **ADR-004** | Node.js v22+ | `.nvmrc` file + Netlify build |
 | **ADR-005** | Static data fetching patterns | `generateStaticParams()` implementation |
 | **ADR-006** | `generateStaticParams()` for dynamic routes | `[service]/[location]` route works |
 | **ADR-009** | Static export configuration | `output: 'export'` in `next.config.js` |
@@ -82,7 +82,7 @@ This is NOT a simple `console.log()` demo. This is a **production-ready deployme
 - Tailwind CSS 4.0.0+ (CSS-first configuration)
 
 **Build Tools:**
-- Node.js v20+ (required for Tailwind CSS v4)
+- Node.js v22+ (required for Netlify MCP; supports Tailwind CSS v4)
 - npm (package manager)
 
 **Deployment:**
@@ -129,14 +129,14 @@ This is NOT a simple `console.log()` demo. This is a **production-ready deployme
     "eslint-config-next": "^15.5.0"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   }
 }
 ```
 
 #### 1.2 `.nvmrc`
 ```
-20
+22
 ```
 
 #### 1.3 `tsconfig.json`
@@ -274,7 +274,7 @@ module.exports = nextConfig
   publish = "out"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
   NPM_FLAGS = "--legacy-peer-deps"
 
 # Redirect rules (optional for future)
@@ -733,7 +733,7 @@ After completing this story, verify these architecture decisions:
 
 - [ ] **ADR-001 (Flat Repo):** Netlify build is simple, no monorepo complexity
 - [ ] **ADR-003 (npm):** `package-lock.json` reliable, no peer dependency issues
-- [ ] **ADR-004 (Node v20):** Tailwind CSS v4 compiles successfully
+- [ ] **ADR-004 (Node v22):** Tailwind CSS v4 and Netlify MCP compatibility verified
 - [ ] **ADR-005 (Static Data Fetching):** `generateStaticParams()` works as expected
 - [ ] **ADR-006 (Dynamic Routes):** `[service]/[location]` routing works
 - [ ] **ADR-007 (Server vs Client Components):** No "use client" needed yet (all Server Components)

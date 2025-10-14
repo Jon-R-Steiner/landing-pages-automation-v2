@@ -1,0 +1,143 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: airtable-script-doc-template
+  name: Airtable Script Documentation
+  version: 1.0
+  output:
+    format: markdown
+    filename: scripts/airtable/{{script_name}}.README.md
+    title: "{{script_name}} - Airtable Script Documentation"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+sections:
+  - id: overview
+    title: Overview
+    instruction: |
+      Describe what this Airtable script does at a high level.
+      Include the business purpose and value it provides.
+    elicit: true
+
+  - id: base-table-info
+    title: Airtable Base and Table Information
+    instruction: |
+      Document the specific Airtable base and tables this script interacts with.
+    sections:
+      - id: base-id
+        title: Base ID
+        instruction: "Document the Airtable base ID (e.g., appXXXXXXXXXXXXXX)"
+
+      - id: tables
+        title: Tables Used
+        type: bullet-list
+        instruction: "List each table name and its purpose in this script"
+
+      - id: views
+        title: Views Used
+        type: bullet-list
+        instruction: "List any specific views the script uses"
+
+  - id: operations
+    title: Operations Performed
+    instruction: |
+      Detail what operations this script performs on Airtable data.
+    elicit: true
+    sections:
+      - id: reads
+        title: Read Operations
+        instruction: "Describe what data is read and any filters/sorts applied"
+
+      - id: writes
+        title: Write Operations
+        instruction: "Describe what data is created/updated and under what conditions"
+
+      - id: transforms
+        title: Data Transformations
+        instruction: "Explain how data is transformed between Airtable and your system"
+
+  - id: configuration
+    title: Configuration
+    instruction: |
+      Document all configuration requirements for this script.
+    sections:
+      - id: env-vars
+        title: Environment Variables
+        type: bullet-list
+        instruction: "List required environment variables with descriptions"
+
+      - id: config-files
+        title: Configuration Files
+        instruction: "Document any JSON config files or settings needed"
+
+  - id: usage
+    title: Usage
+    instruction: |
+      Provide clear instructions for running this script.
+    sections:
+      - id: install
+        title: Installation
+        instruction: "List npm packages or dependencies needed"
+
+      - id: run
+        title: Running the Script
+        instruction: "Provide exact commands to execute the script"
+        example: |
+          ```bash
+          node scripts/airtable/export-landing-pages.js
+          ```
+
+      - id: scheduling
+        title: Scheduling (if applicable)
+        instruction: "Explain if/how this script runs on a schedule (GitHub Actions, cron, etc.)"
+
+  - id: error-handling
+    title: Error Handling
+    instruction: |
+      Document how errors are handled and what to do if things fail.
+    elicit: true
+    sections:
+      - id: common-errors
+        title: Common Errors
+        instruction: "List common error scenarios and how to resolve them"
+
+      - id: logging
+        title: Logging
+        instruction: "Explain where logs are stored and what information they contain"
+
+      - id: retry-logic
+        title: Retry Logic
+        instruction: "Describe any retry or backoff mechanisms implemented"
+
+  - id: testing
+    title: Testing
+    instruction: |
+      Document testing approach for this script.
+    sections:
+      - id: unit-tests
+        title: Unit Tests
+        instruction: "Describe unit test coverage and how to run tests"
+
+      - id: integration-tests
+        title: Integration Tests
+        instruction: "Explain integration testing approach and test data setup"
+
+  - id: maintenance
+    title: Maintenance Notes
+    instruction: |
+      Document any ongoing maintenance considerations.
+    sections:
+      - id: rate-limits
+        title: Rate Limit Considerations
+        instruction: "Note any rate limiting concerns or monitoring needed"
+
+      - id: schema-changes
+        title: Schema Change Impact
+        instruction: "Explain how Airtable schema changes might affect this script"
+
+      - id: last-updated
+        title: Last Updated
+        type: table
+        columns: [Date, Version, Changes, Author]
+        instruction: "Track updates to this script"

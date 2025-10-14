@@ -51,7 +51,7 @@ Our documentation is organized **by purpose, not by file type**. Instead of one 
 **"How does the system work end-to-end?"**
 → Start with: [`diagrams/technology-flow/`](diagrams/technology-flow/)
 - Visual overview of the 4-phase workflow (Airtable → Netlify Functions → GitHub Actions → Netlify Build)
-- Then read: [`workflows/airtable-to-production/`](workflows/airtable-to-production/)
+- Then read: [`workflows/ongoing/`](workflows/ongoing/) - Operational workflows
 
 **"How do I integrate with Salesforce?"**
 → Start with: [`integrations/salesforce-integration-strategy.md`](integrations/salesforce-integration-strategy.md)
@@ -69,7 +69,7 @@ Our documentation is organized **by purpose, not by file type**. Instead of one 
 - Then: [`architecture/testing-types.md`](architecture/testing-types.md)
 
 **"How do we deploy?"**
-→ See: [`architecture/deployment-workflow.md`](architecture/deployment-workflow.md) and [`workflows/airtable-to-production/`](workflows/airtable-to-production/)
+→ See: [`workflows/ongoing/deployment-workflow.md`](workflows/ongoing/deployment-workflow.md) and [`workflows/ongoing/approval-to-live/`](workflows/ongoing/approval-to-live/)
 
 ---
 
@@ -96,7 +96,7 @@ Our documentation is organized **by purpose, not by file type**. Instead of one 
 
 **Read These (in order):**
 1. [`diagrams/technology-flow/`](diagrams/technology-flow/) - Visual overview
-2. [`workflows/airtable-to-production/`](workflows/airtable-to-production/) - Detailed workflow
+2. [`workflows/ongoing/`](workflows/ongoing/) - Operational workflows
 3. [`architecture/data-models.md`](architecture/data-models.md) - Data structure
 4. [`architecture/external-services-apis.md`](architecture/external-services-apis.md) - External integrations
 
@@ -214,19 +214,29 @@ These three documents are referenced in `.bmad-core/core-config.yaml` under `dev
 
 ---
 
-### `workflows/` - Operational Processes
+### `workflows/` - Operational Processes & Build Documentation
 
-**Airtable to Production Workflow:**
-- Complete 4-phase workflow from content creation to deployment
-- Marketing team operations
-- AI generation via Netlify Functions
-- GitHub Actions automation
-- Netlify build and deploy
+**Organized by lifecycle phase:**
+
+**`workflows/build/` - One-Time Setup Documentation:**
+- Airtable automation configuration
+- GitHub Actions workflow setup
+- Netlify deployment setup
+- Initial system integration
+- ⚠️ **Archive after production launch**
+
+**`workflows/ongoing/` - Operational Workflows:**
+- Content creation workflow (Airtable → AI → Approval)
+- Build & deployment workflow (Approval → GitHub Actions → Netlify)
+- Form submission workflow (User → Make.com → Salesforce)
+- Approval-to-live process (4-step deployment)
+- ✅ **Active after production launch**
 
 **Contents:**
 - Step-by-step process documentation
 - Cross-team coordination guides
 - Operational procedures
+- Build-time setup guides
 
 ---
 
@@ -325,9 +335,10 @@ When updating documentation:
 - [Local Development Setup](architecture/local-development-setup.md)
 
 **Workflow Reference:**
-- [Airtable to Production Workflow](workflows/airtable-to-production/)
+- [Ongoing Operational Workflows](workflows/ongoing/) - Content creation, deployment, forms
+- [Build Phase Documentation](workflows/build/) - One-time setup (archive after launch)
 - [Technology Flow Diagram](diagrams/technology-flow/)
-- [Deployment Workflow](architecture/deployment-workflow.md)
+- [Deployment Workflow](workflows/ongoing/deployment-workflow.md)
 
 **Integration Guides:**
 - [Salesforce Integration](integrations/salesforce-integration-strategy.md)

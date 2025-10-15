@@ -2,6 +2,8 @@
 
 **Flow:** User → Make.com → Salesforce → Notifications
 
+**Implementation Phase:** Phase 0.6 (Planned)
+
 ```
 STEP 1: User completes 3-stage form
   ↓
@@ -30,3 +32,23 @@ STEP 4: Salesforce Assignment Rules
 - ✅ Duplicate lead prevention
 - ✅ Multi-client support (Airtable lookup determines Salesforce org)
 - ✅ UTM parameter preservation (campaign attribution)
+
+---
+
+## Technical Implementation Details
+
+**For developers implementing this workflow:**
+
+See the complete technical specification: **[docs/integrations/salesforce-integration-strategy.md](../../integrations/salesforce-integration-strategy.md)**
+
+The integration document provides:
+- Complete parameter specifications (30+ fields)
+- Production-ready code examples
+- Error handling patterns
+- Cost analysis
+- Environment configuration
+- Implementation checklist
+
+**Separation of Concerns:**
+- **This document** (workflow) = Operational process for marketing/ops teams
+- **Integration doc** (technical) = Implementation guide for developers

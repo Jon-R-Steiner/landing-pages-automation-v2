@@ -21,6 +21,8 @@
 
 ```
 landing-pages-automation-v2/
+├── .ai/                             # AI agent workspace
+│   └── scratch/                     # Staging area for ad-hoc documentation
 ├── .bmad-core/                      # BMAD framework (tasks, templates, agents)
 │   ├── tasks/
 │   ├── templates/
@@ -28,6 +30,8 @@ landing-pages-automation-v2/
 ├── .claude/                         # Claude Code configuration
 ├── docs/                            # Architecture, PRD, ADRs, specs
 │   ├── architecture/                # Sharded architecture documents (78 files)
+│   ├── api-reference/               # Technology-specific context (Airtable, Netlify, etc.)
+│   ├── components/                  # Component implementation guides (on-demand)
 │   ├── workflows/                   # Operational workflows
 │   ├── integrations/                # Integration strategies
 │   ├── diagrams/                    # Visual overviews
@@ -110,6 +114,7 @@ landing-pages-automation-v2/
 
 ### What Netlify DOESN'T NEED (development/documentation only):
 
+- ❌ `.ai/` - AI agent workspace (scratch docs, debug logs) - development only
 - ❌ `.bmad-core/` - BMAD framework (tasks, templates, agents) - development/planning only
 - ❌ `.claude/` - Claude Code configuration - development only
 - ❌ `docs/` - Architecture, PRD, ADRs, specs - documentation only
@@ -170,11 +175,35 @@ export interface PageData {
 }
 ```
 
-### `scripts/` - Build-time automation
+### `scripts/` - Build-time automation and Airtable UI scripts
 
-- `export-airtable-to-json.js` - Export Airtable to JSON (eliminates API dependency during build)
+**Build Scripts (Root Level):**
+- `export-airtable-to-json.ts` - Export Airtable to JSON (eliminates API dependency during build)
 - `optimize-images.js` - Sharp-based image optimization (AVIF, WebP, JPEG)
 - `extract-critical-css.js` - Critical CSS extraction per page
+
+**Note:** These scripts run via npm during the build process (e.g., `npm run export-airtable`)
+
+#### `scripts/Airtable/` - Airtable UI Automation Scripts
+
+**Purpose:** JavaScript automation scripts designed to run inside Airtable's scripting environment (NOT Node.js build scripts).
+
+**Workflow:**
+1. Dev agent creates scripts using `*new-airtable-script` command (follows BMad workflow)
+2. Scripts follow Airtable Scripting API patterns (from `docs/api-reference/airtable/`)
+3. Developer manually copies script into Airtable automation UI
+4. Scripts run server-side within Airtable environment (triggered by Airtable events)
+
+**Documentation Pattern:** Each script has accompanying `[script-name].README.md` file created via `*document-airtable-script` command.
+
+**Current Scripts:**
+- `airtable-automation-match-branch.js` - Smart branch matching with self-healing logic
+
+**Important Distinction:**
+- **Build scripts** (root `scripts/` folder): Run by Node.js/npm during build, part of CI/CD pipeline
+- **Airtable automation scripts** (`scripts/Airtable/` folder): Run by Airtable UI, not part of build process, manually deployed
+
+**Discovery:** See `scripts/Airtable/README.md` for full inventory and usage patterns.
 
 ### `tests/` - All test files (unit, integration, E2E)
 
@@ -295,10 +324,75 @@ RECAPTCHA_SECRET_KEY=XXXXXX
 - Error handling and monitoring
 - Testing and quality gates
 
-### `docs/workflows/` - Operational workflows
+### `docs/workflows/` - Operational workflows (project-specific)
 
-- Step-by-step process documentation
-- Cross-team coordination guides
+**Important Distinction:** This directory contains project-specific operational workflows, NOT BMad framework agent workflows (those are in `.bmad-core/workflows/`).
+
+**Lifecycle-Based Organization:**
+
+**`workflows/build/`** - One-Time Setup Documentation
+- Airtable automation configuration guides
+- GitHub Actions workflow setup
+- Netlify deployment initial configuration
+- System integration setup procedures
+- ⚠️ **Archive after production launch** to `Archive/build-phase-docs/`
+
+**`workflows/ongoing/`** - Operational Workflows (Active After Production)
+- Content creation workflow (Airtable → AI generation)
+- Build & deployment workflow (GitHub Actions → Netlify)
+- Form submission workflow (User → Make.com → Salesforce)
+- Approval-to-live process (Marketing → Production)
+- ✅ **Continuously maintained** for operational teams
+
+**Key Principle:** Separate build-time setup documentation from ongoing operational procedures to clearly define what to archive vs maintain long-term.
+
+### `.ai/scratch/` - Agent ad-hoc documentation staging area
+
+**Purpose:** Central staging location for agent-created documentation that doesn't fit standard BMad templates.
+
+**Use Cases:**
+- Research documentation (technology explorations, optimization research)
+- Specifications that don't match story/PRD/architecture templates
+- Briefing documents for stakeholders
+- Implementation approach explorations
+- Experiment documentation
+- Ad-hoc process documentation
+
+**File Naming:** `YYYY-MM-DD-{agent}-{topic}.md`
+- Example: `2025-10-14-architect-lcp-optimization-research.md`
+
+**Metadata Requirement:** All scratch documents must include YAML frontmatter:
+```yaml
+---
+created: YYYY-MM-DD
+agent: {agent-name}
+purpose: {brief description}
+audience: {who should read this}
+status: draft
+triage-status: pending
+related-to: {epic/story/issue if applicable}
+---
+```
+
+**Triage Lifecycle:**
+1. **pending** → Agent creates document, awaits review
+2. **reviewed** → User assesses value and applicability
+3. **promoted** → Moved to appropriate `docs/` location
+4. **archived** → Moved to `Archive/` for historical reference
+5. **integrated** → Pattern promoted to BMad core (template/task)
+6. **discarded** → Removed if no longer valuable
+
+**Pattern Recognition:** If 3+ similar scratch documents emerge, consider promoting the pattern to BMad core as a reusable template or task.
+
+**Triage Tracking:** See `.ai/scratch/_triage-status.md` for review log
+
+**When NOT to use scratch:**
+- User stories → `docs/stories/`
+- Architecture documentation → `docs/architecture/`
+- PRD content → `docs/prd.md`
+- API reference → `docs/api-reference/`
+- Component guides → `docs/components/`
+- Operational workflows → `docs/workflows/`
 
 ### `docs/integrations/` - Integration strategies
 

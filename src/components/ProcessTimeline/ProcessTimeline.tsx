@@ -49,7 +49,7 @@ export default function ProcessTimeline({ steps }: ProcessTimelineProps) {
         {/* Mobile: Vertical Timeline */}
         <ol className="flex flex-col space-y-8 md:hidden">
           {displaySteps.map((step, index) => (
-            <li key={index} className="flex items-start gap-4 relative">
+            <li key={step.stepNumber} className="flex items-start gap-4 relative">
               {/* Vertical connector line (not on last step) */}
               {index < displaySteps.length - 1 && (
                 <div className="absolute left-5 top-10 bottom-0 w-0.5 bg-gray-300" />
@@ -83,7 +83,7 @@ export default function ProcessTimeline({ steps }: ProcessTimelineProps) {
         <ol className="hidden md:flex flex-row items-start justify-between gap-8">
           {displaySteps.map((step, index) => (
             <li
-              key={index}
+              key={step.stepNumber}
               className="flex flex-col items-center flex-1 relative"
             >
               {/* Horizontal connector line (not on last step) */}

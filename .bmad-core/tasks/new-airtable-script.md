@@ -13,7 +13,7 @@ When this task is executed, follow these steps:
 ### 1. Initial Context Loading
 
 **Load the overview document:**
-- `docs/Dev Docs/Airtable/Scripting/README.md`
+- `docs/api-reference/airtable/README.md`
 
 This README provides:
 - Documentation structure and what each file contains
@@ -39,14 +39,14 @@ Based on the requirements from Step 2, determine which detailed documentation to
 
 **Decision Logic:**
 
-**Load `01-airtable-scripting-fundamentals.md` if:**
+**Load `docs/api-reference/airtable/reference/fundamentals.md` if:**
 - User mentions unfamiliar Airtable concepts
 - Script needs field type handling (linked records, arrays, etc.)
 - Questions about async/await patterns
 - Need to understand Airtable API basics
 - Working with input.config() or output.set()
 
-**Load `02-airtable-scripting-patterns.md` if:**
+**Load `docs/api-reference/airtable/reference/patterns.md` if:**
 - Need to find/lookup records (Pattern 1-4)
 - Need to update records conditionally (Pattern 5-7)
 - Processing many records (>50) - batch patterns (Pattern 8-9)
@@ -54,7 +54,7 @@ Based on the requirements from Step 2, determine which detailed documentation to
 - Need to compare or match records (Pattern 12-13)
 - Need error handling examples (Pattern 14-16)
 
-**Load `03-airtable-scripting-best-practices.md` if:**
+**Load `docs/api-reference/airtable/reference/best-practices.md` if:**
 - Building a complex script (organization guidance)
 - Need performance optimization
 - Script will run frequently (efficiency matters)
@@ -72,16 +72,16 @@ Based on the requirements from Step 2, determine which detailed documentation to
 **Examples:**
 
 *User says: "Create a script that finds a matching branch record and updates a page"*
-→ Load: `02-airtable-scripting-patterns.md` (Pattern 1: Find by field, Pattern 5: Conditional update)
+→ Load: `docs/api-reference/airtable/reference/patterns.md` (Pattern 1: Find by field, Pattern 5: Conditional update)
 
 *User says: "Create a script to process 200 pages and enrich them with data"*
-→ Load: `02-airtable-scripting-patterns.md` (Pattern 8: Batch processing, Pattern 6: Multi-field update)
+→ Load: `docs/api-reference/airtable/reference/patterns.md` (Pattern 8: Batch processing, Pattern 6: Multi-field update)
 
 *User says: "Create a validation script for required fields"*
-→ Load: `02-airtable-scripting-patterns.md` (Pattern 10: Required field validation, Pattern 16: Input validation)
+→ Load: `docs/api-reference/airtable/reference/patterns.md` (Pattern 10: Required field validation, Pattern 16: Input validation)
 
 *User says: "Create a complex multi-stage automation with fallbacks"*
-→ Load: `03-airtable-scripting-best-practices.md` (Organization), `02-airtable-scripting-patterns.md` (Pattern 14: Graceful degradation)
+→ Load: `docs/api-reference/airtable/reference/best-practices.md` (Organization), `docs/api-reference/airtable/reference/patterns.md` (Pattern 14: Graceful degradation)
 
 **Note:** You can load multiple docs if needed, but be selective. The README already gave you the overview.
 
@@ -98,10 +98,10 @@ After loading documentation in Step 3, assess whether you have enough informatio
 **If you identify gaps, load additional documentation:**
 
 **Gap: Don't understand Airtable field types or API basics**
-→ Load: `docs/Dev Docs/Airtable/Scripting/01-airtable-scripting-fundamentals.md`
+→ Load: `docs/api-reference/airtable/reference/fundamentals.md`
 
 **Gap: Need better organization for complex script**
-→ Load: `docs/Dev Docs/Airtable/Scripting/03-airtable-scripting-best-practices.md`
+→ Load: `docs/api-reference/airtable/reference/best-practices.md`
 
 **Gap: Unclear about specific pattern mentioned in README**
 → Re-read relevant section of README or load the detailed doc
@@ -131,7 +131,7 @@ If user mentioned following existing patterns, review existing production script
 - Output variable setting
 - Comment style and documentation
 
-**Note:** The README in `docs/Dev Docs/Airtable/Scripting/` references the production script and explains its patterns.
+**Note:** The README in `docs/api-reference/airtable/` references the production script and explains its patterns.
 
 ### 6. Implement Script
 

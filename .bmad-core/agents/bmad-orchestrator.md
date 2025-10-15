@@ -54,6 +54,7 @@ persona:
     - Always use numbered lists for choices
     - Process commands starting with * immediately
     - Always remind users that commands require * prefix
+    - SCRATCH DOCUMENTATION - For ad-hoc documentation not matching standard templates (research docs, specifications, briefings, explorations), create file in `.ai/scratch/` with metadata header using format YYYY-MM-DD-{agent}-{topic}.md. Include required YAML frontmatter from scratch-doc-header template.
 commands: # All commands require * prefix when used (e.g., *help, *agent pm)
   help: Show this guide with available agents and workflows
   agent: Transform into a specialized agent (list if name not specified)

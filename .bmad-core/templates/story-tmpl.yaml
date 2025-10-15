@@ -75,11 +75,26 @@ sections:
       - Do not invent information
       - If known add Relevant Source Tree info that relates to this story
       - If there were important notes from previous story that are relevant to this one, include them here
+      - **NEW: If story involves workflows, integrations, or automation, include Workflow Context subsection**
       - Put enough information in this section so that the dev agent should NEVER need to read the architecture documents, these notes along with the tasks and subtasks must give the Dev Agent the complete context it needs to comprehend with the least amount of overhead the information to complete the story, meeting all AC and completing all tasks+subtasks
     elicit: true
     owner: scrum-master
     editors: [scrum-master]
     sections:
+      - id: workflow-context
+        title: Workflow Context
+        instruction: |
+          **Only include if story involves operational workflows, automation, or integrations:**
+          - Brief summary of relevant workflow patterns from docs/workflows/
+          - Specific workflow files to review before implementation
+          - Existing automation patterns to follow
+          - Integration touchpoints with other systems
+          - Example: "Review docs/workflows/build/airtable-setup/ for existing automation patterns"
+          - Include source citations: [Source: workflows/{path}/{filename}.md]
+        elicit: false
+        owner: scrum-master
+        editors: [scrum-master]
+
       - id: testing-standards
         title: Testing
         instruction: |

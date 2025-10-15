@@ -295,6 +295,8 @@ here...                     [Get Free Estimate]
 ⭐⭐⭐⭐⭐ 4.9 • Licensed • Since 2008
 ```
 
+> **Implementation Guide**: See [docs/components/forms-implementation-guide.md](./components/forms-implementation-guide.md) for contact form implementation (React Hook Form + Zod, validation, localStorage persistence).
+
 ---
 
 ### Section 2: Trust Bar (Sticky on Scroll - Optional)
@@ -315,6 +317,8 @@ here...                     [Get Free Estimate]
 **Implementation Note:**
 - Desktop: Full trust bar sticky at top
 - Mobile: Condensed to phone button only (avoid header clutter)
+
+> **Implementation Guide**: See [docs/components/trust-bar-implementation.md](./components/trust-bar-implementation.md) for sticky trust bar implementation (CSS position sticky, CLS prevention, mobile optimization).
 
 ---
 
@@ -383,6 +387,8 @@ All photos: Local projects with neighborhood captions
 - Lazy load images (only load when scrolled into view)
 - Max image size: 100KB each (WebP format)
 - Total gallery weight: <600KB
+
+> **Implementation Guide**: See [docs/components/gallery-implementation.md](./components/gallery-implementation.md) for before/after gallery implementation (lazy loading, WebP optimization, interactive sliders).
 
 ---
 
@@ -537,6 +543,8 @@ A: Most bathrooms take 2-3 weeks from start to completion. We'll provide an exac
 Still have questions? [Call Us Button]
 ```
 
+> **Implementation Guide**: See [docs/components/faq-accordion-implementation.md](./components/faq-accordion-implementation.md) for accessible FAQ accordion implementation (expand/collapse, keyboard navigation, ARIA attributes).
+
 ---
 
 ### Section 9: Final CTA Section
@@ -565,6 +573,8 @@ Or fill out this form and we'll call you:
 
 Book your consultation this month for spring installation!
 ```
+
+> **Implementation Guide**: See [docs/components/forms-implementation-guide.md](./components/forms-implementation-guide.md) for contact form implementation in Final CTA section.
 
 ---
 
@@ -1243,6 +1253,8 @@ Landing-Pages-v2.fig
    - 60px height, green background
    - White text: "📞 Call Now: (216) 555-1234"
    - `z-index: 1000` to stay above content
+
+> **Implementation Guide**: See [docs/components/mobile-optimization-checklist.md](./components/mobile-optimization-checklist.md) for comprehensive mobile optimization requirements (tap targets, click-to-call, form fields, testing checklist).
 
 ---
 

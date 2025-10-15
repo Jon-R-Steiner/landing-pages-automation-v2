@@ -6,7 +6,7 @@ prd:
   prdVersion: v4
   prdSharded: true
   prdShardedLocation: docs/prd
-  epicFilePattern: epic-{n}*.md
+  epicFilePattern: epic-*.md
 architecture:
   architectureFile: docs/architecture.md
   architectureVersion: v4
@@ -20,3 +20,4 @@ devLoadAlwaysFiles:
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
+scratchLocation: .ai/scratch  # Staging area for agent ad-hoc documentation not fitting standard templates

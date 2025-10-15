@@ -113,15 +113,34 @@ Visit `http://localhost:3000` to see the site.
 
 ### Environment Variables
 
-Required environment variables:
-- `AIRTABLE_API_KEY` - Airtable API key
-- `AIRTABLE_BASE_ID` - Airtable base ID
-- `CLAUDE_API_KEY` - Claude API key (for AI generation)
-- `MAKE_WEBHOOK_URL` - Make.com webhook URL (for form submissions)
-- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` - reCAPTCHA site key
-- `RECAPTCHA_SECRET_KEY` - reCAPTCHA secret key
+Copy `.env.local.example` to `.env.local` and configure the following variables:
 
-See [docs/architecture/environment-variables.md](docs/architecture/environment-variables.md) for complete list.
+**Airtable Configuration:**
+- `AIRTABLE_API_KEY` - Airtable API key (get from [Airtable tokens](https://airtable.com/create/tokens))
+- `AIRTABLE_BASE_ID` - Airtable base ID (find in URL)
+
+**Netlify Deployment:**
+- `NETLIFY_AUTH_TOKEN` - Netlify authentication token for deployment and API access
+
+**AI Content Generation:**
+- `ANTHROPIC_API_KEY` - Claude API key for AI generation (get from [Anthropic Console](https://console.anthropic.com/))
+
+**Form Submission:**
+- `NEXT_PUBLIC_MAKE_WEBHOOK_URL` - Make.com webhook URL (connects forms to Salesforce)
+
+**reCAPTCHA (Spam Protection):**
+- `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` - reCAPTCHA site key (client-side)
+- `RECAPTCHA_SECRET_KEY` - reCAPTCHA secret key (server-side)
+
+**Analytics & Tracking:**
+- `NEXT_PUBLIC_GTM_ID` - Google Tag Manager ID
+- `NEXT_PUBLIC_GA4_MEASUREMENT_ID` - Google Analytics 4 measurement ID
+- `NEXT_PUBLIC_CALLRAIL_COMPANY_ID` - CallRail company ID (phone tracking)
+- `NEXT_PUBLIC_CALLRAIL_SCRIPT_ID` - CallRail script ID
+
+**Security Note:** Variables prefixed with `NEXT_PUBLIC_` are exposed to the browser (safe for public keys only). All other variables are build-time only and never exposed to clients.
+
+See [docs/architecture/environment-variables.md](docs/architecture/environment-variables.md) for detailed documentation.
 
 ---
 

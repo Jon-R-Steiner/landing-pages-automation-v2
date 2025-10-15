@@ -1,12 +1,17 @@
-import Hero from '@/components/Hero'
-
 export default function HomePage() {
   return (
     <main>
-      <Hero
-        title="Welcome to Landing Pages Automation v2"
-        description="Phase 0.2 Deployment Baseline - Next.js 15 + Tailwind CSS v4"
-      />
+      <section className="bg-gradient-to-r from-sky-500 to-purple-500 py-20 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Welcome to Landing Pages Automation v2
+          </h1>
+          <p className="text-xl text-white/90 mb-8">
+            Phase 0.2 Deployment Baseline - Next.js 15 + Tailwind CSS v4
+          </p>
+        </div>
+      </section>
+
       <section className="max-w-4xl mx-auto py-16 px-4">
         <h2 className="text-3xl font-bold mb-6">Deployment Baseline Features</h2>
         <ul className="space-y-4 text-lg">

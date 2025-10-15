@@ -274,6 +274,26 @@ The complete field-by-field specifications for all 12 tables are documented in t
 
 ---
 
+## 5. Future Enhancements
+
+> **Phase 1 MVP is LOCKED.** The current 12-table schema is production-ready and should not be modified without explicit approval from Owner and Architect.
+
+**Phase 2 Proposal:** For a comprehensive enhancement proposal including:
+- A/B testing via Page Variants table
+- Flexible content blocks (modular page sections)
+- Historical analytics tracking (Page Analytics table)
+- Bulk import capabilities (500+ pages at once)
+- Enhanced version control and approval workflows
+- Advanced SEO and URL management
+
+**See:** [`airtable-data-model-v2-FUTURE.md`](airtable-data-model-v2-FUTURE.md)
+
+**Status:** Evaluated specification by architect, ready for future implementation (Phase 1.0+)
+
+**Migration Path:** Document includes non-breaking migration strategy from Phase 1 (12 tables) → Phase 2 (15 tables)
+
+---
+
 ## Data Validation Rules
 
 ### Airtable Validation (Manual Enforcement)

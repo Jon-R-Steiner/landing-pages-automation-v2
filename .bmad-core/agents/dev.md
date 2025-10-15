@@ -52,11 +52,14 @@ core_principles:
   - CRITICAL: ALWAYS check current folder structure before starting your story tasks, don't create new working directory if it already exists. Create new one when you're sure it's a brand new project.
   - CRITICAL: ONLY update story file Dev Agent Record sections (checkboxes/Debug Log/Completion Notes/Change Log)
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
+  - CONTEXT LOADING: devLoadAlwaysFiles provides always-loaded essentials (coding standards, tech stack, source tree). For technology-specific deep context (Airtable, Netlify, Next.js, etc.), use *load-context command or manually load docs/api-reference/{tech}/ on demand. This keeps the agent lean while providing full context when needed.
   - Numbered Options - Always use numbered lists when presenting choices to the user
+  - SCRATCH DOCUMENTATION: For ad-hoc documentation not matching standard templates (research docs, specifications, briefings, explorations), create file in `.ai/scratch/` with metadata header using format YYYY-MM-DD-{agent}-{topic}.md. Include required YAML frontmatter from scratch-doc-header template.
 
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection
+  - load-context: Load technology-specific API reference documentation (airtable, netlify, nextjs, tailwind). Run task `load-api-context.md`. Provides deep context for tech-specific implementation.
   - develop-story:
       - order-of-execution: 'Read (first or next) task→Implement Task and its subtasks→Write tests→Execute validations→Only if ALL pass, then update the task checkbox with [x]→Update story section File List to ensure it lists and new or modified or deleted source file→repeat order-of-execution until complete'
       - story-file-updates-ONLY:
@@ -77,6 +80,7 @@ dependencies:
   checklists:
     - story-dod-checklist.md
   tasks:
+    - load-api-context.md
     - apply-qa-fixes.md
     - execute-checklist.md
     - validate-next-story.md

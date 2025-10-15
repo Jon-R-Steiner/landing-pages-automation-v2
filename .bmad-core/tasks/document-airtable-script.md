@@ -38,7 +38,7 @@ This will guide you through creating complete documentation with sections for:
 ### 3. Load Reference Patterns
 
 While creating the documentation, reference:
-- `.bmad-core/data/airtable-integration-patterns.md` for standard patterns
+- `docs/api-reference/airtable/reference/patterns.md` for standard patterns
 - The actual script code for accurate technical details
 
 ### 4. Placement

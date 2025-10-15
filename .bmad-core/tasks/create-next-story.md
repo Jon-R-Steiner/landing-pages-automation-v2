@@ -69,6 +69,28 @@ Extract:
 
 ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
 
+#### 3.4 Extract Workflow Context (If Applicable)
+
+**Check if story involves operational workflows:**
+- Review story title and requirements for workflow-related keywords: "automation", "workflow", "process", "integration", "deployment"
+- Check if story involves Airtable, forms, deployment processes, or business operations
+
+**If workflow-related:**
+- Load `docs/workflows/README.md` to understand structure
+- Identify specific workflow files relevant to the story (build/ or ongoing/)
+- Extract workflow context:
+  - Existing automation patterns to follow
+  - Integration touchpoints with other systems
+  - Business process requirements
+  - Deployment or operational considerations
+
+**Add to Dev Notes:**
+- **Workflow Context**: Brief summary of relevant workflow patterns
+- **Workflow Files to Review**: List specific workflow documentation files
+- Example: `Review docs/workflows/build/airtable-setup/ for existing automation patterns before implementation`
+
+ALWAYS cite workflow sources: `[Source: workflows/{path}/{filename}.md]`
+
 ### 4. Verify Project Structure Alignment
 
 - Cross-reference story requirements with Project Structure Guide from `docs/architecture/unified-project-structure.md`

@@ -1,0 +1,7 @@
+# .gitkeep
+
+This file ensures the `.ai/scratch/` directory is tracked in Git even when empty.
+
+**Purpose:** Staging area for agent-created ad-hoc documentation.
+
+See README.md in this directory for usage guidelines.

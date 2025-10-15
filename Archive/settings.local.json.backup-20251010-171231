@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(md-tree:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.netlify.com)",
+      "WebFetch(domain:gist.github.com)",
+      "Bash(where netlify)",
+      "Bash(netlify:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nComplete Epic 0 Phase 0.1: Architecture Research & ADRs\n\nPhase 0.1 Complete - Ready for Phase 0.2 Development\n\n## Major Deliverables:\n\n### Architecture Documentation (78 files in docs/architecture/)\n- Complete tech stack documentation (Next.js 15, React 19, Tailwind v4, TypeScript)\n- Coding standards and best practices\n- Repository structure and file organization\n- Performance optimization strategies (Core Web Vitals)\n- Error handling and monitoring approaches\n- Testing philosophy and types\n- Deployment and workflow documentation\n\n### Component Implementation Guides\n- FAQ accordion implementation\n- Forms implementation guide (React Hook Form + Zod)\n- Gallery implementation\n- Trust bar implementation\n- Mobile optimization checklist\n- HTML validation strategy\n\n### Workflows & Integration\n- Airtable to production workflow (7-step process)\n- Salesforce integration strategy\n- Technology flow diagrams\n\n### Phase 0.2 Story Created\n- Epic-0-Phase-0.2-deployment-baseline.md\n- Complete implementation guide for Dev Agent\n- 5 sequential tasks with acceptance criteria\n- Architecture validation checklist\n\n### Project Organization\n- README.md with project overview\n- docs/README.md navigation guide\n- Archive of old documentation\n- QA assessment templates\n\n🏗️ Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+      "Read(//c/Users/JonSteiner/.claude/**)",
+      "Bash(node:*)",
+      "Read(//c/Users/JonSteiner/**)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(python:*)",
+      "Bash(/dev/null)",
+      "Bash(test:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

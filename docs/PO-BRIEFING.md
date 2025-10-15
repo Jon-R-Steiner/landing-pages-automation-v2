@@ -37,8 +37,8 @@ When running the PO master checklist, review the following documents in order:
   - Success Criteria
 
 #### Sprint Change Proposal: Paid Traffic Alignment
-- **Location:** `docs/SCP-001-Paid-Traffic-Alignment.md`
-- **Status:** APPROVED
+- **Location:** `Archive/decisions/SCP-001-paid-traffic-alignment.md`
+- **Status:** APPROVED & ARCHIVED (decision implemented in PRD v2.1)
 - **Purpose:** Documents requirements shift from SEO → Paid Traffic
 - **Key Info:**
   - Why timeline expanded (+4-6 days)
@@ -70,7 +70,7 @@ When running the PO master checklist, review the following documents in order:
   - Message match requirements (ad headline → landing page headline)
 
 #### LCP Optimization Research
-- **Location:** `docs/lcp-optimization-research.md`
+- **Location:** `docs/architecture/lcp-optimization-guide.md`
 - **Purpose:** Performance research for achieving LCP <2.5s (Google Ads Quality Score)
 - **Key Info:**
   - 5 optimization strategies with impact analysis
@@ -164,7 +164,7 @@ When running the PO master checklist, follow this review order:
 ### Phase 1: Context & Requirements
 1. ✅ Read `README.md` - Project overview
 2. ✅ Read `docs/prd.md` - Product requirements
-3. ✅ Read `docs/SCP-001-Paid-Traffic-Alignment.md` - Requirements evolution context
+3. ✅ Read `Archive/decisions/SCP-001-paid-traffic-alignment.md` - Requirements evolution context (optional - historical record)
 
 ### Phase 2: Epic Planning & Architecture
 4. ✅ Review `docs/Epic-0-Phase-0.1-ADR-Task-List.md` - Epic 0 scope and user interactions needed
@@ -178,7 +178,7 @@ When running the PO master checklist, follow this review order:
 
 ### Phase 4: UI/UX & Technical Specifications
 10. ✅ Review relevant sections of `docs/front-end-spec.md` - UI/UX requirements
-11. ✅ Review `docs/lcp-optimization-research.md` - Performance strategy
+11. ✅ Review `docs/architecture/lcp-optimization-guide.md` - Performance strategy
 12. ✅ Spot-check key architecture files as needed
 
 ### Phase 5: Workflows & Operations

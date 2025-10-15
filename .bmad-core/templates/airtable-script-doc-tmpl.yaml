@@ -5,7 +5,7 @@ template:
   version: 1.0
   output:
     format: markdown
-    filename: scripts/airtable/{{script_name}}.README.md
+    filename: scripts/Airtable/{{script_name}}.README.md
     title: "{{script_name}} - Airtable Script Documentation"
 
 workflow:

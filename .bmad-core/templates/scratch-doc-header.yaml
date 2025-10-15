@@ -1,0 +1,73 @@
+# <!-- Powered by BMAD™ Core -->
+template:
+  id: scratch-doc-header
+  name: Scratch Documentation Header
+  version: 1.0
+  output:
+    format: markdown
+    filename: .ai/scratch/YYYY-MM-DD-{{agent}}-{{topic}}.md
+    header_only: true
+
+workflow:
+  mode: manual
+  elicitation: none
+
+sections:
+  - id: frontmatter
+    title: Metadata Frontmatter
+    type: yaml-frontmatter
+    instruction: |
+      Required YAML frontmatter for all scratch documentation.
+      This metadata enables efficient triage and review.
+    template: |
+      ---
+      created: {{date}}
+      agent: {{agent_name}}
+      purpose: {{brief_purpose_description}}
+      audience: {{intended_audience}}
+      status: draft
+      triage-status: pending
+      related-to: {{epic_story_issue_or_none}}
+      ---
+
+agent_config:
+  auto_include: true
+  required_fields:
+    - created
+    - agent
+    - purpose
+    - audience
+
+usage_examples:
+  - example: |
+      ---
+      created: 2025-10-14
+      agent: architect
+      purpose: Research LCP optimization strategies for landing pages
+      audience: Dev team, PM
+      status: draft
+      triage-status: pending
+      related-to: epic-1
+      ---
+
+  - example: |
+      ---
+      created: 2025-10-14
+      agent: pm
+      purpose: Specification for paid traffic alignment feature
+      audience: Stakeholders, Dev team
+      status: draft
+      triage-status: pending
+      related-to: SCP-001
+      ---
+
+  - example: |
+      ---
+      created: 2025-10-14
+      agent: dev
+      purpose: Explore Airtable export automation approaches
+      audience: Dev team
+      status: draft
+      triage-status: pending
+      related-to: story-1.3
+      ---

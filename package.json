@@ -7,24 +7,27 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "export-airtable": "tsx scripts/export-airtable-to-json.ts"
   },
   "dependencies": {
     "airtable": "^0.12.2",
     "next": "^15.5.0",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.51.0",
-    "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "dotenv": "^17.2.3",
     "eslint": "^8.0.0",
     "eslint-config-next": "^15.5.0",
-    "postcss": "^8.4.0",
-    "tailwindcss": "^4.0.0",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.0"
   },
   "engines": {

@@ -29,7 +29,13 @@
         }
       },
       "trustBar": {
-        "signals": []
+        "signals": [
+          "4.9/5 Stars (2,847 reviews)",
+          "25+ Years Experience",
+          "BBB Accredited A+",
+          "Lifetime Warranty",
+          "Free Quote"
+        ]
       },
       "content": {
         "serviceDescription": "",
@@ -86,7 +92,13 @@
         }
       },
       "trustBar": {
-        "signals": []
+        "signals": [
+          "4.9/5 Stars (2,847 reviews)",
+          "25+ Years Experience",
+          "BBB Accredited A+",
+          "Lifetime Warranty",
+          "Free Quote"
+        ]
       },
       "content": {
         "serviceDescription": "",

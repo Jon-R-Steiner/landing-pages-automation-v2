@@ -124,16 +124,28 @@ From `package.json`:
 
 **Root Cause**: lightningcss-linux-x64-gnu is an **optional dependency** - not guaranteed to install in all environments
 
-**Attempt 2: Add Linux binary as explicit dependency** ⏳ IN PROGRESS
+**Attempt 2: Add Linux binary as explicit dependency** ❌ FAILED
 **Aligned with Netlify Recommendation**: "Ensure all JavaScript dependencies are correctly listed in package.json"
 
-1. ⏳ Add `lightningcss-linux-x64-gnu@1.30.1` to dependencies (not optional)
-2. ⏳ Run npm install to update package-lock.json
-3. ⏳ Verify local build still works
-4. ⏳ Deploy (commit will be 3rd attempt)
-5. ⏳ Monitor Netlify build logs
-6. ⏳ Run Lighthouse on deployed page
-7. ⏳ Document performance metrics
+1. ✅ Added `lightningcss-linux-x64-gnu@1.30.1` to dependencies (not optional)
+2. ✅ Ran npm install --force to update package-lock.json
+3. ✅ Verified local build still works
+4. ✅ Deployed (commit 203c75d)
+5. ❌ Still failed - same error "Cannot find module '../lightningcss.linux-x64-gnu.node'"
+
+**User Action**: Disabled Netlify plugins (Lighthouse & Chromium) to simplify troubleshooting
+
+**Attempt 3: Remove --legacy-peer-deps flag** ⏳ IN PROGRESS
+**Hypothesis**: The `--legacy-peer-deps` npm flag may interfere with optional dependency resolution
+
+1. ⏳ Remove `NPM_FLAGS = "--legacy-peer-deps"` from netlify.toml
+2. ⏳ Update scratch documentation with this attempt
+3. ⏳ Run npm install to ensure clean state
+4. ⏳ Verify local build still works
+5. ⏳ Deploy (commit will be 4th attempt)
+6. ⏳ Monitor Netlify build logs
+7. ⏳ Run Lighthouse on deployed page manually (Chrome DevTools)
+8. ⏳ Document performance metrics in story file
 
 ---
 

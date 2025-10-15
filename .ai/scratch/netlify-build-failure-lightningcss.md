@@ -135,17 +135,121 @@ From `package.json`:
 
 **User Action**: Disabled Netlify plugins (Lighthouse & Chromium) to simplify troubleshooting
 
-**Attempt 3: Remove --legacy-peer-deps flag** ⏳ IN PROGRESS
+**Attempt 3: Remove --legacy-peer-deps flag** ❌ FAILED
 **Hypothesis**: The `--legacy-peer-deps` npm flag may interfere with optional dependency resolution
 
-1. ⏳ Remove `NPM_FLAGS = "--legacy-peer-deps"` from netlify.toml
-2. ⏳ Update scratch documentation with this attempt
-3. ⏳ Run npm install to ensure clean state
-4. ⏳ Verify local build still works
-5. ⏳ Deploy (commit will be 4th attempt)
-6. ⏳ Monitor Netlify build logs
-7. ⏳ Run Lighthouse on deployed page manually (Chrome DevTools)
-8. ⏳ Document performance metrics in story file
+1. ✅ Removed `NPM_FLAGS = "--legacy-peer-deps"` from netlify.toml
+2. ✅ Updated scratch documentation with this attempt
+3. ✅ Ran npm install (expected EBADPLATFORM error on Windows)
+4. ✅ Verified local build still works (compiled successfully in 1138ms)
+5. ✅ Deployed (commit 6a1f753)
+6. ❌ Still failed - same error "Cannot find module '../lightningcss.linux-x64-gnu.node'"
+
+**Deploy Details**:
+- Deploy ID: 68efceca1340600008a186ba
+- Commit: 6a1f753
+- State: error
+- Error: "Failed during stage 'building site': Build script returned non-zero exit code: 2"
+- Build Time: ~28 seconds (16:41:46 - 16:42:14 UTC)
+
+**Critical Discovery**: Attempt 4 only modified netlify.toml - **package.json/package-lock.json unchanged**. Netlify likely reused cached node_modules from Attempt 3!
+
+**Attempt 5: Add postinstall script + cache bust** ⏳ IN PROGRESS
+**Strategy**: Multi-pronged approach to force Linux binary installation AND invalidate Netlify cache
+
+1. ✅ Added postinstall script to force lightningcss-linux-x64-gnu installation
+   ```json
+   "postinstall": "npm install --no-save --force lightningcss-linux-x64-gnu@1.30.1 2>/dev/null || echo 'lightningcss binary install skipped (expected on Windows)'"
+   ```
+2. ✅ Added `_comment` field to package.json to trigger Netlify cache invalidation
+3. ✅ Removed lightningcss-linux-x64-gnu from dependencies (rely on postinstall only)
+4. ✅ Ran npm install - postinstall script executed successfully
+5. ✅ Verified local build still works (compiled successfully in 1086ms)
+6. ⏳ Commit and push (will be 5th attempt)
+7. ⏳ Monitor Netlify build logs
+8. ⏳ Run Lighthouse on deployed page if successful
+9. ⏳ Document performance metrics
+
+**Rationale**:
+- Netlify invalidates node_modules cache when package.json changes (cache bust)
+- postinstall script runs AFTER dependencies install on Netlify's Linux environment
+- `--force` bypasses platform checks to download Linux binary
+- `--no-save` prevents modifying package.json during build
+- `2>/dev/null || echo` makes script non-blocking if it fails
+
+---
+
+## Analysis After 4 Failed Attempts
+
+### Pattern Recognition
+
+All 4 deployment attempts failed with the **same error**:
+```
+Cannot find module '../lightningcss.linux-x64-gnu.node'
+```
+
+This suggests the issue is **NOT** related to:
+- devDependencies vs dependencies placement ❌
+- Explicit dependency declaration ❌
+- npm flags (--legacy-peer-deps) ❌
+
+### Likely Root Cause
+
+**Tailwind CSS v4 (Beta) + Netlify Incompatibility**
+
+The lightningcss package has platform-specific **optional dependencies**:
+- `lightningcss-linux-x64-gnu` for Linux
+- `lightningcss-win32-x64-msvc` for Windows
+- Other platform variants
+
+**Problem**: Optional dependencies may not install correctly on Netlify's build environment even when:
+1. Listed in package.json dependencies
+2. Added explicitly as dependencies
+3. npm install runs without special flags
+
+**Evidence**:
+- Local Windows build: ✅ Works perfectly
+- Netlify Linux build: ❌ Consistently fails
+- Same error across all configuration attempts
+
+### Potential Solutions
+
+**Option 1: Use Netlify Build Plugin for PostCSS** 🔍 INVESTIGATE
+- Check if Netlify has a build plugin that handles PostCSS/Tailwind v4 differently
+- May provide better control over dependency installation
+
+**Option 2: Pre-build Approach** 🛠️ WORKAROUND
+- Build locally on Windows
+- Upload `out/` directory directly to Netlify
+- Bypass Netlify's build process entirely
+- **Downside**: Loses continuous deployment automation
+
+**Option 3: Use `postinstall` Script** 🔧 TRY NEXT
+- Add postinstall script to explicitly install Linux binary
+- Force npm to download platform-specific package
+```json
+"scripts": {
+  "postinstall": "npm install --no-save lightningcss-linux-x64-gnu || true"
+}
+```
+
+**Option 4: Investigate Tailwind v4 Beta Netlify Support** 📚 RESEARCH
+- Search Tailwind CSS v4 beta documentation for Netlify deployment guides
+- Check Tailwind CSS GitHub issues for similar problems
+- Tailwind v4 is in beta - may have known deployment issues
+
+**Option 5: Contact Netlify Support** 🆘 ESCALATE
+- This may be a platform-specific issue requiring Netlify engineering input
+- Provide deploy logs and configuration details
+
+**Option 6: Downgrade to Tailwind CSS v3** ⚠️ USER REJECTED
+- User explicitly said: "do not do this Fallback: Downgrade to Tailwind CSS v3"
+- This would resolve the issue but requires significant refactoring
+- Deferred unless all other options exhausted
+
+### Recommended Next Step
+
+**Try Option 3**: Add postinstall script to force Linux binary installation
 
 ---
 

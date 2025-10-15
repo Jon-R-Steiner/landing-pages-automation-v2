@@ -2,13 +2,15 @@
   "name": "landing-pages-automation-v2",
   "version": "0.2.0",
   "private": true,
+  "_comment": "Cache bust for Netlify - Attempt 5: Force lightningcss binary installation",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "export-airtable": "tsx scripts/export-airtable-to-json.ts"
+    "export-airtable": "tsx scripts/export-airtable-to-json.ts",
+    "postinstall": "npm install --no-save --force lightningcss-linux-x64-gnu@1.30.1 2>/dev/null || echo 'lightningcss binary install skipped (expected on Windows)'"
   },
   "dependencies": {
     "airtable": "^0.12.2",
@@ -17,8 +19,7 @@
     "react-dom": "^19.2.0",
     "@tailwindcss/postcss": "^4.0.0",
     "postcss": "^8.4.0",
-    "tailwindcss": "^4.0.0",
-    "lightningcss-linux-x64-gnu": "1.30.1"
+    "tailwindcss": "^4.0.0"
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "^1.51.0",

@@ -115,14 +115,25 @@ From `package.json`:
 
 ### Implementation Steps
 
-1. ✅ **Document diagnosis** (this file)
-2. ⏳ **Update package.json**: Move CSS packages to dependencies
-3. ⏳ **Reinstall**: `npm install` to update package-lock.json
-4. ⏳ **Verify**: `npm run build` to ensure no regressions
-5. ⏳ **Deploy**: Commit and push to trigger Netlify build
-6. ⏳ **Validate**: Monitor Netlify build logs for success
-7. ⏳ **Measure**: Run Lighthouse on deployed page
-8. ⏳ **Document**: Add performance metrics to story file
+**Attempt 1: Move CSS packages to dependencies** ❌ FAILED
+1. ✅ Moved @tailwindcss/postcss, tailwindcss, postcss to dependencies
+2. ✅ Ran npm install
+3. ✅ Verified local build works
+4. ✅ Deployed (commit 5e8c5e3)
+5. ❌ Still failed - same error "Cannot find module '../lightningcss.linux-x64-gnu.node'"
+
+**Root Cause**: lightningcss-linux-x64-gnu is an **optional dependency** - not guaranteed to install in all environments
+
+**Attempt 2: Add Linux binary as explicit dependency** ⏳ IN PROGRESS
+**Aligned with Netlify Recommendation**: "Ensure all JavaScript dependencies are correctly listed in package.json"
+
+1. ⏳ Add `lightningcss-linux-x64-gnu@1.30.1` to dependencies (not optional)
+2. ⏳ Run npm install to update package-lock.json
+3. ⏳ Verify local build still works
+4. ⏳ Deploy (commit will be 3rd attempt)
+5. ⏳ Monitor Netlify build logs
+6. ⏳ Run Lighthouse on deployed page
+7. ⏳ Document performance metrics
 
 ---
 

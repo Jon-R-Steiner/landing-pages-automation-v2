@@ -70,7 +70,7 @@ export default async function ServiceLocationPage({
       <TrustBar trustBar={pageData.trustBar} branding={pageData.branding} />
       <BenefitsGrid benefits={pageData.content.benefits} />
       <ProcessTimeline steps={pageData.content.processSteps} />
-      <section className="max-w-4xl mx-auto py-16 px-4">
+      <section className="max-w-4xl mx-auto py-8 px-4">
         <h2 className="text-3xl font-bold mb-6">About This Page</h2>
         <p className="text-lg mb-4">
           This is a dynamically generated page using Next.js 15&apos;s{' '}

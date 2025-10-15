@@ -39,7 +39,38 @@
       },
       "content": {
         "serviceDescription": "",
-        "benefits": [],
+        "benefits": [
+          {
+            "title": "Licensed & Insured Professionals",
+            "description": "All our contractors are fully licensed, bonded, and insured for your peace of mind and protection.",
+            "icon": "shield"
+          },
+          {
+            "title": "5-Year Quality Guarantee",
+            "description": "We stand behind our work with an industry-leading 5-year warranty on all materials and labor.",
+            "icon": "check-circle"
+          },
+          {
+            "title": "Free Design Consultation",
+            "description": "Get expert design advice at no cost. We'll help you create the bathroom of your dreams within your budget.",
+            "icon": "star"
+          },
+          {
+            "title": "Fast Project Completion",
+            "description": "Most bathroom remodels completed in 2-3 weeks. We respect your schedule and minimize disruption.",
+            "icon": "lightning"
+          },
+          {
+            "title": "Flexible Scheduling",
+            "description": "Evening and weekend appointments available. We work around your busy life.",
+            "icon": "clock"
+          },
+          {
+            "title": "Customer Satisfaction Guaranteed",
+            "description": "4.9/5 star rating from over 2,800 customers. Your satisfaction is our top priority.",
+            "icon": "thumb-up"
+          }
+        ],
         "processSteps": [],
         "faqs": []
       },
@@ -102,7 +133,38 @@
       },
       "content": {
         "serviceDescription": "",
-        "benefits": [],
+        "benefits": [
+          {
+            "title": "Licensed & Insured Professionals",
+            "description": "All our contractors are fully licensed, bonded, and insured for your peace of mind and protection.",
+            "icon": "shield"
+          },
+          {
+            "title": "5-Year Quality Guarantee",
+            "description": "We stand behind our work with an industry-leading 5-year warranty on all materials and labor.",
+            "icon": "check-circle"
+          },
+          {
+            "title": "Free Design Consultation",
+            "description": "Get expert design advice at no cost. We'll help you create the bathroom of your dreams within your budget.",
+            "icon": "star"
+          },
+          {
+            "title": "Fast Project Completion",
+            "description": "Most bathroom remodels completed in 2-3 weeks. We respect your schedule and minimize disruption.",
+            "icon": "lightning"
+          },
+          {
+            "title": "Flexible Scheduling",
+            "description": "Evening and weekend appointments available. We work around your busy life.",
+            "icon": "clock"
+          },
+          {
+            "title": "Customer Satisfaction Guaranteed",
+            "description": "4.9/5 star rating from over 2,800 customers. Your satisfaction is our top priority.",
+            "icon": "thumb-up"
+          }
+        ],
         "processSteps": [],
         "faqs": []
       },

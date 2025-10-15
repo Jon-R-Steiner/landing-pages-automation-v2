@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import HeroSection from '@/components/HeroSection'
 import TrustBar from '@/components/TrustBar'
+import BenefitsGrid from '@/components/BenefitsGrid'
 import type { PageParams } from '@/types/page.types'
 import type { EnhancedPageData, ContentData } from '@/types/content-data'
 
@@ -66,6 +67,7 @@ export default async function ServiceLocationPage({
     <main>
       <HeroSection hero={pageData.hero} branding={pageData.branding} />
       <TrustBar trustBar={pageData.trustBar} branding={pageData.branding} />
+      <BenefitsGrid benefits={pageData.content.benefits} />
       <section className="max-w-4xl mx-auto py-16 px-4">
         <h2 className="text-3xl font-bold mb-6">About This Page</h2>
         <p className="text-lg mb-4">

@@ -71,7 +71,44 @@
             "icon": "thumb-up"
           }
         ],
-        "processSteps": [],
+        "processSteps": [
+          {
+            "stepNumber": 1,
+            "title": "Free Consultation",
+            "description": "Schedule your complimentary in-home design consultation to discuss your vision and budget.",
+            "timeline": "Day 1"
+          },
+          {
+            "stepNumber": 2,
+            "title": "Design & Quote",
+            "description": "Receive a detailed design plan with 3D renderings and an accurate project estimate.",
+            "timeline": "Days 2-3"
+          },
+          {
+            "stepNumber": 3,
+            "title": "Material Selection",
+            "description": "Choose from our premium selection of fixtures, tiles, and finishes at our showroom.",
+            "timeline": "Week 1"
+          },
+          {
+            "stepNumber": 4,
+            "title": "Demolition & Prep",
+            "description": "Our team carefully removes old fixtures and prepares the space for renovation.",
+            "timeline": "Week 2"
+          },
+          {
+            "stepNumber": 5,
+            "title": "Installation",
+            "description": "Expert installation of all plumbing, electrical, tile work, and fixtures.",
+            "timeline": "Weeks 3-4"
+          },
+          {
+            "stepNumber": 6,
+            "title": "Final Inspection",
+            "description": "Thorough quality check and walkthrough to ensure everything meets our standards.",
+            "timeline": "Week 5"
+          }
+        ],
         "faqs": []
       },
       "socialProof": {
@@ -165,7 +202,44 @@
             "icon": "thumb-up"
           }
         ],
-        "processSteps": [],
+        "processSteps": [
+          {
+            "stepNumber": 1,
+            "title": "Free Consultation",
+            "description": "Schedule your complimentary in-home design consultation to discuss your vision and budget.",
+            "timeline": "Day 1"
+          },
+          {
+            "stepNumber": 2,
+            "title": "Design & Quote",
+            "description": "Receive a detailed design plan with 3D renderings and an accurate project estimate.",
+            "timeline": "Days 2-3"
+          },
+          {
+            "stepNumber": 3,
+            "title": "Material Selection",
+            "description": "Choose from our premium selection of fixtures, tiles, and finishes at our showroom.",
+            "timeline": "Week 1"
+          },
+          {
+            "stepNumber": 4,
+            "title": "Demolition & Prep",
+            "description": "Our team carefully removes old fixtures and prepares the space for renovation.",
+            "timeline": "Week 2"
+          },
+          {
+            "stepNumber": 5,
+            "title": "Installation",
+            "description": "Expert installation of all plumbing, electrical, tile work, and fixtures.",
+            "timeline": "Weeks 3-4"
+          },
+          {
+            "stepNumber": 6,
+            "title": "Final Inspection",
+            "description": "Thorough quality check and walkthrough to ensure everything meets our standards.",
+            "timeline": "Week 5"
+          }
+        ],
         "faqs": []
       },
       "socialProof": {

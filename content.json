@@ -1,0 +1,133 @@
+{
+  "pages": [
+    {
+      "pageId": 3,
+      "urlSlug": "bathroom-remodeling/strongsville",
+      "pageUrl": "https://http://bathsrusc687.com//bathroom-remodeling/strongsville",
+      "service": "bathroom-remodeling",
+      "location": "strongsville",
+      "seo": {
+        "title": "Expert Bathroom Remodeling in Strongsville, OH | Free Quote",
+        "description": "Transform your bathroom with Strongsville's top-rated remodeling experts. 5-year warranty, licensed contractors, free design consultation. Call (440) 555-1234 today!",
+        "canonicalUrl": "https://http://bathsrusc687.com//bathroom-remodeling/strongsville",
+        "keywords": ["bathroom remodeling", "Strongsville OH", "bathroom renovation", "shower installation", "tub replacement"]
+      },
+      "hero": {
+        "h1Headline": "Expert Bathroom Remodeling in Strongsville, OH",
+        "subheadline": "Transform your bathroom into a luxurious retreat. Licensed contractors, 5-year warranty, and free design consultation included with every project.",
+        "imageUrl": "https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=1200&h=800&fit=crop&q=80",
+        "imageAlt": "Modern bathroom remodel with white subway tiles, walk-in shower, and contemporary fixtures in Strongsville, Ohio",
+        "primaryCta": {
+          "text": "Get Free Quote",
+          "actionType": "form",
+          "actionValue": "#contact-form"
+        },
+        "secondaryCta": {
+          "text": "Call (440) 555-1234",
+          "actionType": "phone",
+          "actionValue": "4405551234"
+        }
+      },
+      "trustBar": {
+        "signals": []
+      },
+      "content": {
+        "serviceDescription": "",
+        "benefits": [],
+        "processSteps": [],
+        "faqs": []
+      },
+      "socialProof": {
+        "testimonials": [],
+        "aggregateRating": 0,
+        "totalReviews": 0
+      },
+      "branch": {
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": "",
+        "timezone": "",
+        "hours": "",
+        "staff": []
+      },
+      "branding": {
+        "primaryColor": "#0ea5e9",
+        "secondaryColor": "#8b5cf6",
+        "logoUrl": "",
+        "googleFonts": "Inter"
+      },
+      "tracking": {
+        "gtmId": "",
+        "gaPropertyId": ""
+      }
+    },
+    {
+      "pageId": 4,
+      "urlSlug": "bathroom-remodeling/strongsville",
+      "pageUrl": "https://http://bathsrusc687.com//bathroom-remodeling/strongsville",
+      "service": "bathroom-remodeling",
+      "location": "strongsville",
+      "seo": {
+        "title": "bathroom-remodeling in strongsville",
+        "description": "",
+        "canonicalUrl": "https://http://bathsrusc687.com//bathroom-remodeling/strongsville",
+        "keywords": []
+      },
+      "hero": {
+        "h1Headline": "",
+        "subheadline": "",
+        "imageUrl": "",
+        "imageAlt": "",
+        "primaryCta": {
+          "text": "Get Free Quote",
+          "actionType": "form",
+          "actionValue": "#contact-form"
+        }
+      },
+      "trustBar": {
+        "signals": []
+      },
+      "content": {
+        "serviceDescription": "",
+        "benefits": [],
+        "processSteps": [],
+        "faqs": []
+      },
+      "socialProof": {
+        "testimonials": [],
+        "aggregateRating": 0,
+        "totalReviews": 0
+      },
+      "branch": {
+        "name": "",
+        "phone": "",
+        "email": "",
+        "address": "",
+        "timezone": "",
+        "hours": "",
+        "staff": []
+      },
+      "branding": {
+        "primaryColor": "#0ea5e9",
+        "secondaryColor": "#8b5cf6",
+        "logoUrl": "",
+        "googleFonts": "Inter"
+      },
+      "tracking": {
+        "gtmId": "",
+        "gaPropertyId": ""
+      }
+    }
+  ],
+  "metadata": {
+    "exportDate": "2025-10-14T21:34:21.198Z",
+    "totalPages": 2,
+    "exportDurationMs": 318,
+    "tablesExported": [
+      "Pages",
+      "Testimonials",
+      "Branch Staff"
+    ]
+  }
+}

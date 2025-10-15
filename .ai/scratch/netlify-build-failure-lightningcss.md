@@ -154,7 +154,7 @@ From `package.json`:
 
 **Critical Discovery**: Attempt 4 only modified netlify.toml - **package.json/package-lock.json unchanged**. Netlify likely reused cached node_modules from Attempt 3!
 
-**Attempt 5: Add postinstall script + cache bust** ⏳ IN PROGRESS
+**Attempt 5: Add postinstall script + cache bust** ❌ FAILED
 **Strategy**: Multi-pronged approach to force Linux binary installation AND invalidate Netlify cache
 
 1. ✅ Added postinstall script to force lightningcss-linux-x64-gnu installation
@@ -165,21 +165,134 @@ From `package.json`:
 3. ✅ Removed lightningcss-linux-x64-gnu from dependencies (rely on postinstall only)
 4. ✅ Ran npm install - postinstall script executed successfully
 5. ✅ Verified local build still works (compiled successfully in 1086ms)
-6. ⏳ Commit and push (will be 5th attempt)
+6. ✅ Deployed (commit 1a9c1c8)
+7. ❌ Still failed - same error "Cannot find module '../lightningcss.linux-x64-gnu.node'"
+
+**Deploy Details**:
+- Deploy ID: 68efd18ad160830008b14eee
+- Commit: 1a9c1c8
+- State: error
+- Error: "Failed during stage 'building site': Build script returned non-zero exit code: 2"
+- Build Time: ~56 seconds (16:53:30 - 16:54:26 UTC)
+
+**User Action**: Manually triggered "Clear Cache and Deploy" in Netlify dashboard - still failed
+
+**Attempt 6: Add platform-specific binaries to optionalDependencies** ⏳ IN PROGRESS
+**Strategy**: Use optionalDependencies for reliable platform-specific binary installation (recommended by lightningcss GitHub issues)
+
+1. ✅ Added optionalDependencies to package.json:
+   ```json
+   "optionalDependencies": {
+     "@tailwindcss/oxide-linux-x64-gnu": "^4.1.14",
+     "lightningcss-linux-x64-gnu": "1.30.1"
+   }
+   ```
+2. ✅ Removed postinstall script (no longer needed)
+3. ✅ Updated cache bust comment in package.json
+4. ✅ Ran npm install - completed successfully
+5. ✅ Verified local build still works (compiled successfully in 1096ms)
+6. ⏳ Commit and push (will be 6th attempt)
 7. ⏳ Monitor Netlify build logs
 8. ⏳ Run Lighthouse on deployed page if successful
 9. ⏳ Document performance metrics
 
 **Rationale**:
-- Netlify invalidates node_modules cache when package.json changes (cache bust)
-- postinstall script runs AFTER dependencies install on Netlify's Linux environment
-- `--force` bypasses platform checks to download Linux binary
-- `--no-save` prevents modifying package.json during build
-- `2>/dev/null || echo` makes script non-blocking if it fails
+- **Recommended Solution**: Multiple GitHub issues (parcel-bundler/lightningcss #567, #279, #913) recommend optionalDependencies
+- npm treats optionalDependencies differently than regular dependencies
+- Allowed to fail on incompatible platforms (Windows) without breaking build
+- When platform matches (Linux x64 GNU), they install reliably
+- Netlify uses Ubuntu (glibc), not Alpine (musl), so linux-x64-gnu variant is correct
+- `@tailwindcss/oxide-linux-x64-gnu`: Tailwind v4's compiled Rust binary (also needs Linux variant)
 
 ---
 
-## Analysis After 4 Failed Attempts
+## Summary: 5 Failed Deployment Attempts
+
+| Attempt | Strategy | Commit | Result |
+|---------|----------|--------|--------|
+| 1 | Initial QA fixes (ESLint config) | 7b26c77 | ❌ Failed |
+| 2 | Moved CSS packages to dependencies | 5e8c5e3 | ❌ Failed |
+| 3 | Added Linux binary as explicit dependency | 203c75d | ❌ Failed |
+| 4 | Removed --legacy-peer-deps flag | 6a1f753 | ❌ Failed |
+| 5 | Postinstall script + cache bust | 1a9c1c8 | ❌ Failed |
+
+**Consistent Error**: `Cannot find module '../lightningcss.linux-x64-gnu.node'`
+
+**Pattern**: All configuration-based approaches have failed. This suggests a deeper incompatibility between Tailwind CSS v4 (which uses lightningcss) and Netlify's build environment.
+
+---
+
+## Remaining Options
+
+### Option A: Manual "Clear Cache and Deploy" in Netlify Dashboard 🔧 QUICK TRY
+**Effort**: 5 minutes
+**Risk**: Low
+**Process**:
+1. Open Netlify dashboard → Deploys tab
+2. Click "Trigger deploy" → "Clear cache and deploy site"
+3. Forces complete cache invalidation (more aggressive than package.json changes)
+4. May resolve if there's a stubborn cache issue
+
+### Option B: Pre-Build Locally and Deploy `out/` Directory 🛠️ IMMEDIATE WORKAROUND
+**Effort**: 15 minutes
+**Risk**: Low
+**Downside**: Loses continuous deployment automation
+**Process**:
+1. Run `npm run build` locally (Windows)
+2. Configure Netlify to serve pre-built `out/` directory
+3. Manually upload builds when needed
+4. **Advantage**: Bypasses Netlify build process entirely
+
+### Option C: Research Tailwind CSS v4 + Next.js 15 + Netlify Specific Configuration 📚 RESEARCH
+**Effort**: 30-60 minutes
+**Risk**: Medium
+**Process**:
+1. Search GitHub issues for tailwindcss/tailwindcss + "Netlify" + "lightningcss"
+2. Search Netlify community forums for similar problems
+3. Check if there's a Next.js 15 specific configuration needed
+4. Look for alternative PostCSS configuration that works on Netlify
+
+### Option D: Contact Netlify Support 🆘 ESCALATE
+**Effort**: Create support ticket (30 minutes)
+**Risk**: Unknown
+**Wait Time**: 24-48 hours for response
+**Process**:
+1. Provide all 5 deployment logs
+2. Explain lightningcss binary installation issue
+3. Ask if there's a known issue with Tailwind v4 + Netlify
+4. Request engineering team input
+
+### Option E: Try Netlify CLI Local Build Simulation 🧪 DIAGNOSTIC
+**Effort**: 20 minutes
+**Risk**: Low
+**Purpose**: Understand if the issue is Netlify-specific or npm/platform-specific
+**Process**:
+1. Install Netlify CLI: `npm install -g netlify-cli`
+2. Run `netlify build` locally to simulate Netlify's build environment
+3. See if error reproduces locally with Netlify's build process
+
+### Option F: Downgrade to Tailwind CSS v3 ⚠️ LAST RESORT (USER REJECTED)
+**Effort**: 2-3 hours (refactoring required)
+**Risk**: High (breaks existing work)
+**Note**: User explicitly said "do not do this" earlier
+
+---
+
+## Recommended Next Steps
+
+**Immediate Action (5 min)**: Try Option A - Manual "Clear Cache and Deploy"
+
+**If Option A Fails**:
+- Consider Option C (Research) to see if others have solved this
+- Or Option B (Pre-build workaround) to unblock PERF-001 QA testing immediately
+
+**If Time Allows**: Option E (CLI simulation) for diagnostic insights
+
+**User Decision Required**: Which path to pursue?
+
+---
+
+## Analysis After 4 Failed Attempts (For Reference)
 
 ### Pattern Recognition
 

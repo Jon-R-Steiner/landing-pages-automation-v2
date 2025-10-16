@@ -35,12 +35,16 @@ export default function TestimonialsGrid({ testimonials }: TestimonialsGridProps
       t.reviewText.trim() !== ''
   )
 
-  // Limit to top 5 testimonials
-  const displayTestimonials = validTestimonials.slice(0, 5)
+  // Show either 3 or 6 testimonials based on availability
+  // If we have 6+, show 6; if we have 3-5, show 3; if fewer than 3, show none
+  let displayTestimonials: TestimonialItem[] = []
 
-  // Return null if no valid testimonials
-  if (displayTestimonials.length === 0) {
-    return null
+  if (validTestimonials.length >= 6) {
+    displayTestimonials = validTestimonials.slice(0, 6)
+  } else if (validTestimonials.length >= 3) {
+    displayTestimonials = validTestimonials.slice(0, 3)
+  } else {
+    return null // Need at least 3 testimonials to display
   }
 
   return (

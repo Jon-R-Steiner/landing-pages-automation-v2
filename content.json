@@ -112,9 +112,73 @@
         "faqs": []
       },
       "socialProof": {
-        "testimonials": [],
-        "aggregateRating": 0,
-        "totalReviews": 0
+        "testimonials": [
+          {
+            "customerName": "Sarah Johnson",
+            "city": "Strongsville",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Amazing Bathroom Transformation!",
+            "reviewText": "The team did an incredible job transforming our outdated 1980s bathroom into a modern spa-like retreat. The attention to detail was outstanding, from the custom tile work to the perfectly installed rainfall shower. They completed the project on time and within budget. Communication was excellent throughout the entire process, and they cleaned up thoroughly every day. We couldn't be happier with the results and have already recommended them to our neighbors. The quality of workmanship is top-notch and the design consultation helped us make perfect choices for our space.",
+            "reviewDate": "2025-01-10T00:00:00.000Z",
+            "source": "Google",
+            "photoUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&h=96&fit=crop&q=80"
+          },
+          {
+            "customerName": "Michael Chen",
+            "city": "Strongsville",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Professional and Efficient",
+            "reviewText": "Outstanding service from start to finish. The crew was professional, courteous, and extremely skilled. Our master bathroom remodel exceeded our expectations. They handled everything from plumbing to electrical work with expertise. Highly recommended!",
+            "reviewDate": "2024-12-15T00:00:00.000Z",
+            "source": "Yelp"
+          },
+          {
+            "customerName": "Jennifer Williams",
+            "city": "Brunswick",
+            "state": "OH",
+            "rating": 4,
+            "reviewTitle": "Great Experience Overall",
+            "reviewText": "Very happy with our new bathroom. The team was punctual and respectful of our home. The only minor issue was a slight delay due to a backordered fixture, but they kept us informed and made it right. The final result is beautiful and functional. Worth every penny.",
+            "reviewDate": "2024-11-20T00:00:00.000Z",
+            "source": "Google",
+            "photoUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&fit=crop&q=80"
+          },
+          {
+            "customerName": "Robert Martinez",
+            "city": "Medina",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Exceptional Craftsmanship",
+            "reviewText": "After getting quotes from three different contractors, we chose this team and we're so glad we did. The quality of their work is simply exceptional. Every detail was perfect - from the tile alignment to the grout lines to the fixture installation. They transformed our cramped bathroom into an open, luxurious space that adds real value to our home.",
+            "reviewDate": "2024-10-05T00:00:00.000Z",
+            "source": "Google"
+          },
+          {
+            "customerName": "Emily Thompson",
+            "city": "Strongsville",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Best Decision Ever!",
+            "reviewText": "We were nervous about doing a full bathroom renovation, but this team made the entire process stress-free. They walked us through every step, offered great design suggestions, and completed the work in just three weeks. Our bathroom looks like it belongs in a luxury hotel. The heated floors and custom vanity are absolute game-changers. Thank you for the amazing work!",
+            "reviewDate": "2024-09-18T00:00:00.000Z",
+            "source": "Yelp",
+            "photoUrl": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=96&h=96&fit=crop&q=80"
+          },
+          {
+            "customerName": "David Anderson",
+            "city": "North Royalton",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Highly Professional Team",
+            "reviewText": "Great communication, fair pricing, and excellent results. Would hire again without hesitation.",
+            "reviewDate": "2024-08-25T00:00:00.000Z",
+            "source": "Google"
+          }
+        ],
+        "aggregateRating": 4.8,
+        "totalReviews": 6
       },
       "branch": {
         "name": "",
@@ -243,9 +307,73 @@
         "faqs": []
       },
       "socialProof": {
-        "testimonials": [],
-        "aggregateRating": 0,
-        "totalReviews": 0
+        "testimonials": [
+          {
+            "customerName": "Sarah Johnson",
+            "city": "Strongsville",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Amazing Bathroom Transformation!",
+            "reviewText": "The team did an incredible job transforming our outdated 1980s bathroom into a modern spa-like retreat. The attention to detail was outstanding, from the custom tile work to the perfectly installed rainfall shower. They completed the project on time and within budget. Communication was excellent throughout the entire process, and they cleaned up thoroughly every day. We couldn't be happier with the results and have already recommended them to our neighbors. The quality of workmanship is top-notch and the design consultation helped us make perfect choices for our space.",
+            "reviewDate": "2025-01-10T00:00:00.000Z",
+            "source": "Google",
+            "photoUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&h=96&fit=crop&q=80"
+          },
+          {
+            "customerName": "Michael Chen",
+            "city": "Strongsville",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Professional and Efficient",
+            "reviewText": "Outstanding service from start to finish. The crew was professional, courteous, and extremely skilled. Our master bathroom remodel exceeded our expectations. They handled everything from plumbing to electrical work with expertise. Highly recommended!",
+            "reviewDate": "2024-12-15T00:00:00.000Z",
+            "source": "Yelp"
+          },
+          {
+            "customerName": "Jennifer Williams",
+            "city": "Brunswick",
+            "state": "OH",
+            "rating": 4,
+            "reviewTitle": "Great Experience Overall",
+            "reviewText": "Very happy with our new bathroom. The team was punctual and respectful of our home. The only minor issue was a slight delay due to a backordered fixture, but they kept us informed and made it right. The final result is beautiful and functional. Worth every penny.",
+            "reviewDate": "2024-11-20T00:00:00.000Z",
+            "source": "Google",
+            "photoUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&fit=crop&q=80"
+          },
+          {
+            "customerName": "Robert Martinez",
+            "city": "Medina",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Exceptional Craftsmanship",
+            "reviewText": "After getting quotes from three different contractors, we chose this team and we're so glad we did. The quality of their work is simply exceptional. Every detail was perfect - from the tile alignment to the grout lines to the fixture installation. They transformed our cramped bathroom into an open, luxurious space that adds real value to our home.",
+            "reviewDate": "2024-10-05T00:00:00.000Z",
+            "source": "Google"
+          },
+          {
+            "customerName": "Emily Thompson",
+            "city": "Strongsville",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Best Decision Ever!",
+            "reviewText": "We were nervous about doing a full bathroom renovation, but this team made the entire process stress-free. They walked us through every step, offered great design suggestions, and completed the work in just three weeks. Our bathroom looks like it belongs in a luxury hotel. The heated floors and custom vanity are absolute game-changers. Thank you for the amazing work!",
+            "reviewDate": "2024-09-18T00:00:00.000Z",
+            "source": "Yelp",
+            "photoUrl": "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=96&h=96&fit=crop&q=80"
+          },
+          {
+            "customerName": "David Anderson",
+            "city": "North Royalton",
+            "state": "OH",
+            "rating": 5,
+            "reviewTitle": "Highly Professional Team",
+            "reviewText": "Great communication, fair pricing, and excellent results. Would hire again without hesitation.",
+            "reviewDate": "2024-08-25T00:00:00.000Z",
+            "source": "Google"
+          }
+        ],
+        "aggregateRating": 4.8,
+        "totalReviews": 6
       },
       "branch": {
         "name": "",

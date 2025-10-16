@@ -4,6 +4,7 @@ import HeroSection from '@/components/HeroSection'
 import TrustBar from '@/components/TrustBar'
 import BenefitsGrid from '@/components/BenefitsGrid'
 import ProcessTimeline from '@/components/ProcessTimeline'
+import TestimonialsGrid from '@/components/TestimonialsGrid'
 import type { PageParams } from '@/types/page.types'
 import type { EnhancedPageData, ContentData } from '@/types/content-data'
 
@@ -70,6 +71,7 @@ export default async function ServiceLocationPage({
       <TrustBar trustBar={pageData.trustBar} branding={pageData.branding} />
       <BenefitsGrid benefits={pageData.content.benefits} />
       <ProcessTimeline steps={pageData.content.processSteps} />
+      <TestimonialsGrid testimonials={pageData.socialProof.testimonials} />
       <section className="max-w-4xl mx-auto py-8 px-4">
         <h2 className="text-3xl font-bold mb-6">About This Page</h2>
         <p className="text-lg mb-4">

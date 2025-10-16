@@ -135,6 +135,7 @@ export interface TestimonialItem {
   reviewText: string // Testimonials.Review Text
   reviewDate: string // Testimonials.Review Date (ISO string)
   source: string // Testimonials.Source (Google, Yelp, etc.)
+  photoUrl?: string // Testimonials.Photo URL (optional)
 }
 
 export interface BranchData {

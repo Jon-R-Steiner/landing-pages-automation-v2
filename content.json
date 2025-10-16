@@ -109,7 +109,48 @@
             "timeline": "Week 5"
           }
         ],
-        "faqs": []
+        "faqs": [
+          {
+            "question": "How much does a bathroom remodel cost?",
+            "answer": "The cost of a bathroom remodel varies based on the size of the space, materials selected, and scope of work. On average, a full bathroom remodel in Strongsville ranges from $10,000 to $25,000. A simple refresh with new fixtures and paint may cost $5,000-$8,000, while a luxury master bath renovation can reach $30,000-$50,000. We provide detailed, itemized quotes during your free consultation so you know exactly what to expect—no hidden fees or surprises."
+          },
+          {
+            "question": "How long does a typical bathroom renovation take?",
+            "answer": "Most bathroom remodels take 2-4 weeks from start to finish, depending on the complexity of the project. A powder room refresh might be completed in 1-2 weeks, while a full master bath with custom tile work, new plumbing, and electrical updates typically takes 3-4 weeks. We'll provide you with a detailed timeline during your consultation and keep you informed every step of the way."
+          },
+          {
+            "question": "Do I need permits for bathroom remodeling?",
+            "answer": "Yes, most bathroom remodels require permits, especially if you're doing plumbing, electrical, or structural work. We handle all permit applications and inspections for you as part of our service. This ensures your renovation meets all local building codes and protects your investment. Permit costs are included in your project quote."
+          },
+          {
+            "question": "Can I use my bathroom during the renovation?",
+            "answer": "Unfortunately, your bathroom will not be usable during the active renovation period. We recommend planning ahead if this is your only bathroom—perhaps staying with family or using a portable facility. However, we work efficiently to minimize downtime and always clean up thoroughly at the end of each day. For multi-bathroom homes, we can often schedule work to ensure you have at least one functioning bathroom."
+          },
+          {
+            "question": "What's included in your 5-year warranty?",
+            "answer": "Our 5-year warranty covers all labor and workmanship, including tile installation, plumbing connections, fixture installation, and custom carpentry. If any issue arises from our work within 5 years, we'll return to fix it at no charge. Materials are covered by their manufacturer warranties (typically 1-10 years depending on the product). We also provide a lifetime warranty on certain premium fixtures when selected."
+          },
+          {
+            "question": "Do you offer financing options?",
+            "answer": "Yes! We partner with several financing companies to offer flexible payment plans with competitive rates. Options include 12-month same-as-cash financing, low-interest loans up to 10 years, and special promotional rates for qualified buyers. We'll help you explore all available financing options during your free consultation to find a plan that fits your budget."
+          },
+          {
+            "question": "Can you match my existing tile or fixtures?",
+            "answer": "We'll do our best! If you're doing a partial remodel and need to match existing materials, bring us photos and we'll search our supplier network. However, tile and fixture lines change frequently, so exact matches aren't always possible. In many cases, we recommend considering a full room refresh with complementary new materials—it often looks better and costs less than tracking down discontinued products."
+          },
+          {
+            "question": "What if I want to change the layout of my bathroom?",
+            "answer": "Layout changes are absolutely possible and often transform a cramped, dated bathroom into a spacious, functional space. Moving plumbing fixtures (toilet, shower, sink) does add cost and complexity, but the results can be dramatic. During your design consultation, we'll discuss your vision, show you layout options, and provide accurate pricing for each scenario. We've successfully relocated fixtures in hundreds of bathrooms across Strongsville and Northeast Ohio."
+          },
+          {
+            "question": "Are walk-in showers better than tub/shower combos?",
+            "answer": "It depends on your needs! Walk-in showers are popular for their modern look, accessibility, and ease of cleaning. However, if you have young children or plan to sell your home soon, having at least one bathtub in the house is recommended. We can help you evaluate your options during the design phase and make the best choice for your lifestyle and home value."
+          },
+          {
+            "question": "What happens if you discover mold or water damage during demolition?",
+            "answer": "Unfortunately, hidden mold and water damage are common in bathroom renovations, especially in older homes. If we discover issues during demolition, we'll document everything with photos, explain the problem, and provide a detailed quote for remediation. We never proceed with hidden damage repairs without your approval. Our team is certified in mold remediation and can handle most issues in-house, which saves you time and money compared to hiring a separate specialist."
+          }
+        ]
       },
       "socialProof": {
         "testimonials": [
@@ -304,7 +345,48 @@
             "timeline": "Week 5"
           }
         ],
-        "faqs": []
+        "faqs": [
+          {
+            "question": "How much does a bathroom remodel cost?",
+            "answer": "The cost of a bathroom remodel varies based on the size of the space, materials selected, and scope of work. On average, a full bathroom remodel in Strongsville ranges from $10,000 to $25,000. A simple refresh with new fixtures and paint may cost $5,000-$8,000, while a luxury master bath renovation can reach $30,000-$50,000. We provide detailed, itemized quotes during your free consultation so you know exactly what to expect—no hidden fees or surprises."
+          },
+          {
+            "question": "How long does a typical bathroom renovation take?",
+            "answer": "Most bathroom remodels take 2-4 weeks from start to finish, depending on the complexity of the project. A powder room refresh might be completed in 1-2 weeks, while a full master bath with custom tile work, new plumbing, and electrical updates typically takes 3-4 weeks. We'll provide you with a detailed timeline during your consultation and keep you informed every step of the way."
+          },
+          {
+            "question": "Do I need permits for bathroom remodeling?",
+            "answer": "Yes, most bathroom remodels require permits, especially if you're doing plumbing, electrical, or structural work. We handle all permit applications and inspections for you as part of our service. This ensures your renovation meets all local building codes and protects your investment. Permit costs are included in your project quote."
+          },
+          {
+            "question": "Can I use my bathroom during the renovation?",
+            "answer": "Unfortunately, your bathroom will not be usable during the active renovation period. We recommend planning ahead if this is your only bathroom—perhaps staying with family or using a portable facility. However, we work efficiently to minimize downtime and always clean up thoroughly at the end of each day. For multi-bathroom homes, we can often schedule work to ensure you have at least one functioning bathroom."
+          },
+          {
+            "question": "What's included in your 5-year warranty?",
+            "answer": "Our 5-year warranty covers all labor and workmanship, including tile installation, plumbing connections, fixture installation, and custom carpentry. If any issue arises from our work within 5 years, we'll return to fix it at no charge. Materials are covered by their manufacturer warranties (typically 1-10 years depending on the product). We also provide a lifetime warranty on certain premium fixtures when selected."
+          },
+          {
+            "question": "Do you offer financing options?",
+            "answer": "Yes! We partner with several financing companies to offer flexible payment plans with competitive rates. Options include 12-month same-as-cash financing, low-interest loans up to 10 years, and special promotional rates for qualified buyers. We'll help you explore all available financing options during your free consultation to find a plan that fits your budget."
+          },
+          {
+            "question": "Can you match my existing tile or fixtures?",
+            "answer": "We'll do our best! If you're doing a partial remodel and need to match existing materials, bring us photos and we'll search our supplier network. However, tile and fixture lines change frequently, so exact matches aren't always possible. In many cases, we recommend considering a full room refresh with complementary new materials—it often looks better and costs less than tracking down discontinued products."
+          },
+          {
+            "question": "What if I want to change the layout of my bathroom?",
+            "answer": "Layout changes are absolutely possible and often transform a cramped, dated bathroom into a spacious, functional space. Moving plumbing fixtures (toilet, shower, sink) does add cost and complexity, but the results can be dramatic. During your design consultation, we'll discuss your vision, show you layout options, and provide accurate pricing for each scenario. We've successfully relocated fixtures in hundreds of bathrooms across Strongsville and Northeast Ohio."
+          },
+          {
+            "question": "Are walk-in showers better than tub/shower combos?",
+            "answer": "It depends on your needs! Walk-in showers are popular for their modern look, accessibility, and ease of cleaning. However, if you have young children or plan to sell your home soon, having at least one bathtub in the house is recommended. We can help you evaluate your options during the design phase and make the best choice for your lifestyle and home value."
+          },
+          {
+            "question": "What happens if you discover mold or water damage during demolition?",
+            "answer": "Unfortunately, hidden mold and water damage are common in bathroom renovations, especially in older homes. If we discover issues during demolition, we'll document everything with photos, explain the problem, and provide a detailed quote for remediation. We never proceed with hidden damage repairs without your approval. Our team is certified in mold remediation and can handle most issues in-house, which saves you time and money compared to hiring a separate specialist."
+          }
+        ]
       },
       "socialProof": {
         "testimonials": [

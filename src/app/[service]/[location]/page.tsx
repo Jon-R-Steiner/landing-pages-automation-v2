@@ -5,6 +5,7 @@ import TrustBar from '@/components/TrustBar'
 import BenefitsGrid from '@/components/BenefitsGrid'
 import ProcessTimeline from '@/components/ProcessTimeline'
 import TestimonialsGrid from '@/components/TestimonialsGrid'
+import FAQAccordion from '@/components/FAQAccordion'
 import type { PageParams } from '@/types/page.types'
 import type { EnhancedPageData, ContentData } from '@/types/content-data'
 
@@ -72,6 +73,7 @@ export default async function ServiceLocationPage({
       <BenefitsGrid benefits={pageData.content.benefits} />
       <ProcessTimeline steps={pageData.content.processSteps} />
       <TestimonialsGrid testimonials={pageData.socialProof.testimonials} />
+      <FAQAccordion items={pageData.content.faqs} />
       <section className="max-w-4xl mx-auto py-8 px-4">
         <h2 className="text-3xl font-bold mb-6">About This Page</h2>
         <p className="text-lg mb-4">

@@ -74,6 +74,8 @@ commands:
   - run-tests: Execute linting and tests
   - new-airtable-script: run task `new-airtable-script.md`
   - document-airtable-script: run task `document-airtable-script.md`
+  - get-table-schema: run task `get-airtable-table-schema.md`
+  - update-table-descriptions: run task `update-table-descriptions.md`
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
 
 dependencies:
@@ -86,6 +88,8 @@ dependencies:
     - validate-next-story.md
     - new-airtable-script.md
     - document-airtable-script.md
+    - get-airtable-table-schema.md
+    - update-table-descriptions.md
   templates:
     - airtable-script-doc-tmpl.yaml
 ```

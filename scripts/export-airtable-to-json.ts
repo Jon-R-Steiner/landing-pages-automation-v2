@@ -306,6 +306,10 @@ async function exportAirtablePages(): Promise<void> {
       service: serviceSlug,
       location: locationSlug,
 
+      // AI Max/PMax Optimization
+      serviceCategory: getField(fields, 'Service Category', undefined),
+      servicePriceHigh: getField(fields, 'Price Range High', undefined),
+
       // SEO
       seo: {
         title: getField(fields, 'SEO Title', `${serviceSlug} in ${locationSlug}`),
@@ -381,6 +385,8 @@ async function exportAirtablePages(): Promise<void> {
         address: getField(fields, 'Branch Address', ''),
         timezone: getField(fields, 'Branch Timezone', ''),
         hours: getField(fields, 'Branch Hours', ''),
+        latitude: getField(fields, 'Latitude', undefined),
+        longitude: getField(fields, 'Longitude', undefined),
         staff: branchStaff.map((s) => ({
           name: getField(s.fields, 'Full Name', ''),
           jobTitle: getField(s.fields, 'Job Title', ''),
@@ -397,6 +403,11 @@ async function exportAirtablePages(): Promise<void> {
         secondaryColor: getField(fields, 'Secondary Color', '#8b5cf6'),
         logoUrl: getField(fields, 'Logo URL', ''),
         googleFonts: getField(fields, 'Google Fonts', 'Inter'),
+        // Warranty information (for Schema.org)
+        productWarrantyDuration: getField(fields, 'Product Warranty Duration', undefined),
+        productWarrantyScope: getField(fields, 'Product Warranty Scope', undefined),
+        workmanshipWarrantyDuration: getField(fields, 'Workmanship Warranty Duration', undefined),
+        workmanshipWarrantyScope: getField(fields, 'Workmanship Warranty Scope', undefined),
       },
 
       // Offer (optional)

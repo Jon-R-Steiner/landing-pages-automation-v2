@@ -37,6 +37,10 @@ export interface EnhancedPageData {
   service: string // Service Slug lookup (e.g., "bathroom-remodeling")
   location: string // Location Slug lookup (e.g., "strongsville")
 
+  // === AI MAX/PMAX OPTIMIZATION ===
+  serviceCategory?: string // AI-generated category (e.g., "Home Improvement", "Aging-in-Place")
+  servicePriceHigh?: number // Service.Price Range High lookup (for ads feed)
+
   // === SEO ===
   seo: SEOData
 
@@ -145,6 +149,8 @@ export interface BranchData {
   address: string // Branch.Address lookup
   timezone: string // Branch.Timezone lookup
   hours: string // Branch.Hours Summary lookup
+  latitude?: number // Branch.Latitude lookup (required for LocalBusiness Schema - optional until Airtable updated)
+  longitude?: number // Branch.Longitude lookup (required for LocalBusiness Schema - optional until Airtable updated)
   staff: StaffMember[] // Filtered from Branch Staff table
 }
 
@@ -162,6 +168,12 @@ export interface BrandingData {
   secondaryColor: string // Client.Secondary Color lookup (e.g., "#8b5cf6")
   logoUrl: string // Client.Logo URL lookup
   googleFonts: string // Client.Google Fonts lookup (e.g., "Inter")
+
+  // === WARRANTY INFORMATION (for Schema.org) ===
+  productWarrantyDuration?: string // Client.Product Warranty Duration (e.g., "P12Y" - ISO 8601 format)
+  productWarrantyScope?: string // Client.Product Warranty Scope (e.g., "12-year warranty on tub materials.")
+  workmanshipWarrantyDuration?: string // Client.Workmanship Warranty Duration (e.g., "P1Y" - ISO 8601 format)
+  workmanshipWarrantyScope?: string // Client.Workmanship Warranty Scope (e.g., "1-year warranty covering installation workmanship.")
 }
 
 export interface OfferData {

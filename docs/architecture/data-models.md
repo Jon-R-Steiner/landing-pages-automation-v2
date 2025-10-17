@@ -67,26 +67,8 @@ The system uses three distinct data storage strategies:
 - ✅ 3 automations ready: Auto-Match Branch, Trigger AI Generation, Export on Approval
 - ✅ Multiple views per table for different workflows
 
-**For detailed field specifications, relationships, example records, and automation logic, see:**
-📄 `Archive/airtable-schema-phase1.md` (Complete 1,700+ line schema specification)
-
-### Detailed Table Specifications
-
-The complete field-by-field specifications for all 12 tables are documented in the archived schema file. This includes:
-
-- Complete field lists with types, required/optional flags, and examples
-- Formula field definitions (URL slugs, unique keys, computed values)
-- Lookup and rollup field configurations
-- Relationship mappings between tables
-- View configurations for each table
-- Example records for reference
-- Automation logic specifications
-
-**See:** `Archive/airtable-schema-phase1.md` for full details on:
-- Foundation Tables (Clients, Services, Locations, Branch Locations, Service Areas, Branch Staff)
-- Core Content Table (Pages with 50+ fields)
-- Content Libraries (CTAs, Hero Images Library, Testimonials)
-- Marketing Tables (Offers, Campaigns)
+**For current field specifications:**
+Fetch live schema via Airtable Metadata API (Base ID: `appATvatPtaoJ8MmS`).
 
 ---
 

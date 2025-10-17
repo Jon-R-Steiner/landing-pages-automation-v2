@@ -1,0 +1,29 @@
+Auto-generates Pages when new Offer is created.
+
+BEHAVIOR:
+• Reads all Services and filters by Target Services
+• Reads all Locations and filters by Target Locations
+• Further filters by Target Branches (via Service Areas)
+• Creates 1 Page per Service × Location × Keyword for this Offer
+• Validates keywords (min 3 chars, must contain letters)
+• Automatically prevents duplicate pages
+• Sets all new pages to Status: Draft, Published: false
+
+TARGETING:
+• Target Services empty = ALL services
+• Target Locations empty = ALL locations
+• Target Branches empty = no additional filtering
+• Target Branches set = only locations served by those branches
+
+EXAMPLE:
+Add "Bathroom Spring Sale" offer
+→ Target Services: [Bathroom Remodeling]
+→ Target Locations: [ALL]
+→ Target Branches: [Medina Office]
+→ Creates pages ONLY for Bathroom × Medina Office's locations × all keywords
+
+NOTES:
+• Can create 100+ pages depending on targeting
+• Handles up to ~750 pages per run (30 second script timeout)
+• Skips services with no keywords
+• Uses batch creation for performance

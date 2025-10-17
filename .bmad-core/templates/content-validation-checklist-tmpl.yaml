@@ -1,0 +1,232 @@
+# Content Validation Checklist Template
+
+metadata:
+  template_version: 1.0
+  template_type: validation-checklist
+  purpose: Validate generated landing page content before writing to Airtable
+  agent_owner: copywriter
+  last_updated: 2025-01-10
+
+# This checklist should be run after content generation to ensure quality
+
+seo_meta_validation:
+  section: SEO Meta (Title & Description)
+  checks:
+    - id: title_length
+      check: "Title is 50-60 characters (or 40-60 acceptable)"
+      critical: true
+
+    - id: title_includes_service
+      check: "Title includes exact service name or close variation"
+      critical: true
+
+    - id: title_includes_location
+      check: "Title includes location (City, State or City)"
+      critical: true
+
+    - id: title_natural
+      check: "Title reads naturally (not keyword-stuffed)"
+      critical: true
+
+    - id: description_length
+      check: "Description is 150-160 characters (or 120-160 acceptable)"
+      critical: true
+
+    - id: description_includes_service
+      check: "Description includes service name"
+      critical: true
+
+    - id: description_includes_location
+      check: "Description includes location reference"
+      critical: true
+
+    - id: description_has_cta
+      check: "Description ends with clear call-to-action"
+      critical: false
+
+    - id: description_has_differentiators
+      check: "Description includes 2-3 trust signals or differentiators"
+      critical: true
+
+    - id: message_match
+      check: "If Google Ads: Meta matches ad copy for message match"
+      critical: false
+
+hero_copy_validation:
+  section: Hero Copy (H1 & Subheadline)
+  checks:
+    - id: h1_length
+      check: "H1 is 40-70 characters (or 30-80 acceptable)"
+      critical: true
+
+    - id: h1_includes_service
+      check: "H1 includes service name"
+      critical: true
+
+    - id: h1_includes_location
+      check: "H1 includes location (City, State or City)"
+      critical: true
+
+    - id: h1_natural
+      check: "H1 reads naturally (not keyword-stuffed)"
+      critical: true
+
+    - id: subheadline_length
+      check: "Subheadline is 80-120 characters (or 60-140 acceptable)"
+      critical: true
+
+    - id: subheadline_benefit
+      check: "Subheadline includes emotional benefit or outcome"
+      critical: true
+
+    - id: subheadline_differentiator
+      check: "Subheadline includes 1-2 differentiators or trust signals"
+      critical: true
+
+    - id: subheadline_cta
+      check: "Subheadline ends with CTA or urgency statement"
+      critical: false
+
+    - id: no_repetition
+      check: "Subheadline doesn't repeat H1 verbatim (adds new info)"
+      critical: true
+
+faq_validation:
+  section: FAQ Section
+  checks:
+    - id: faq_count
+      check: "Exactly 5 FAQ items present"
+      critical: true
+
+    - id: faq_json_valid
+      check: "FAQ array is valid JSON syntax"
+      critical: true
+
+    - id: faq_questions_end_with_question_mark
+      check: "All questions end with '?'"
+      critical: true
+
+    - id: faq_answer_length
+      check: "All answers are 50-150 words"
+      critical: true
+
+    - id: faq_includes_service_location
+      check: "Service + location mentioned in 3-4 questions/answers"
+      critical: true
+
+    - id: faq_includes_trust_signals
+      check: "Trust signals included (years, ratings, certifications)"
+      critical: true
+
+    - id: faq_has_cta
+      check: "2-3 answers include soft CTAs"
+      critical: false
+
+    - id: faq_addresses_real_concerns
+      check: "Questions address real user concerns (not company-centric)"
+      critical: true
+
+    - id: faq_answers_specific
+      check: "Answers are specific and helpful (not vague)"
+      critical: true
+
+    - id: faq_variety
+      check: "Mix of question types (cost, timeline, trust, process)"
+      critical: true
+
+benefits_validation:
+  section: Benefits List
+  checks:
+    - id: benefits_count
+      check: "5-7 benefits present (prefer 6 for grid layout)"
+      critical: true
+
+    - id: benefits_json_valid
+      check: "Benefits array is valid JSON syntax"
+      critical: true
+
+    - id: benefits_have_all_fields
+      check: "All benefits have title, description, and icon"
+      critical: true
+
+    - id: benefits_title_length
+      check: "All titles are 3-8 words"
+      critical: true
+
+    - id: benefits_description_length
+      check: "All descriptions are 15-30 words"
+      critical: true
+
+    - id: benefits_customer_focused
+      check: "Benefits are customer-focused (not company/feature-focused)"
+      critical: true
+
+    - id: benefits_have_specifics
+      check: "Benefits include specific numbers and proof points"
+      critical: true
+
+    - id: benefits_variety
+      check: "Mix of benefit categories (quality, trust, convenience, financial)"
+      critical: true
+
+    - id: benefits_differentiated
+      check: "Benefits are unique to this company (not generic)"
+      critical: true
+
+    - id: benefits_icons_valid
+      check: "All icons are from approved list (star, shield, clock, etc.)"
+      critical: true
+
+overall_content_quality:
+  section: Overall Content Quality
+  checks:
+    - id: no_placeholder_text
+      check: "No placeholder text remaining (e.g., '[Company Name]', '[Service]')"
+      critical: true
+
+    - id: consistent_company_name
+      check: "Company name used consistently across all content"
+      critical: true
+
+    - id: consistent_service_name
+      check: "Service name used consistently across all content"
+      critical: true
+
+    - id: consistent_location
+      check: "Location referenced consistently across all content"
+      critical: true
+
+    - id: proper_capitalization
+      check: "Proper capitalization and punctuation throughout"
+      critical: true
+
+    - id: no_typos
+      check: "No obvious spelling or grammar errors"
+      critical: true
+
+    - id: brand_voice_consistent
+      check: "Content matches brand voice guidelines (if provided)"
+      critical: false
+
+    - id: reading_level_appropriate
+      check: "Content is accessible (8th grade reading level or lower)"
+      critical: false
+
+    - id: no_jargon
+      check: "Minimal industry jargon (or explained if used)"
+      critical: false
+
+    - id: compelling_copy
+      check: "Overall content is compelling and persuasive"
+      critical: true
+
+# Validation Scoring:
+# - All "critical: true" items must pass
+# - "critical: false" items are recommended but optional
+# - If any critical check fails, content should be regenerated
+
+# Usage:
+# 1. After generating all content, run through this checklist
+# 2. Mark each check as pass/fail
+# 3. If critical checks fail, regenerate that section
+# 4. Once all critical checks pass, proceed to write to Airtable

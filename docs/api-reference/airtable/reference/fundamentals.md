@@ -6,6 +6,11 @@
 
 ---
 
+**📌 Before You Start:**
+This guide covers the **Airtable Scripting API** (for automations inside Airtable). If you're unsure which API to use (Scripting API vs REST API vs Airtable.js), read **[access-methods.md](./access-methods.md)** first to understand when to use each method.
+
+---
+
 ## Table of Contents
 
 1. [Script Structure](#script-structure)

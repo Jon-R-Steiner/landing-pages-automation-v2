@@ -79,14 +79,14 @@ Each automation script follows this pattern:
 
 ```
 scripts/Airtable/
-├── airtable-automation-match-branch.js       # The script
-├── airtable-automation-match-branch.README.md # Documentation
+├── automation-airtable-match-branch.js       # The script
+├── automation-airtable-automation-match-branch.README.md # Documentation
 ├── [next-script].js
 ├── [next-script].README.md
 └── README.md                                  # This file
 ```
 
-**Naming Convention:** `airtable-automation-[descriptive-name].js`
+**Naming Convention:** `automation-airtable-automation-[descriptive-name].js`
 
 ---
 

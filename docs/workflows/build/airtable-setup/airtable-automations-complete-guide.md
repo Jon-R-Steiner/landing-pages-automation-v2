@@ -11,6 +11,7 @@
 
 Track your overall progress across all automations:
 
+### Core Workflow Automations
 - [x] **Automation 0**: Set Default Values (CRITICAL) ✅ **TESTED & WORKING**
 - [ ] **Automation 3**: Export on Approval (CRITICAL)
 - [ ] **Automation 4**: Clear Matched Branch When Location Removed
@@ -19,7 +20,12 @@ Track your overall progress across all automations:
 - [ ] **Automation 5**: Validate Before AI Processing (FUTURE)
 - [ ] **Automation 7**: Warn About Expired Offers (FUTURE)
 
-**Current Status**: 1 of 7 automations complete
+### Auto-Generation Automations (NEW!)
+- [ ] **Automation 9**: New Keyword → Auto-Create Pages (CRITICAL)
+- [ ] **Automation 10**: New Location → Auto-Create Pages (CRITICAL)
+- [ ] **Automation 11**: New Offer → Auto-Create Offer Pages (OPTIONAL)
+
+**Current Status**: 1 of 10 automations complete
 
 ---
 
@@ -903,6 +909,54 @@ Use this to track overall progress:
 
 ---
 
+## 🆕 Auto-Generation Automations (Automations 9, 10, 11)
+
+**NEW FEATURE**: Automatically create Pages records when foundational data changes!
+
+### Overview
+
+These automations use **Airtable Scripting Actions** to auto-generate Pages records when:
+- **Automation 9**: New keyword added to Service.Primary Keywords
+- **Automation 10**: New Location created
+- **Automation 11**: New Offer created
+
+### Schema Requirement
+
+⚠️ **CRITICAL**: Before implementing these automations, you MUST add the "Target Keyword" field to Pages table!
+
+**Field Configuration:**
+- **Field Name:** `Target Keyword`
+- **Type:** Single line text
+- **Purpose:** Specific keyword this page targets (from Service.Primary Keywords)
+
+**Update Unique Key Formula:**
+```
+{Service Slug} & "-" & {Location Slug} & "-" & LOWER(SUBSTITUTE({Target Keyword}, " ", "-"))
+```
+
+### Complete Setup Guide
+
+📖 **Full documentation:** `scripts/Airtable/AUTO-GENERATION-SETUP-GUIDE.md`
+
+This guide includes:
+- Step-by-step setup instructions for all 3 automations
+- Complete JavaScript scripts ready to copy/paste
+- Testing procedures and validation
+- Troubleshooting tips
+
+### Quick Reference
+
+**Automation Scripts:**
+- `scripts/Airtable/automation-9-new-keyword.js` - New keyword handler
+- `scripts/Airtable/automation-10-new-location.js` - New location handler
+- `scripts/Airtable/automation-11-new-offer.js` - New offer handler
+
+**Setup Time:** ~1.5 hours total (15 min per automation + testing)
+
+**When to Implement:** After Automation 0 is working, before scaling content production
+
+---
+
 ## 📚 Additional Resources
 
 ### Airtable Schema Reference
@@ -913,6 +967,7 @@ Use this to track overall progress:
 ### Automation Documentation
 - **Automation 1**: Already implemented (Auto-Match Branch)
 - **Script Reference**: `scripts/Airtable/airtable-automation-match-branch.js`
+- **Automations 9-11**: `scripts/Airtable/AUTO-GENERATION-SETUP-GUIDE.md` (NEW!)
 
 ### External Dependencies
 - **GitHub Actions Workflow**: `.github/workflows/airtable-export.yml` (Phase 0.3b)

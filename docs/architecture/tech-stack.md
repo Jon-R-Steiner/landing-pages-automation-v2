@@ -385,15 +385,19 @@ module.exports = withBeasties({
 
 ---
 
-### Claude API
+### BMad Content Writer Agent (MVP)
 
-**Purpose:** AI content generation (Trust Bar, Gallery, FAQ)
+**Purpose:** AI content generation (FAQ, Benefits, SEO Meta, Hero Copy)
 
 **Integration:**
-- **Build-Time:** Netlify Functions generate AI content in Airtable
-- **Runtime:** NO API calls (content pre-generated in Airtable)
+- **Manual Trigger:** Developer runs BMad Content Writer agent via Claude Code
+- **Agent Command:** `/BMad:agents:copywriter` then `*generate-full-page {record_id}`
+- **API Integration:** Agent uses Airtable REST API to read/write content
+- **No Infrastructure:** Leverages existing Claude Code subscription (no API keys needed)
 
-**Cost:** ~$0.50-1.00 per 500 pages
+**Future State:** Agent workflows will be converted to Netlify Functions with Claude API
+
+**Cost:** $0 (uses existing Claude Code subscription)
 
 ---
 

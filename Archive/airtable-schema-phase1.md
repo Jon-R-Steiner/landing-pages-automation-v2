@@ -5,7 +5,7 @@
 
 Phase 1 focuses on core functionality with room for future expansion.
 
-**Tables:** 11 core tables
+**Tables:** 12 core tables
 **Max Capacity:** 3,000 pages
 **Future-Proofed:** Fields planned for later features (dormant until needed)
 
@@ -41,7 +41,7 @@ Phase 1 focuses on core functionality with room for future expansion.
 IDENTITY:
   - Client ID (auto-number) [Primary Key]
   - Client Name (single line text) *Required
-  - Domain (URL) *Required - "bathsrus.com" (no https://, no trailing /)
+  - Domain (single line text) *Required - "bathsrus.com" (no https://, no trailing /)
   - Active (checkbox) *Default: true
 
 BRANDING:
@@ -57,18 +57,21 @@ CONTACT:
 
 TRACKING & INTEGRATIONS:
   - GTM Container ID (single line text)
-  - CallRail Swap Target (single line text)
+  - CallRail Swap Target (phone)
   - reCAPTCHA Site Key (single line text)
   - Salesforce Campaign ID (single line text)
   - Make.com Webhook URL (URL)
   - Google Analytics Property ID (single line text)
 
 BUSINESS INFO:
-  - Years in Business (number)
+  - Founded Date (date) *Required - e.g., 2020-01-01
+  - Years in Business (formula) - DATETIME_DIFF(TODAY(), {Founded Date}, 'years')
   - Licensed Since (number) - Year (e.g., 2010)
+  - Years Licensed (formula) - YEAR(TODAY()) - {Licensed Since}
   - Insurance Amount (currency) - $2,000,000
   - BBB Rating (single select) - A+, A, B, C, etc.
-  - Default Warranty Years (number) - Lifetime, 5, 10
+  - Product Warranty (single line text) - e.g., "Double Lifetime", "10 Years", "Lifetime"
+  - Workmanship Warranty Years (number) - e.g., 3, 5, 10
 
 METADATA:
   - Total Pages (rollup count from Pages)
@@ -79,8 +82,10 @@ METADATA:
 RELATIONSHIPS:
   - Branch Locations (linked to Branch Locations table)
   - Pages (linked to Pages table)
-  - Services Offered (linked to Services table)
-  - Active Offers (linked to Offers table)
+  - Testimonials (linked to Testimonials table)
+  - Services (linked to Services table)
+  - Offers (linked to Offers table)
+  - Campaigns (linked to Campaigns table)
 ```
 
 ### Views
@@ -141,10 +146,6 @@ AI CONFIGURATION:
   - Default Trust Bar Topics (long text, JSON)
     ["Licensed & Insured", "Years in Business", "Reviews", "Warranty", "Financing"]
 
-DEFAULTS:
-  - Default CTA ID (linked to CTAs)
-  - Default Offer ID (linked to Offers) - Optional
-
 METADATA:
   - Total Pages (rollup count from Pages)
   - Last Used (rollup max from Pages → Created Date)
@@ -152,9 +153,12 @@ METADATA:
   - Last Modified (last modified time)
 
 RELATIONSHIPS:
+  - Client (linked to Clients)
   - Pages (linked to Pages)
-  - Default CTA (linked to CTAs)
-  - Default Offer (linked to Offers)
+  - Hero Images Library (linked to Hero Images Library)
+  - Testimonials (linked to Testimonials)
+  - Offers (linked to Offers)
+  - Campaigns (linked to Campaigns)
 ```
 
 ### Keyword Grouping Logic
@@ -740,6 +744,25 @@ Landing page content and workflow management
     CONCATENATE("https://", {Client Domain}, "/", {URL Slug})
     Result: "https://bathsrus.com/bathroom-remodeling/strongsville"
 
+=== TARGET KEYWORD & OFFER SLUG ===
+
+  - Target Keyword (single line text) *Required
+    Purpose: Specific keyword from Service.Primary Keywords that this page targets
+    Example: "bathtub installation"
+
+    Why Needed:
+      - Enables keyword-specific pages (1 page per Service × Location × Keyword × Offer)
+      - Better SEO through hyper-focused content
+      - Powers Automations 9, 10, 11 (auto-page generation)
+      - Included in Unique Key and URL Slug formulas
+
+  - Offer Slug (lookup) *Required - From Offer ID → Offer Slug
+    Purpose: Pull offer slug for URL uniqueness (every page must have an offer)
+    Why Needed:
+      - Prevents URL collisions when multiple offers target same Service + Location + Keyword
+      - Example: Same service+location+keyword with 2 offers creates 2 unique URLs
+      - ALWAYS included in Unique Key and URL Slug (no conditional logic)
+
 === WORKFLOW STATUS ===
 
   - Status (single select) *Required *Default: Draft
@@ -765,7 +788,7 @@ Landing page content and workflow management
     Example: "Emphasize fast turnaround - client wants urgency angle"
 
   - Campaign (linked to Campaigns) - Optional
-  - Offer (linked to Offers) - Optional (overrides service default)
+  - Offer ID (linked to Offers) *Required - Every page must have an offer
   - Priority (single select) - High, Medium, Low
   - Notes (long text) - Internal notes
 
@@ -846,23 +869,27 @@ Landing page content and workflow management
 
 ```javascript
 // Unique Key (for duplicate detection)
-CONCATENATE(
-  {Client Name},
-  "-",
-  {Service Slug},
-  "-",
-  IF({Location Slug} = BLANK(), "national", {Location Slug})
-)
+// Always includes Service + Location + Keyword + Offer Slug
+{Service Slug} & "-" & {Location Slug} & "-" & LOWER(SUBSTITUTE({Target Keyword}, " ", "-")) & "-" & {Offer Slug}
+
+// Examples:
+// "bathroom-remodeling-austin-installation-spring-sale-20"
+// "kitchen-remodeling-houston-renovation-senior-discount"
 
 // URL Slug
-IF(
-  {Location ID} = BLANK(),
-  {Service Slug},
-  CONCATENATE({Service Slug}, "/", {Location Slug})
-)
+// Always includes Service / Location / Keyword / Offer Slug in path
+"/" & {Service Slug} & "/" & {Location Slug} & "/" & LOWER(SUBSTITUTE({Target Keyword}, " ", "-")) & "/" & {Offer Slug}
 
-// Page URL
-CONCATENATE("https://", {Client Domain}, "/", {URL Slug})
+// Examples:
+// "/bathroom-remodeling/austin/installation/spring-sale-20"
+// "/kitchen-remodeling/houston/renovation/senior-discount"
+
+// Page URL (no changes - automatically uses URL Slug)
+CONCATENATE("https://", {Client Domain}, {URL Slug})
+
+// Examples:
+// "https://bathsrus.com/bathroom-remodeling/austin/installation/spring-sale-20"
+// "https://bathsrus.com/kitchen-remodeling/houston/renovation/senior-discount"
 ```
 
 ### Views
@@ -1207,8 +1234,10 @@ Manage simultaneous promotions across services and locations
 IDENTITY:
   - Offer ID (auto-number) [Primary Key]
   - Offer Name (single line text) *Required - "Spring 2025 Bathroom Promo"
+  - Offer Slug (formula) *Auto-generated - "spring-2025-bathroom-promo"
+    Formula: LOWER(REGEX_REPLACE(REGEX_REPLACE(REGEX_REPLACE({Offer Name}, '[^a-zA-Z0-9\\s]', ''), '\\s+', '-'), '-+', '-'))
+    Purpose: URL-friendly slug for unique page URLs
   - Client Name (linked to Clients) *Required
-  - Active (checkbox) *Default: true
 
 OFFER DETAILS:
   - Offer Type (single select) *Required
@@ -1228,12 +1257,9 @@ OFFER DETAILS:
 VALIDITY:
   - Start Date (date) *Required
   - End Date (date) *Required
-  - Status (formula)
-    IF(
-      AND(START_DATE <= TODAY(), END_DATE >= TODAY()),
-      "Active",
-      IF(END_DATE < TODAY(), "Expired", "Scheduled")
-    )
+  - Status (formula) *Auto-calculated based on dates
+    IF(AND({Start Date} <= TODAY(), {End Date} >= TODAY()), "Active", IF({End Date} < TODAY(), "Expired", "Scheduled"))
+    Returns: "Active", "Expired", or "Scheduled"
 
 TARGETING:
   - Target Services (linked to Services)

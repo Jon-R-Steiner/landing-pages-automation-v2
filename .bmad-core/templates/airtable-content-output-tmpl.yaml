@@ -1,0 +1,201 @@
+# Airtable Content Output Template
+
+metadata:
+  template_version: 1.0
+  template_type: airtable-output
+  purpose: Define structure for writing generated content to Airtable
+  agent_owner: copywriter
+  last_updated: 2025-01-10
+
+# This template defines the mapping between generated content and Airtable fields
+
+api_configuration:
+  base_url: "https://api.airtable.com/v0"
+  table_name: "Pages"
+  method: "PATCH"
+  headers:
+    - name: "Authorization"
+      value: "Bearer {AIRTABLE_API_KEY}"
+    - name: "Content-Type"
+      value: "application/json"
+
+field_mappings:
+  # Direct text fields
+  seo_title:
+    airtable_field: "SEO Title"
+    data_type: string
+    max_length: 60
+    required: true
+    validation: "Must be 40-60 characters"
+
+  seo_description:
+    airtable_field: "SEO Description"
+    data_type: string
+    max_length: 160
+    required: true
+    validation: "Must be 120-160 characters"
+
+  h1_headline:
+    airtable_field: "H1 Headline"
+    data_type: string
+    max_length: 80
+    required: true
+    validation: "Must be 30-80 characters"
+
+  hero_subheadline:
+    airtable_field: "Hero Subheadline"
+    data_type: string
+    max_length: 140
+    required: true
+    validation: "Must be 60-140 characters"
+
+  # JSON array fields (must be stringified)
+  faqs:
+    airtable_field: "FAQs"
+    data_type: long_text
+    format: json_string
+    required: true
+    validation: "Must be valid JSON array of 5 FAQ objects"
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          question:
+            type: string
+            description: "Question ending with ?"
+          answer:
+            type: string
+            description: "Answer 50-150 words"
+        required: [question, answer]
+
+  benefits:
+    airtable_field: "Benefits"
+    data_type: long_text
+    format: json_string
+    required: true
+    validation: "Must be valid JSON array of 5-7 benefit objects"
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            description: "Benefit title 3-8 words"
+          description:
+            type: string
+            description: "Benefit description 15-30 words"
+          icon:
+            type: string
+            description: "Icon keyword (star, shield, clock, etc.)"
+        required: [title, description, icon]
+
+  # Status field (updated after content write)
+  status:
+    airtable_field: "Status"
+    data_type: string
+    required: true
+    value: "Ready for Review"
+    description: "Status updated to signal marketing team can review"
+
+# Request body structure for Airtable PATCH
+request_body_template:
+  fields:
+    "SEO Title": "{seo_title}"
+    "SEO Description": "{seo_description}"
+    "H1 Headline": "{h1_headline}"
+    "Hero Subheadline": "{hero_subheadline}"
+    "FAQs": "{faqs_json_string}"
+    "Benefits": "{benefits_json_string}"
+    "Status": "Ready for Review"
+
+# Example cURL command structure
+example_curl:
+  command: |
+    curl -X PATCH "https://api.airtable.com/v0/{BASE_ID}/Pages/{RECORD_ID}" \
+      -H "Authorization: Bearer {API_KEY}" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "fields": {
+          "SEO Title": "Bathroom Remodeling in Austin, TX | Free Quote",
+          "SEO Description": "Transform your bathroom with Austin's trusted experts...",
+          "H1 Headline": "Expert Bathroom Remodeling in Austin, TX",
+          "Hero Subheadline": "Transform your bathroom into the space you've always dreamed of...",
+          "FAQs": "[{\"question\":\"How much does bathroom remodeling cost in Austin, TX?\",\"answer\":\"Bathroom remodeling in Austin...\"}]",
+          "Benefits": "[{\"title\":\"25+ Years of Austin Expertise\",\"description\":\"Trust a local company...\",\"icon\":\"award\"}]",
+          "Status": "Ready for Review"
+        }
+      }'
+
+# JSON stringification requirements
+json_stringification:
+  faqs:
+    input: "Array of FAQ objects"
+    output: "JSON string"
+    example:
+      input: |
+        [
+          {
+            "question": "How much does bathroom remodeling cost?",
+            "answer": "Bathroom remodeling in Austin typically ranges..."
+          }
+        ]
+      output: "[{\"question\":\"How much does bathroom remodeling cost?\",\"answer\":\"Bathroom remodeling in Austin typically ranges...\"}]"
+
+  benefits:
+    input: "Array of benefit objects"
+    output: "JSON string"
+    example:
+      input: |
+        [
+          {
+            "title": "25+ Years Experience",
+            "description": "Trust a local company that's been serving...",
+            "icon": "award"
+          }
+        ]
+      output: "[{\"title\":\"25+ Years Experience\",\"description\":\"Trust a local company that's been serving...\",\"icon\":\"award\"}]"
+
+# Error handling
+error_responses:
+  "401":
+    meaning: "Unauthorized - Invalid API key"
+    action: "Check AIRTABLE_API_KEY environment variable"
+
+  "404":
+    meaning: "Not Found - Record doesn't exist"
+    action: "Verify record ID is correct"
+
+  "422":
+    meaning: "Unprocessable Entity - Invalid field value"
+    action: "Check field values match Airtable schema"
+
+  "429":
+    meaning: "Too Many Requests - Rate limit exceeded"
+    action: "Wait and retry (Airtable limit: 5 req/sec)"
+
+# Success response example
+success_response_example:
+  status: 200
+  body:
+    id: "recABC123"
+    fields:
+      "SEO Title": "Bathroom Remodeling in Austin, TX | Free Quote"
+      "SEO Description": "Transform your bathroom with Austin's trusted experts..."
+      "H1 Headline": "Expert Bathroom Remodeling in Austin, TX"
+      "Hero Subheadline": "Transform your bathroom into the space..."
+      "FAQs": "[{\"question\":\"...\",\"answer\":\"...\"}]"
+      "Benefits": "[{\"title\":\"...\",\"description\":\"...\",\"icon\":\"...\"}]"
+      "Status": "Ready for Review"
+    createdTime: "2025-01-10T12:00:00.000Z"
+
+# Usage notes
+usage_notes:
+  - "Always validate content before writing to Airtable"
+  - "Use JSON.stringify() to convert arrays to strings"
+  - "Ensure no placeholder text remains (e.g., [Company Name])"
+  - "Update Status field to signal completion"
+  - "Check response status code and handle errors gracefully"
+  - "Display success message with record ID and Airtable link"
+  - "Offer to save locally if write fails"

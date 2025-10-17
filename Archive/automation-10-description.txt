@@ -1,0 +1,18 @@
+Auto-generates Pages when new Location is created.
+
+BEHAVIOR:
+• Reads all existing Services with Primary Keywords
+• Creates 1 Page per Service × Keyword × this new Location
+• Validates keywords (min 3 chars, must contain letters)
+• Automatically prevents duplicate pages
+• Sets all new pages to Status: Draft, Published: false
+
+EXAMPLE:
+Add "San Antonio, TX" location
+→ Creates pages for all Service × Keyword combinations
+→ If 3 services with 5 keywords each = 15 new pages
+
+NOTES:
+• Handles up to ~100 pages per run (30 second script timeout)
+• Skips services with no keywords
+• Target Keyword field automatically populated

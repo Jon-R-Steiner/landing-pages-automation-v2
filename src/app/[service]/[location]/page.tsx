@@ -74,78 +74,97 @@ export default async function ServiceLocationPage({
   // ============================================
   // Generate feed-style data layer for Google Ads optimization
   // This helps AI Max generate more relevant headlines and improve targeting
-  const adsFeedData = generateAdsFeedData(pageData)
+  // Skip if required data is missing (test data)
+  let adsFeedData = null
+  try {
+    adsFeedData = generateAdsFeedData(pageData)
+  } catch (error) {
+    // Silently skip ads feed if required data is missing
+    // This allows builds to succeed with incomplete test data
+    console.warn(`Skipping ads feed for ${pageData.urlSlug}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 
   // ============================================
   // SERVICE SCHEMA (Schema.org JSON-LD)
   // ============================================
   // Generate Service schema for SEO and AI Max/PMax optimization
   // Includes offer catalog, warranty info, and provider details
+  // Skip if required data is missing (test data)
+  let serviceSchema = null
+  try {
+    // Parse branch address from single address string
+    // Format: "3985 Medina Rd, Suite 100, Medina, OH 44256"
+    // We'll need to split this - for now, use the full address as streetAddress
+    // TODO: Enhance this if address is stored in separate fields in Airtable
+    const addressParts = pageData.branch.address.split(', ')
+    const streetAddress = addressParts.slice(0, -3).join(', ') || pageData.branch.address
+    const city = addressParts[addressParts.length - 3] || 'Unknown'
+    const stateZip = addressParts[addressParts.length - 1] || ''
+    const [state, zipCode] = stateZip.split(' ')
 
-  // Parse branch address from single address string
-  // Format: "3985 Medina Rd, Suite 100, Medina, OH 44256"
-  // We'll need to split this - for now, use the full address as streetAddress
-  // TODO: Enhance this if address is stored in separate fields in Airtable
-  const addressParts = pageData.branch.address.split(', ')
-  const streetAddress = addressParts.slice(0, -3).join(', ') || pageData.branch.address
-  const city = addressParts[addressParts.length - 3] || 'Unknown'
-  const stateZip = addressParts[addressParts.length - 1] || ''
-  const [state, zipCode] = stateZip.split(' ')
+    // Extract service name from H1 (format: "Service Name in Location")
+    const serviceName = pageData.hero.h1Headline.split(' in ')[0] || pageData.hero.h1Headline
 
-  // Extract service name from H1 (format: "Service Name in Location")
-  const serviceName = pageData.hero.h1Headline.split(' in ')[0] || pageData.hero.h1Headline
+    // Format location name as "City, ST" for areaServed
+    const locationName = `${city}, ${state || 'OH'}`
 
-  // Format location name as "City, ST" for areaServed
-  const locationName = `${city}, ${state || 'OH'}`
+    // Extract client domain from page URL (e.g., "https://bathsrus.com/walk-in-tub/cleveland" → "https://bathsrus.com")
+    const clientDomain = pageData.seo.canonicalUrl.split('/').slice(0, 3).join('/')
 
-  // Extract client domain from page URL (e.g., "https://bathsrus.com/walk-in-tub/cleveland" → "https://bathsrus.com")
-  const clientDomain = pageData.seo.canonicalUrl.split('/').slice(0, 3).join('/')
+    const branchAddress = createPostalAddress({
+      streetAddress,
+      city,
+      state: state || 'OH',
+      zipCode: zipCode || '00000',
+    })
 
-  const branchAddress = createPostalAddress({
-    streetAddress,
-    city,
-    state: state || 'OH',
-    zipCode: zipCode || '00000',
-  })
-
-  const serviceSchema = generateServiceSchema({
-    serviceName,
-    serviceDescription: pageData.content.serviceDescription,
-    clientName: pageData.branch.name,
-    branchPhone: pageData.branch.phone,
-    branchAddress,
-    locationName,
-    canonicalUrl: pageData.seo.canonicalUrl,
-    heroImageUrl: pageData.hero.imageUrl,
-    latitude: pageData.branch.latitude,
-    longitude: pageData.branch.longitude,
-    clientDomain,
-    servicePriceHigh: pageData.servicePriceHigh,
-    offerData: pageData.offer,
-    branding: pageData.branding,
-  })
+    serviceSchema = generateServiceSchema({
+      serviceName,
+      serviceDescription: pageData.content.serviceDescription,
+      clientName: pageData.branch.name,
+      branchPhone: pageData.branch.phone,
+      branchAddress,
+      locationName,
+      canonicalUrl: pageData.seo.canonicalUrl,
+      heroImageUrl: pageData.hero.imageUrl,
+      latitude: pageData.branch.latitude,
+      longitude: pageData.branch.longitude,
+      clientDomain,
+      servicePriceHigh: pageData.servicePriceHigh,
+      offerData: pageData.offer,
+      branding: pageData.branding,
+    })
+  } catch (error) {
+    // Silently skip service schema if required data is missing
+    // This allows builds to succeed with incomplete test data
+    console.warn(`Skipping service schema for ${pageData.urlSlug}: ${error instanceof Error ? error.message : 'Unknown error'}`)
+  }
 
   return (
     <>
       {/* AI Max/PMax Feed-Style Data Layer */}
-      <Script
-        id="adsFeed"
-        type="application/json"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(adsFeedData, null, 2),
-        }}
-      />
+      {adsFeedData && (
+        <Script
+          id="adsFeed"
+          type="application/json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(adsFeedData, null, 2),
+          }}
+        />
+      )}
 
       {/* Service Schema.org JSON-LD */}
-      <Script
-        id="serviceSchema"
-        type="application/ld+json"
-        strategy="beforeInteractive"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(serviceSchema, null, 2),
-        }}
-      />
+      {serviceSchema && (
+        <Script
+          id="serviceSchema"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(serviceSchema, null, 2),
+          }}
+        />
+      )}
 
       <main>
         <HeroSection hero={pageData.hero} branding={pageData.branding} />

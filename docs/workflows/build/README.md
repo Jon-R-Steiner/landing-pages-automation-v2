@@ -40,7 +40,7 @@ This folder contains all documentation related to **one-time setup activities** 
 build/
 ├── README.md (this file)
 ├── airtable-setup/              # Airtable automation setup
-│   └── airtable-automations-complete-guide.md  # Complete guide for all 7+ automations
+│   └── automations-airtable-complete-guide.md  # Complete guide for all 7+ automations
 ├── github-actions-setup/        # GitHub Actions configuration (future)
 └── netlify-setup/               # Netlify deployment setup (future)
 ```

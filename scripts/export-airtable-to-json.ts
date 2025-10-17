@@ -64,6 +64,27 @@ function getField<T>(fields: Record<string, unknown>, fieldName: string, default
 }
 
 /**
+ * Get value from Airtable lookup field (handles arrays)
+ * Lookup fields return arrays like ["value"], this extracts the first element
+ */
+function getLookupField<T>(fields: Record<string, unknown>, fieldName: string, defaultValue: T): T {
+  const value = fields[fieldName]
+
+  // If value is an array, return first element
+  if (Array.isArray(value) && value.length > 0) {
+    return value[0] as T
+  }
+
+  // If value exists but isn't an array, return as-is
+  if (value !== undefined && value !== null) {
+    return value as T
+  }
+
+  // Return default if undefined/null
+  return defaultValue
+}
+
+/**
  * Parse JSON field safely
  */
 function parseJSON<T>(jsonString: string | undefined, defaultValue: T): T {
@@ -194,6 +215,37 @@ async function exportAirtablePages(): Promise<void> {
     )
     console.log(sampleFields.slice(0, 20).join(', '))
     console.log(`  ... and ${Math.max(0, sampleFields.length - 20)} more\n`)
+
+    // ENHANCED DEBUG: Show warranty and price field values
+    console.log('🔍 DEBUG: Checking warranty and price fields...')
+    const fields = pagesRecords[0].fields
+    const debugFields = [
+      'Product Warranty Duration',
+      'Product Warranty Duration (from Client Name)',
+      'Product Warranty Scope',
+      'Product Warranty Scope (from Client Name)',
+      'Workmanship Warranty Duration',
+      'Workmanship Warranty Duration (from Client Name)',
+      'Workmanship Warranty Scope',
+      'Workmanship Warranty Scope (from Client Name)',
+      'Service Category',
+      'Price Range High',
+      'Price Range High (from Service ID)',
+      'Price Range Low (from Service ID)',
+    ]
+
+    debugFields.forEach(fieldName => {
+      const value = fields[fieldName]
+      if (value !== undefined) {
+        console.log(`  ✅ "${fieldName}":`,
+          Array.isArray(value) ? `[Array: ${JSON.stringify(value)}]` :
+          typeof value === 'object' ? JSON.stringify(value) :
+          `"${value}"`)
+      } else {
+        console.log(`  ❌ "${fieldName}": undefined`)
+      }
+    })
+    console.log('')
   }
 
   // ============================================
@@ -308,7 +360,7 @@ async function exportAirtablePages(): Promise<void> {
 
       // AI Max/PMax Optimization
       serviceCategory: getField(fields, 'Service Category', undefined),
-      servicePriceHigh: getField(fields, 'Price Range High', undefined),
+      servicePriceHigh: getLookupField(fields, 'Price Range High (from Service ID)', undefined),
 
       // SEO
       seo: {
@@ -403,11 +455,11 @@ async function exportAirtablePages(): Promise<void> {
         secondaryColor: getField(fields, 'Secondary Color', '#8b5cf6'),
         logoUrl: getField(fields, 'Logo URL', ''),
         googleFonts: getField(fields, 'Google Fonts', 'Inter'),
-        // Warranty information (for Schema.org)
-        productWarrantyDuration: getField(fields, 'Product Warranty Duration', undefined),
-        productWarrantyScope: getField(fields, 'Product Warranty Scope', undefined),
-        workmanshipWarrantyDuration: getField(fields, 'Workmanship Warranty Duration', undefined),
-        workmanshipWarrantyScope: getField(fields, 'Workmanship Warranty Scope', undefined),
+        // Warranty information (for Schema.org) - using lookup fields from Client table
+        productWarrantyDuration: getLookupField(fields, 'Product Warranty Duration (from Client Name)', undefined),
+        productWarrantyScope: getLookupField(fields, 'Product Warranty Scope (from Client Name)', undefined),
+        workmanshipWarrantyDuration: getLookupField(fields, 'Workmanship Warranty Duration (from Client Name)', undefined),
+        workmanshipWarrantyScope: getLookupField(fields, 'Workmanship Warranty Scope (from Client Name)', undefined),
       },
 
       // Offer (optional)

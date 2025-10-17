@@ -27,6 +27,12 @@ Load this entire folder when the dev agent needs to:
 
 Complete Airtable scripting knowledge base:
 
+0. **[access-methods.md](./reference/access-methods.md)** 🎯 **START HERE**
+   - Choosing the right API (Scripting API vs REST API vs Airtable.js)
+   - Decision flow chart
+   - When to use each method
+   - Practical examples for your project
+
 1. **[fundamentals.md](./reference/fundamentals.md)** 📖
    - Script structure (automation vs extension)
    - Core APIs (base, table, record)
@@ -72,17 +78,19 @@ Curated code examples organized by type:
 
 ### For Beginners
 
-1. Read [fundamentals.md](./reference/fundamentals.md) sections 1-3
-2. Study patterns in [patterns.md](./reference/patterns.md)
-3. Review [examples/README.md](./examples/README.md) for use cases
-4. Follow [best-practices.md](./reference/best-practices.md) checklist
+1. **START:** Read [access-methods.md](./reference/access-methods.md) to understand which API to use
+2. Read [fundamentals.md](./reference/fundamentals.md) sections 1-3
+3. Study patterns in [patterns.md](./reference/patterns.md)
+4. Review [examples/README.md](./examples/README.md) for use cases
+5. Follow [best-practices.md](./reference/best-practices.md) checklist
 
 ### For Experienced Developers
 
-1. Scan [fundamentals.md](./reference/fundamentals.md) for Airtable quirks
-2. Use [patterns.md](./reference/patterns.md) as a recipe book
-3. Check [examples/](./examples/) for similar implementations
-4. Apply [best-practices.md](./reference/best-practices.md) performance tips
+1. **Check:** [access-methods.md](./reference/access-methods.md) for quick decision guide
+2. Scan [fundamentals.md](./reference/fundamentals.md) for Airtable quirks
+3. Use [patterns.md](./reference/patterns.md) as a recipe book
+4. Check [examples/](./examples/) for similar implementations
+5. Apply [best-practices.md](./reference/best-practices.md) performance tips
 
 ---
 

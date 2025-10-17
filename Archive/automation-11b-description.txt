@@ -1,0 +1,32 @@
+Auto-generates Pages when Offer targeting is UPDATED.
+
+BEHAVIOR:
+• Triggers when Target Services, Target Locations, or Target Branches fields change
+• Reads all Services and filters by updated Target Services
+• Reads all Locations and filters by updated Target Locations
+• Further filters by updated Target Branches (via Service Areas)
+• Creates any MISSING pages based on new targeting
+• Duplicate detection skips existing pages (additive behavior)
+• Sets all new pages to Status: Draft, Published: false
+
+WHY NEEDED:
+When you update an offer's targeting (e.g., expand from Bathroom to include Kitchen),
+this automation creates the new Kitchen pages without recreating existing Bathroom pages.
+
+TARGETING:
+• Target Services empty = ALL services
+• Target Locations empty = ALL locations
+• Target Branches empty = no additional filtering
+• Target Branches set = only locations served by those branches
+
+EXAMPLE:
+Original: "Spring Sale" targets [Bathroom]
+Update: Change to target [Bathroom, Kitchen]
+→ Automation creates Kitchen pages
+→ Skips existing Bathroom pages (duplicates)
+
+NOTES:
+• Watch specific fields to prevent triggering on unrelated changes
+• Can create 100+ pages depending on targeting expansion
+• Uses batch creation for performance
+• Duplicate detection prevents re-creating pages

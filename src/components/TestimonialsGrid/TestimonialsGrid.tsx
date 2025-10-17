@@ -4,6 +4,12 @@ interface TestimonialsGridProps {
   testimonials: TestimonialItem[]
 }
 
+// Configuration constants
+const MAX_WORDS = 200 // Maximum words to display in testimonial text
+const MIN_TESTIMONIALS = 3 // Minimum testimonials required to display section
+const DISPLAY_COUNT_SMALL = 3 // Number to display when 3-5 available
+const DISPLAY_COUNT_LARGE = 6 // Number to display when 6+ available
+
 /**
  * TestimonialsGrid Component
  *
@@ -39,12 +45,12 @@ export default function TestimonialsGrid({ testimonials }: TestimonialsGridProps
   // If we have 6+, show 6; if we have 3-5, show 3; if fewer than 3, show none
   let displayTestimonials: TestimonialItem[] = []
 
-  if (validTestimonials.length >= 6) {
-    displayTestimonials = validTestimonials.slice(0, 6)
-  } else if (validTestimonials.length >= 3) {
-    displayTestimonials = validTestimonials.slice(0, 3)
+  if (validTestimonials.length >= DISPLAY_COUNT_LARGE) {
+    displayTestimonials = validTestimonials.slice(0, DISPLAY_COUNT_LARGE)
+  } else if (validTestimonials.length >= MIN_TESTIMONIALS) {
+    displayTestimonials = validTestimonials.slice(0, DISPLAY_COUNT_SMALL)
   } else {
-    return null // Need at least 3 testimonials to display
+    return null // Need at least MIN_TESTIMONIALS to display
   }
 
   return (
@@ -67,6 +73,9 @@ export default function TestimonialsGrid({ testimonials }: TestimonialsGridProps
                   <img
                     src={testimonial.photoUrl}
                     alt={`${testimonial.customerName} photo`}
+                    width={48}
+                    height={48}
+                    loading="lazy"
                     className="w-12 h-12 rounded-full object-cover flex-shrink-0"
                   />
                 ) : (
@@ -109,9 +118,9 @@ export default function TestimonialsGrid({ testimonials }: TestimonialsGridProps
                 </h4>
               )}
 
-              {/* Review Text (truncated to 200 words) */}
+              {/* Review Text (truncated to MAX_WORDS) */}
               <p className="text-gray-700 leading-relaxed">
-                {truncateText(testimonial.reviewText, 200)}
+                {truncateText(testimonial.reviewText, MAX_WORDS)}
               </p>
 
               {/* Footer: Date + Source */}

@@ -1,0 +1,170 @@
+# Landing Page Content Brief Template
+
+metadata:
+  template_version: 1.0
+  template_type: content-brief
+  purpose: Gather requirements before generating landing page content
+  agent_owner: copywriter
+  last_updated: 2025-01-10
+
+# This template is used when the Content Writer agent needs to gather
+# additional context beyond what's available in Airtable
+
+page_identity:
+  instruction: "Basic page information (usually from Airtable)"
+  fields:
+    - name: record_id
+      type: text
+      required: true
+      description: "Airtable record ID (e.g., recABC123)"
+
+    - name: service_name
+      type: text
+      required: true
+      description: "Service being offered (e.g., 'Bathroom Remodeling')"
+
+    - name: location
+      type: text
+      required: true
+      description: "City, State (e.g., 'Austin, TX')"
+
+    - name: target_url
+      type: text
+      required: false
+      description: "URL slug (e.g., 'bathroom-remodeling/austin-tx')"
+
+client_context:
+  instruction: "Client branding and differentiation (from Airtable lookups)"
+  fields:
+    - name: client_name
+      type: text
+      required: true
+      description: "Company name"
+
+    - name: years_in_business
+      type: number
+      required: false
+      description: "Years company has been operating"
+
+    - name: bbb_rating
+      type: text
+      required: false
+      description: "BBB rating (e.g., 'A+', 'A', 'B')"
+
+    - name: warranty_years
+      type: text
+      required: false
+      description: "Warranty offered (e.g., 'Lifetime', '10 years')"
+
+    - name: licenses_certifications
+      type: multiline
+      required: false
+      description: "Relevant licenses or certifications"
+
+    - name: insurance_amount
+      type: number
+      required: false
+      description: "Insurance coverage amount (if notable)"
+
+seo_context:
+  instruction: "SEO and keyword targeting"
+  fields:
+    - name: primary_keywords
+      type: multiline
+      required: true
+      description: "Comma-separated list of target keywords"
+
+    - name: google_ads_headline
+      type: text
+      required: false
+      description: "If paid traffic, what's the ad headline (for message match)"
+
+    - name: competitor_urls
+      type: multiline
+      required: false
+      description: "URLs of competitor pages (for differentiation research)"
+
+audience_context:
+  instruction: "Target audience and pain points"
+  fields:
+    - name: target_audience
+      type: text
+      required: true
+      description: "Who is the ideal customer (e.g., 'Homeowners with outdated bathrooms')"
+
+    - name: primary_pain_point
+      type: text
+      required: true
+      description: "Main problem service solves (e.g., 'Dysfunctional, outdated bathroom')"
+
+    - name: desired_outcome
+      type: text
+      required: true
+      description: "What customer wants to achieve (e.g., 'Modern, functional bathroom')"
+
+    - name: common_objections
+      type: multiline
+      required: false
+      description: "Common reasons prospects don't buy (e.g., 'too expensive', 'takes too long')"
+
+brand_voice:
+  instruction: "Brand voice and messaging guidelines"
+  fields:
+    - name: voice_tone
+      type: select
+      required: false
+      options:
+        - professional
+        - friendly
+        - authoritative
+        - approachable
+        - luxury
+      description: "Overall brand voice (select one)"
+
+    - name: voice_guidelines
+      type: multiline
+      required: false
+      description: "Any specific voice/tone guidelines (e.g., 'avoid jargon', 'use local references')"
+
+    - name: words_to_avoid
+      type: multiline
+      required: false
+      description: "Words or phrases to avoid (comma-separated)"
+
+    - name: words_to_use
+      type: multiline
+      required: false
+      description: "Preferred words or phrases (comma-separated)"
+
+special_instructions:
+  instruction: "Any additional context or special requests"
+  fields:
+    - name: current_promotion
+      type: text
+      required: false
+      description: "Current offer or promotion to highlight"
+
+    - name: unique_process
+      type: multiline
+      required: false
+      description: "Unique methodology or process to emphasize"
+
+    - name: testimonial_themes
+      type: multiline
+      required: false
+      description: "Common themes from customer testimonials"
+
+    - name: additional_notes
+      type: multiline
+      required: false
+      description: "Any other relevant context"
+
+# Example Usage:
+# When Content Writer agent loads a page but needs additional context,
+# use this template to structure the information gathering.
+#
+# Typical workflow:
+# 1. Load page data from Airtable
+# 2. If missing key context, prompt user with this template
+# 3. Gather responses
+# 4. Proceed with content generation

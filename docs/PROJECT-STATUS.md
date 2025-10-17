@@ -194,7 +194,8 @@
 ### Development Tools
 - **Node.js:** v22.19.0 (local)
 - **Package Manager:** npm
-- **MCP Servers Configured:** 9 (including Netlify MCP, Playwright, Chrome DevTools, Context7, Airtable, etc.)
+- **MCP Servers Configured:** 8 (including Netlify MCP, Playwright, Chrome DevTools, Context7, etc.)
+- **Airtable Integration:** Direct REST API (not MCP)
 
 ---
 
